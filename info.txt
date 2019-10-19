@@ -1,0 +1,7 @@
+Nel proprio branch:
+
+- Scaricare aggiornamenti dal branch dell'esperienza (eventualmente forzando il pull se non si hanno modifiche locali non pubblicate)
+- Copiare la cartella functions (o solo le funzioni necessarie) nella cartella dell' esperienza
+- Modificare le funzioni per il caso specifico 
+- Fare "add" solo dei file modificati
+- Pubblicare i cambiamenti sul branch esperienza (eventualmente forzare il push, dato che si pushano solo i file modificati)

@@ -1,0 +1,10 @@
+Una volta aperto il file "presadati.py", è richiesto (nelle prime righe) un nome file da inserire nel programma. 
+Su questo file verrano salvati i dati inseriti durante l'esecuzione del programma; inoltre 
+vengono subito cercati eventuali dati già presenti nel file e caricati nel grafico. Se si vogliono caricare dei dati, quindi,
+bisogna mettere in questa cartella il .csv e dire al programma il nome del file. Se invece si vuole cominciare un nuovo file,
+verrà creato qui un .csv con il nome indicato.
+Ogni volta sono richiesti 3 dati: x, y, sigma: se non si sa ancora la sigma basta mettere 0 e così non viene plottata.
+Per poter inserire un nuovo dato è necessario prima chiudere il grafico aperto.
+
+Note di modifiche:
+aggiungere plot sigma, possibilità di differenziare tra file lettura e file scrittura, trasformazione a funzione
