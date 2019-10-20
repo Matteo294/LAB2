@@ -1,0 +1,7 @@
+Viene fatta la regressione lineare tra due insiemi di misure x e y, ipotizzando che y = Ax + B.
+
+Nelle prime righe di reglin.py va scritto il nome del file csv da cui leggere i dati. 
+I dati vanno salvati nel formato: misure delle due grandezze nelle prime due colonne, incertezze delle due grandezze nelle seconde due colonne.
+Verrà chiesto se si intende tenere conto del contributo di sigma_x; se non lo si vuole, viene contata solo sigma_y. 
+Vengono stampati A e B con le loro incertezze.
+
