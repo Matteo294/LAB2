@@ -1,3 +1,9 @@
+''' 
+Questo script viene usato durante le sessioni di laboratorio per graficare in tempo reale i dati.
+E' prevista una funzione per cui i dati inseriti nel plot vengono automaticamente salvati su un file csv in questa cartella.
+Il programma inizialmente carica i dati presenti nel file di lettura indicato (se esiste) e li plotta subito.
+'''
+
 import scipy
 import matplotlib
 from matplotlib import pyplot as plt
@@ -50,6 +56,13 @@ def aggiornaFile(nomefile, xysigma):
     with open(nomefile, 'a') as filew:
         writer = csv.writer(filew, delimiter=',')
         writer.writerow(xysigma)
+
+
+
+
+'''
+Inizio main routine
+'''
 
 leggiFile(file_lettura)
 print(xdata, ydata, sigmadata)
