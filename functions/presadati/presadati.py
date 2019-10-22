@@ -6,8 +6,8 @@ import csv
 
 matplotlib.rcParams.update({'font.size': 22}) # Cambio dimensione font globale dei plot
 
-file_lettura = "lab1.csv" # Nome del file da cui caricare quelli esistenti.
-file_scrittura = "misure1.csv" # Nome del file dove salvare tutti i dati
+file_lettura = "misure2.csv" # Nome del file da cui caricare quelli esistenti.
+file_scrittura = "misure2.csv" # Nome del file dove salvare tutti i dati
 
 # Array di storage dove tenere tutti i dati (che poi andranno anche salvati su un csv)
 xdata = []
@@ -21,15 +21,15 @@ os.chdir(dname)
 
 # Funzione di plotting, la faccio una volta per tutte
 def plotxy(x , y):
-    print(type(y[-1]))
-    plt.plot(x, y, 'go--', linewidth=2, markersize=12, color=[0.01, 0.01, 0.01], alpha=0.5, markerfacecolor=[0, 0, 1])
+    #print(type(y[-1]))
+    plt.plot(x, y, 'go', linewidth=2, markersize=12, color=[0.01, 0.01, 0.01], alpha=0.5, markerfacecolor=[0, 0, 1])
     plt.grid()
     plt.xlabel("x")
     plt.ylabel("y")
     plt.title("X-Y Plot")
     plt.show()
 
-# Funzione di lettura dati già presenti
+# Funzione di lettura dati gia presenti
 def leggiFile(nomefile):
     myfile = os.path.join(file_lettura)
     if os.path.isfile(myfile):
@@ -41,7 +41,9 @@ def leggiFile(nomefile):
                 xdata.append(row[0])
                 ydata.append(row[1])
                 sigmadata.append(row[2])
-                aggiornaFile(file_scrittura, row) # Funzione che scrive in modalità "append" sul file di scrittura
+                print(row)
+                if(nomefile != file_scrittura):
+                    aggiornaFile(file_scrittura, row) # Funzione che scrive in modalita "append" sul file di scrittura
 
 # Funzione di scrittura su file
 def aggiornaFile(nomefile, xysigma):
@@ -50,6 +52,7 @@ def aggiornaFile(nomefile, xysigma):
         writer.writerow(xysigma)
 
 leggiFile(file_lettura)
+print(xdata, ydata, sigmadata)
 plotxy(xdata, ydata)
 
 while(True):
