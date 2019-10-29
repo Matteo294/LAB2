@@ -6,7 +6,7 @@ import os
 import csv
 
 # nome del file da cui si prenderanno i dati per la regressione
-nomefile = "data.csv"
+nomefile = "monte10V_5mA.csv"
 
 # inizializzo i miei array 
 xdata = np.array([])
