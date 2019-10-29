@@ -5,6 +5,12 @@ Le linee guida di utilizzo sono scritte nel file .txt in questa cartella (devo a
 C'è una superclasse (Analisi) in cui sono scritte tutte le funzioni comuni, ovvero quelle funzioni che vanno bene per ogni tipo di analisi.
 Ci sono poi delle sottoclassi (per ora solo LinearFit) con delle funzioni particolari per l'analisi cercata (utili per il fit lineare in questo caso).
 ''' 
+
+'''
+Lista di cose da aggiungere:
+chi quadro a 2 parametri, trasferimento incertezze, calcolo probabilità di eccedere il chi quadro, migliorare la funzione di print, 
+funzione per i grafici (deve creare l'oggetto self.axes in modo da potervi accedere dall'esterno per modificare il grafico), grafico dei residui
+'''
 import numpy as np
 import scipy
 import math
@@ -69,8 +75,8 @@ class LinearFit(Analisi):
     def __str__(self):
         # Printo con 4 decimali i valori e con 1 il chi ridotto (troncamento, non approssimazione)
         # Il codice \u00B1 è per il +-
-        return(u"\nIntercetta: {0:.4f} \u00B1 {1:.4f} \t Coefficiente angolare: {2:.4f} \u00B1 {3:.4f} \t Chi quadro ridotto: {4:.1f}\n".format(
-            self.A, self.sigma_A, self.B, self.sigma_B, self.chi_ridotto))
+        return(u"\nIntercetta: {0:.4f} \u00B1 {1:.4f} \t Coefficiente angolare: {2:.4f} \u00B1 {3:.4f} \t Chi quadro ridotto: {4:.1f} ({5})\n".format(
+            self.A, self.sigma_A, self.B, self.sigma_B, self.chi_ridotto, self.xdata.size))
     
     def chi_quadro(self, n_params=1):
         if n_params == 1:
