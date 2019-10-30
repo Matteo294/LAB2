@@ -1,0 +1,9 @@
+- calcolare resistenze interne strumenti * 
+- trasferire incertezze * 
+- correzione misure + correzione incertezze *
+- test compatibilità
+- disegno circuiti
+- stima resistenza cavi
+- strutturare relazione
+
+* elena
