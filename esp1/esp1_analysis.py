@@ -20,7 +20,6 @@ sigma_y_10V = 10 / 50 / math.sqrt(12)
 
 
 
-
 def main():
 
     # Creo gli oggetti dalla classe per il fit lineare
@@ -34,25 +33,25 @@ def main():
     # Analisi gruppo 1
     monte_10v_5ma.leggiDati(file1, scale_y=1, scale_x=10**(-3), swap_xy=1) # Le misure di x sono in mA quindi moltiplico tutto per 10^-3
     monte_10v_5ma.add_sigmas(sigmay=sigma_y_10V) # 
-    monte_10v_5ma.regressione_lineare()
+    monte_10v_5ma.reg_lin()
     monte_10v_5ma.chi_quadro()
 
     # Analisi gruppo 2
     monte_50v_5ma.leggiDati(file2, scale_y=1, scale_x=10**(-3), swap_xy=1) # Le misure di x sono in mA quindi moltiplico tutto per 10^-3
     monte_50v_5ma.add_sigmas(sigmay=sigma_y_50V)
-    monte_50v_5ma.regressione_lineare()
+    monte_50v_5ma.reg_lin()
     monte_50v_5ma.chi_quadro()
 
     # Analisi gruppo 3
     valle_10v_500ua.leggiDati(file3, scale_y=1, scale_x=10**(-6), swap_xy=1) # Le misure di x sono in uA quindi moltiplico tutto per 10^-6
     valle_10v_500ua.add_sigmas(sigmay=sigma_y_10V)
-    valle_10v_500ua.regressione_lineare()
+    valle_10v_500ua.reg_lin()
     valle_10v_500ua.chi_quadro()
 
     # Analisi gruppo 4
     valle_50v_5ma.leggiDati(file4, scale_y=1, scale_x=10**(-3), swap_xy=1) # Le misure di x sono in mA quindi moltiplico tutto per 10^-3
     valle_50v_5ma.add_sigmas(sigmay=sigma_y_50V)
-    valle_50v_5ma.regressione_lineare()
+    valle_50v_5ma.reg_lin()
     valle_50v_5ma.chi_quadro()
 
     # Quando printo gli oggetti della classe direttamente, viene invocata la funzione __str__ della classe
