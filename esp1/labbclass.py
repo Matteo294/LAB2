@@ -5,16 +5,15 @@ Le linee guida di utilizzo sono scritte nel file .txt in questa cartella (devo a
 C'è una superclasse (Analisi) in cui sono scritte tutte le funzioni comuni, ovvero quelle funzioni che vanno bene per ogni tipo di analisi.
 Ci sono poi delle sottoclassi (per ora solo LinearFit) con delle funzioni particolari per l'analisi cercata (utili per il fit lineare in questo caso).
 ''' 
-
 '''
 Lista di cose da aggiungere:
-chi quadro a 2 parametri, trasferimento incertezze, calcolo probabilità di eccedere il chi quadro, migliorare la funzione di print, 
-funzione per i grafici (deve creare l'oggetto self.axes in modo da potervi accedere dall'esterno per modificare il grafico), grafico dei residui
+chi quadro a 2 parametri, calcolo probabilità di eccedere il chi quadro, migliorare la funzione di print, grafico dei residui
 '''
+
 import numpy as np
 import scipy
 import math
-import matplotlib
+from matplotlib import pyplot as plt
 from numpy.linalg import inv
 from numpy import matrix as mat
 import os
@@ -41,7 +40,7 @@ class Analisi:
                     self.ydata = np.append(self.ydata, row[1] * scale_y)
 
     def add_sigmas(self, sigmax=0, sigmay=0):
-        # Se la sigma passata per parametro è costante (int o float), creo un array di costanti, altrimenti copio l'array
+        # Se il parametro passato è una costante, creo un array di costanti. Altrimenti copio l'array.
         if isinstance(sigmax, (int, float)):
             self.sigmax = np.full(self.xdata.size, sigmax)
         else:
@@ -51,8 +50,11 @@ class Analisi:
         else:
             self.sigmay = np.asarray(sigmay)
 
+    # Queste funzioni devono essere implementate nelle sottoclassi. Se non lo si fa, lancio un errore
     def __str__(self):
-        # Questa funzione dev'essere implementata nelle sottoclassi. Se non lo si fa, lancio un errore
+        raise NotImplementedError
+
+    def plotData(self):
         raise NotImplementedError
 
 
@@ -60,13 +62,13 @@ class Analisi:
 
     
 class LinearFit(Analisi):
-    # Aggiungo la creazione di una unica incertezza (sigma_reg) da usare nella regressione e nel chi quadro. 
+    # Uso l'incertezza sigma_reg per la regressione e nel chi quadro. 
     # Di default è solo sigmay, se dovrò trasferire sigmax, lo farò in reg_lin
     def add_sigmas(self, sigmax=0, sigmay=0):
         super(LinearFit, self).add_sigmas(sigmax, sigmay)
         self.sigma_reg = self.sigmay
 
-    # Fit lineare con una funzione a + bx
+    # Fit lineare con una funzione A + Bx
     def reg_lin(self, trasferisci=False):
         w = 1/self.sigma_reg
         delta = sum(w)*sum(self.xdata**2/w) - (sum(self.xdata/w))**2
@@ -90,3 +92,19 @@ class LinearFit(Analisi):
         if n_params == 1:
             self.chi_q = sum((self.B*self.xdata - self.ydata)**2 / (self.sigma_reg)**2)
             self.chi_ridotto = self.chi_q / self.xdata.size
+
+    def plotData(self, xlabel='X data', ylabel='Y data', title=None, xscale=1, yscale=1):
+        params = plt.errorbar(xscale*self.xdata, yscale*self.ydata, self.sigmay*yscale, self.sigmax*xscale, 'o', ecolor='red', linewidth=1.8, markersize=8, label='Dati misurati')
+        self.dataplot = params[0]
+        self.ax = plt.gca()
+        plt.xlabel(xlabel, fontsize=18)
+        plt.ylabel(ylabel, fontsize=18)
+
+        if title is not None:
+            plt.title(title, fontsize=24)   
+
+        # Array di 1000 punti nel range xmin-xmax dove calcolare la funzione di regressione
+        xrange = np.linspace(min(self.xdata), max(self.xdata), 1000)
+        self.regression_plot, = plt.plot(xrange * xscale, (self.A + self.B*xrange) * yscale, label='Regressione lineare')
+        
+        plt.grid() # Griglia
