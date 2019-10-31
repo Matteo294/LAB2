@@ -62,18 +62,15 @@ class Analisi:
 
     
 class LinearFit(Analisi):
+    # Aggiungo la creazione di una unica incertezza (sigma_reg) da usare nella regressione e nel chi quadro. 
+    # Di default è solo sigmay, se dovrò trasferire sigmax, lo farò in reg_lin
+    def add_sigmas(self, sigmax=0, sigmay=0):
+        super(LinearFit, self).add_sigmas(sigmax, sigmay)
+        self.sigma_reg = self.sigmay
 
     # Ho copiato solo una parte dalla funzione, non quella in cui vengono trasferite le incertezze
     def reg_lin(self, trasferisci=False): # a + bx model
-        # Guardo se esiste la variabile sigma_regressione. All'inizio non esisterà, quindi la setto uguale a sigmay e sigmax non influisce.
-        # Se poi voglio trasferire sigmax, allora aggiorno sigma_regressione e poi rieseguo il codice
-        # In questo modo posso reinvocare dopo lo stesso codice cambiando solo sigma_regressione
-        try:
-            sigma_regressione
-        except NameError:
-            sigma_regressione = self.sigmay
-
-        w = 1/sigma_regressione
+        w = 1/self.sigma_reg
         delta = sum(w)*sum(self.xdata**2/w) - (sum(self.xdata/w))**2
         self.A = 1/delta * (sum(self.xdata**2/w)*sum(self.ydata/w) - sum(self.xdata/w)*sum(self.xdata*self.ydata/w))
         self.B = 1/delta * (sum(w)*sum(self.xdata*self.ydata/w) - sum(self.xdata/w)*sum(self.ydata/w))
@@ -82,7 +79,7 @@ class LinearFit(Analisi):
         
         if (trasferisci==True):
             sigma_trasformata = abs(self.B)*self.sigmax
-            sigma_regressione = np.sqrt(self.sigmay**2 + sigma_trasformata**2)
+            self.sigma_reg = np.sqrt(self.sigmay**2 + sigma_trasformata**2)
             self.reg_lin(trasferisci=False)
 
 
