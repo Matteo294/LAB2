@@ -11,7 +11,7 @@ chi quadro a 2 parametri, calcolo probabilità di eccedere il chi quadro, miglio
 '''
 
 import numpy as np
-import scipy
+from scipy.stats import t
 import math
 from matplotlib import pyplot as plt
 from numpy.linalg import inv
