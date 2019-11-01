@@ -88,15 +88,51 @@ class LinearFit(Analisi):
         return(u"\nIntercetta: {0:.4f} \u00B1 {1:.4f} \t Coefficiente angolare: {2:.4f} \u00B1 {3:.4f} \t Chi quadro ridotto: {4:.1f} ({5})\n".format(
             self.A, self.sigma_A, self.B, self.sigma_B, self.chi_ridotto, self.xdata.size))
     
-    def chi_quadro(self, n_params=1):
+    def chi_quadro(self, n_params=1, n_vincoli=0):
         if n_params == 1:
             self.chi_q = sum((self.B*self.xdata - self.ydata)**2 / (self.sigma_reg)**2)
-            self.chi_ridotto = self.chi_q / self.xdata.size
+            self.chi_ridotto = self.chi_q / (self.xdata.size - 1)
+        elif n_params == 2:
+            self.chi_q = sum((self.B*self.xdata + self.A - self.ydata)**2 / (self.sigma_reg)**2)
+            self.chi_ridotto = self.chi_q / (self.xdata.size - 2)
 
-    def plotData(self, xlabel='X data', ylabel='Y data', title=None, xscale=1, yscale=1):
+    def residui(self, n_params=1, xlabel='ID Misura', ylabel='Y', title=None):
+        xticks = np.arange(0, self.xdata.size, 1) # Valori sull'asse x: interi da 1 a n misure
+        if n_params == 1:
+            residui = self.B*self.xdata - self.ydata
+        elif n_params == 2:
+            residui = self.B*self.xdata + self.A - self.ydata
+
+        params = plt.errorbar(xticks, residui, self.sigmay, self.sigmax, 'o', ecolor='red')
+
+        self.residui_plot = params[0]
+
+        # Sistemo alcuni parametri
+        self.residui_plot.set_color('black')
+        self.residui_plot.set_alpha(0.8)
+        self.residui_plot.set_markersize(8)
+        
+        plt.xlabel(xlabel, fontsize=18)
+        plt.ylabel(ylabel, fontsize=18)
+
+        if title is not None:
+            plt.title(title, fontsize=24)
+        
+        plt.plot([0, self.xdata.size], [0, 0], '--', color='gray', linewidth=1.8)
+
+        plt.grid()
+
+    def plotData(self, xlabel='X data', ylabel='Y', title=None, xscale=1, yscale=1):
         params = plt.errorbar(xscale*self.xdata, yscale*self.ydata, self.sigmay*yscale, self.sigmax*xscale, 'o', ecolor='red', linewidth=1.8, markersize=8, label='Dati misurati')
-        self.dataplot = params[0]
-        self.ax = plt.gca()
+        
+        # Memorizzo l'oggetto del grafico di modo da potervi accedere dall'esterno
+        self.data_plot = params[0]
+        self.ax_data = plt.gca()
+
+        # Sistemo alcuni parametri
+        self.data_plot.set_color('black')
+        self.data_plot.set_alpha(0.8)
+
         plt.xlabel(xlabel, fontsize=18)
         plt.ylabel(ylabel, fontsize=18)
 
