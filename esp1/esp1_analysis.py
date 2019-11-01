@@ -63,7 +63,7 @@ def main():
     '''
         Per cambiare i parametri del grafico dei dati basta usare l'attributo data_plot (oggetto della classe matplotlib).
         Invece per cambiare quelli del grafico della regressione lineare basta usare l'attributo regression_plot
-    ''''''
+    '''
     monte_10v_5ma.plotData(xlabel='Corrente [mA]', ylabel='Tensione [V]', xscale=10**3, title='Grafico I-V amperometro a monte con F.S. 10V - 5mA')
     monte_10v_5ma.data_plot.set_markerfacecolor([0, 1, 0.6]) # data_plot è un oggetto matplotlib creato nella funzione plotData all'interno della classe
     
@@ -87,16 +87,23 @@ def main():
     valle_50v_5ma.data_plot.set_markerfacecolor([0, 1, 0.6])
     valle_50v_5ma.regression_plot.set_color([0, 0.2, 0.7])
     plt.legend(fontsize=18)
-    plt.show()'''
-
-    monte_10v_5ma.residui(ylabel='Scarto', title='Grafico dei residui con F.S. 10V - 5mA')
-    monte_10v_5ma.residui_plot.set_markerfacecolor('blue')
     plt.show()
 
+    monte_10v_5ma.residui(ylabel='Scarto', title='Grafico dei residui con F.S. 10V - 5mA')
+    monte_10v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
+    plt.show()
 
-    monte_50v_5ma.residui()
-    valle_10v_500ua.residui()
-    valle_50v_5ma.residui()
-    
+    monte_50v_5ma.residui(ylabel='Scarto', title='Grafico dei residui amperometro a monte con F.S. 50V - 5mA')
+    monte_50v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
+    plt.show()
+
+    valle_10v_500ua.residui(ylabel='Scarto', title='Grafico dei residui amperometro a valle con F.S. 10V - 500uA')
+    valle_10v_500ua.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
+    plt.show()
+
+    valle_50v_5ma.residui(ylabel='Scarto', title='Grafico dei residui amperometro a valle con F.S. 50V - 5mA')
+    valle_50v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
+    plt.show()
+
 if __name__ == "__main__":
     main()
