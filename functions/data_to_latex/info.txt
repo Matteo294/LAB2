@@ -1,0 +1,3 @@
+Per tasformare il .csv in codice latex basta copiare qui dentro il file e avviare il programma python.
+Il file trascritto si troverà nella cartella 'results'.
+Se il programma non trova la cartella 'results', non funziona, quindi non va eliminata.

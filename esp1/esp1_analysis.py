@@ -3,7 +3,7 @@ import os
 import math
 from matplotlib import pyplot as plt
 
-enable_plots = False # Mettere True per visualizzare i grafici, False per nasconderli
+enable_plots = True # Mettere True per visualizzare i grafici, False per nasconderli
 
 file1 = 'misure/monte_10V_5mA.csv'
 file2 = 'misure/monte_50V_5mA.csv'
@@ -92,6 +92,8 @@ def main():
         plt.legend(fontsize=18)
         plt.show()
 
+
+        #------------ Grafici dei residui -----------#
         monte_10v_5ma.residui(ylabel='Scarto', title='Grafico dei residui con F.S. 10V - 5mA')
         monte_10v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
         plt.show()

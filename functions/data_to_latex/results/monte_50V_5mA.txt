@@ -1,0 +1,11 @@
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|c|c|}
+		7	&	1.1	\\
+		15	&	2.2	\\
+		17.5	&	2.6	\\
+		12.0	&	1.08	\\
+		22	&	3.3	\\
+		5	&	0.8	\\
+	\end{tabular}
+\end{table}
