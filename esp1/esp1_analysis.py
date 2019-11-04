@@ -3,7 +3,7 @@ import os
 import math
 from matplotlib import pyplot as plt
 
-enable_plots = True # Mettere True per visualizzare i grafici, False per nasconderli
+enable_plots = False # Mettere True per visualizzare i grafici, False per nasconderli
 
 file1 = 'misure/monte_10V_5mA.csv'
 file2 = 'misure/monte_50V_5mA.csv'
@@ -34,24 +34,28 @@ def main():
     # Analisi gruppo 1
     monte_10v_5ma.leggiDati(file1, scale_y=1, scale_x=10**(-3), swap_xy=1) # Le misure di x sono in mA quindi moltiplico tutto per 10^-3
     monte_10v_5ma.add_sigmas(sigmay=sigma_y_10V, sigmax=sigma_x_5ma) # 
+    monte_10v_5ma.add_resistenza_tester_ICE(4, 3)
     monte_10v_5ma.reg_lin(trasferisci=True)
     monte_10v_5ma.chi_quadro()
 
     # Analisi gruppo 2
     monte_50v_5ma.leggiDati(file2, scale_y=1, scale_x=10**(-3), swap_xy=1)
     monte_50v_5ma.add_sigmas(sigmay=sigma_y_50V, sigmax=sigma_x_5ma)
+    monte_50v_5ma.add_resistenza_tester_ICE(4, 4)
     monte_50v_5ma.reg_lin(trasferisci=True) # Le incertezze di x non sono trascurabili, quindi le trasferisco in y
     monte_50v_5ma.chi_quadro()
 
     # Analisi gruppo 3
     valle_10v_500ua.leggiDati(file3, scale_y=1, scale_x=10**(-6), swap_xy=1) # Le misure di x sono in uA quindi moltiplico tutto per 10^-6
     valle_10v_500ua.add_sigmas(sigmay=sigma_y_10V, sigmax=sigma_x_500ua)
+    valle_10v_500ua.add_resistenza_tester_ICE(5, 3)
     valle_10v_500ua.reg_lin(trasferisci=True)
     valle_10v_500ua.chi_quadro()
 
     # Analisi gruppo 4
     valle_50v_5ma.leggiDati(file4, scale_y=1, scale_x=10**(-3), swap_xy=1)
     valle_50v_5ma.add_sigmas(sigmay=sigma_y_50V, sigmax=sigma_x_500ua)
+    valle_50v_5ma.add_resistenza_tester_ICE(4, 4)
     valle_50v_5ma.reg_lin(trasferisci=True)
     valle_50v_5ma.chi_quadro()
 
@@ -60,6 +64,19 @@ def main():
     print(monte_50v_5ma)
     print(valle_10v_500ua)
     print(valle_50v_5ma)
+    #print("Resistenza ICE \n5ma Amp = ", monte_10v_5ma.R_amp, "\n10V Vol = ", monte_10v_5ma.R_vol)
+
+
+    # Correzione valori trovati tenendo conto di resistenza strumenti
+    # Configurazione amperometro a monte: R_corretta = (1/R_misurata + 1/R_vol)^-1
+    R_corr_monte_10v_5ma = 1/(1/monte_10v_5ma.B + 1/monte_10v_5ma.R_vol)
+    R_corr_monte_50v_5ma = 1/(1/monte_50v_5ma.B + 1/monte_50v_5ma.R_vol)
+
+    # Configurazione amperometro a valle: R_corretta = R_misurata + R_amp
+    R_corr_valle_10v_500ua = valle_10v_500ua.B + valle_10v_500ua.R_amp
+    R_corr_valle_50v_5ma = valle_50v_5ma.B + valle_50v_5ma.R_amp
+
+    print("Valori della resistenza corretti con la resistenza dell'ICE\n{0:.4f} \t {1:.4f} \t {2:.4f} \t {3:.4f}".format(R_corr_monte_10v_5ma, R_corr_monte_50v_5ma, R_corr_valle_10v_500ua, R_corr_valle_50v_5ma))
 
     if enable_plots:
         # Grafici  

@@ -50,6 +50,34 @@ class Analisi:
         else:
             self.sigmay = np.asarray(sigmay)
 
+    def add_resistenza_tester_ICE(self, input_amp, input_vol):
+        ''' input_amp: 1=5A; 2=500mA; 3=50mA; 4=5mA; 5=500uA; 6=50uA
+            input_vol: 1= 100mV; 2=2V ; 3=10V ; 4=50V ; 5=200V ; 6=500V ; 7=1000V '''
+        # I commenti messi con le ''' subito sotto l'intestazione della funzione servono da documentazione su come funziona la funzione.
+        # Appaiono come suggerimenti quando le usi su vs code, molto utili per sapere cosa mettere come parametri
+        R_interne = [0.064, 0.576, 5.76, 57.6, 576, 5760]
+        R_tot = sum(R_interne)
+        R_a = 1600
+        R_sh = 0
+        # calcolo R shunt
+        for i in range(input_amp):
+            R_sh += R_interne[i]
+        self.R_amp = R_sh*(R_tot - R_sh + R_a) / (R_tot + R_a)
+        # il terminale 6 ha una resistenza in piu
+        if input_amp == 6:
+            self.R_amp += 720
+
+        # calcolo resistenza del voltmetro
+        R_parallelo_int = R_tot*R_a / (R_tot + R_a)         # parallelo interno completo R_tot || R_a
+        R_terminali_vol = [32.2e3, 6.52e3, 160e3, 800e3, 6e6, 100e6]
+        if input_vol == 1:
+            self.R_vol = 720 + R_parallelo_int
+        else:
+            R_entrata = 0
+            for i in range(input_vol):
+                R_entrata += R_terminali_vol[i]
+            self.R_vol = R_parallelo_int + R_entrata
+
     # Queste funzioni devono essere implementate nelle sottoclassi. Se non lo si fa, lancio un errore
     def __str__(self):
         raise NotImplementedError
