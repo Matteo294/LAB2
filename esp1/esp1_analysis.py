@@ -3,7 +3,7 @@ import os
 import math
 from matplotlib import pyplot as plt
 
-enable_plots = False # Mettere True per visualizzare i grafici, False per nasconderli
+enable_plots = True # Mettere True per visualizzare i grafici, False per nasconderli
 
 file1 = 'misure/monte_10V_5mA.csv'
 file2 = 'misure/monte_50V_5mA.csv'
@@ -23,7 +23,7 @@ sigma_x_500ua = 500e-6 / 50 / math.sqrt(12)
 
 def main():
 
-    # Creo gli oggetti dalla classe per il fit lineare
+    # Creo gli oggetti dalla class e per il fit lineare
     monte_10v_5ma = LinearFit()
     monte_50v_5ma = LinearFit()
     valle_10v_500ua = LinearFit()
