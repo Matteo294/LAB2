@@ -116,7 +116,7 @@ class LinearFit(Analisi):
         return(u"\nIntercetta: {0:.4f} \u00B1 {1:.4f} \t Coefficiente angolare: {2:.4f} \u00B1 {3:.4f} \t Chi quadro ridotto: {4:.1f} ({5})\n".format(
             self.A, self.sigma_A, self.B, self.sigma_B, self.chi_ridotto, self.xdata.size))
     
-    def chi_quadro(self, n_params=1, n_vincoli=0):
+    def chi_quadro(self, n_params=2):
         if n_params == 1:
             self.chi_q = sum((self.B*self.xdata - self.ydata)**2 / (self.sigma_reg)**2)
             self.chi_ridotto = self.chi_q / (self.xdata.size - 1)
