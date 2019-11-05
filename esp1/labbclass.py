@@ -129,7 +129,7 @@ class LinearFit(Analisi):
         elif n_params == 2:
             residui = self.ydata - (self.B*self.xdata + self.A)
 
-        params = plt.errorbar(self.xdata*xscale, residui, self.sigmay, self.sigmax*xscale, 'o', ecolor='red')
+        params = plt.errorbar(self.xdata*xscale, residui, self.sigma_reg, np.zeros(self.xdata.size), 'o', ecolor='red')
 
         self.residui_plot = params[0]
 
