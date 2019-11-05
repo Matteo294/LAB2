@@ -68,13 +68,13 @@ def main():
 
 
     # Correzione valori trovati tenendo conto di resistenza strumenti
-    # Configurazione amperometro a monte: R_corretta = (1/R_misurata + 1/R_vol)^-1
-    R_corr_monte_10v_5ma = 1/(1/monte_10v_5ma.B + 1/monte_10v_5ma.R_vol)
-    R_corr_monte_50v_5ma = 1/(1/monte_50v_5ma.B + 1/monte_50v_5ma.R_vol)
+    # Configurazione amperometro a monte: R_corretta = (1/R_misurata - 1/R_vol)^-1
+    R_corr_monte_10v_5ma = 1/(1/monte_10v_5ma.B - 1/monte_10v_5ma.R_vol)
+    R_corr_monte_50v_5ma = 1/(1/monte_50v_5ma.B - 1/monte_50v_5ma.R_vol)
 
-    # Configurazione amperometro a valle: R_corretta = R_misurata + R_amp
-    R_corr_valle_10v_500ua = valle_10v_500ua.B + valle_10v_500ua.R_amp
-    R_corr_valle_50v_5ma = valle_50v_5ma.B + valle_50v_5ma.R_amp
+    # Configurazione amperometro a valle: R_corretta = R_misurata - R_amp
+    R_corr_valle_10v_500ua = valle_10v_500ua.B - valle_10v_500ua.R_amp
+    R_corr_valle_50v_5ma = valle_50v_5ma.B - valle_50v_5ma.R_amp
 
     print("Valori della resistenza corretti con la resistenza dell'ICE\n{0:.4f} \t {1:.4f} \t {2:.4f} \t {3:.4f}".format(R_corr_monte_10v_5ma, R_corr_monte_50v_5ma, R_corr_valle_10v_500ua, R_corr_valle_50v_5ma))
 
