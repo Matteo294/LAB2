@@ -111,19 +111,19 @@ def main():
 
 
         #------------ Grafici dei residui -----------#
-        monte_10v_5ma.residui(ylabel='Scarto', title='Grafico dei residui con F.S. 10V - 5mA')
+        monte_10v_5ma.residui(ylabel='Scarto', title='Grafico dei residui con F.S. 10V - 5mA', xscale=10**3)
         monte_10v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
         plt.show()
 
-        monte_50v_5ma.residui(ylabel='Scarto', title='Grafico dei residui amperometro a monte con F.S. 50V - 5mA')
+        monte_50v_5ma.residui(ylabel='Scarto', title='Grafico dei residui amperometro a monte con F.S. 50V - 5mA', xscale=10**3)
         monte_50v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
         plt.show()
 
-        valle_10v_500ua.residui(ylabel='Scarto', title='Grafico dei residui amperometro a valle con F.S. 10V - 500uA')
+        valle_10v_500ua.residui(ylabel='Scarto', title='Grafico dei residui amperometro a valle con F.S. 10V - 500uA', xscale=10**3)
         valle_10v_500ua.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
         plt.show()
 
-        valle_50v_5ma.residui(ylabel='Scarto', title='Grafico dei residui amperometro a valle con F.S. 50V - 5mA')
+        valle_50v_5ma.residui(ylabel='Scarto', title='Grafico dei residui amperometro a valle con F.S. 50V - 5mA', xscale=10**3)
         valle_50v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
         plt.show()
 
