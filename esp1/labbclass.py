@@ -10,7 +10,7 @@ dei dati potrebbe essere comodo ri-cambiare udm)
 ''' 
 
 import numpy as np
-from scipy.stats import t
+from scipy import stats
 import math
 from matplotlib import pyplot as plt
 from numpy.linalg import inv
@@ -110,10 +110,15 @@ class LinearFit(Analisi):
             self.reg_lin(trasferisci=False)
 
     def __str__(self):
-        # Printo con 4 decimali i valori e con 1 il chi ridotto (troncamento, non approssimazione)
-        # Il codice \u00B1 è per il +-
-        return(u"\nIntercetta: {0:.4f} \u00B1 {1:.4f} \t Coefficiente angolare: {2:.4f} \u00B1 {3:.4f} \t Chi quadro ridotto: {4:.1f} ({5})\n".format(
-            self.A, self.sigma_A, self.B, self.sigma_B, self.chi_ridotto, self.xdata.size))
+        # Controllo se esistono le variabili e man mano le aggiungo alla frase di print
+        frase = ""
+        if self.A is not None:
+            frase += "Intercetta: {0:.4f} \u00B1 {1:.4f} \t".format(self.A, self.sigma_A)
+        if self.B is not None:
+            frase += "Coefficiente angolare: {0:4f} \u00B1 {1:.4f} \t".format(self.B, self.A)
+        if self.chi_ridotto is not None:
+            frase += "Chi quadro ridotto: {0:.4f} pvalue={1:.4f} su {2} dati \t".format(self.chi_ridotto, self.probabilita_chi, self.xdata.size)
+        return frase
     
     def chi_quadro(self, n_params=2):
         if n_params == 1:
@@ -122,6 +127,8 @@ class LinearFit(Analisi):
         elif n_params == 2:
             self.chi_q = sum((self.B*self.xdata + self.A - self.ydata)**2 / (self.sigma_reg)**2)
             self.chi_ridotto = self.chi_q / (self.xdata.size - 2)
+            self.probabilita_chi = stats.chi2.sf(self.chi_q, self.xdata.size - 2)
+
 
     def residui(self, n_params=2, xlabel='ID Misura', ylabel='Y', title=None, xscale=1, yscale=1):
         if n_params == 1:
