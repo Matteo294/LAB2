@@ -1,0 +1,251 @@
+Script started on 2019-11-05 22:01:15+01:00 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="211" LINES="56"]
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/lab2/LAB2]1;..nti/lab2/LAB2[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mLAB2 [01;34mgit:([31mesp1[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004h...[32m.[39m [39m scripts[32ms[32mc[32mr[32mi[32mp[32mt[32ms[39m[?1l>[?2004l
+]2;cd ~/Documenti/scripts/My-Scripts]1;scripts[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hjjupyter[32mj[32mu[32mp[32my[32mt[32me[32mr[39m notebook[?1l>[?2004l
+]2;jupyter notebook]1;jupyter[32m[I 22:01:31.616 NotebookApp](B[m JupyterLab extension loaded from /home/matteo/anaconda3/lib/python3.7/site-packages/jupyterlab
+[32m[I 22:01:31.616 NotebookApp](B[m JupyterLab application directory is /home/matteo/anaconda3/share/jupyter/lab
+[32m[I 22:01:31.618 NotebookApp](B[m Serving notebooks from local directory: /home/matteo/Documenti/scripts/My-Scripts
+[32m[I 22:01:31.618 NotebookApp](B[m The Jupyter Notebook is running at:
+[32m[I 22:01:31.618 NotebookApp](B[m http://localhost:8888/?token=17a9cace05d82a326d3dc08ed8365cfe87964aa3921a0ac4
+[32m[I 22:01:31.618 NotebookApp](B[m  or http://127.0.0.1:8888/?token=17a9cace05d82a326d3dc08ed8365cfe87964aa3921a0ac4
+[32m[I 22:01:31.618 NotebookApp](B[m Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[C 22:01:31.636 NotebookApp] 
+    
+    To access the notebook, open this file in a browser:
+        file:///home/matteo/.local/share/jupyter/runtime/nbserver-22795-open.html
+    Or copy and paste one of these URLs:
+        http://localhost:8888/?token=17a9cace05d82a326d3dc08ed8365cfe87964aa3921a0ac4
+     or http://127.0.0.1:8888/?token=17a9cace05d82a326d3dc08ed8365cfe87964aa3921a0ac4
+[33m[W 22:02:24.177 NotebookApp](B[m delete /lab_notebook/misure.csv
+[32m[I 22:02:27.562 NotebookApp](B[m Kernel started: b1c858ad-38ee-436e-867c-95927254af85
+[32m[I 22:04:27.525 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:06:27.516 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:08:27.517 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:10:27.518 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:12:27.544 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:14:27.523 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:16:27.520 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:18:27.514 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:20:27.520 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:22:27.519 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:24:27.520 NotebookApp](B[m Saving file at /lab_notebook/Esperienza2.ipynb
+[32m[I 22:30:32.687 NotebookApp](B[m Starting buffering for b1c858ad-38ee-436e-867c-95927254af85:d91bf574099b4895a35fc717dc628fed
+^C[32m[I 22:32:03.796 NotebookApp](B[m interrupted
+Serving notebooks from local directory: /home/matteo/Documenti/scripts/My-Scripts
+1 active kernel
+The Jupyter Notebook is running at:
+http://localhost:8888/?token=17a9cace05d82a326d3dc08ed8365cfe87964aa3921a0ac4
+ or http://127.0.0.1:8888/?token=17a9cace05d82a326d3dc08ed8365cfe87964aa3921a0ac4
+Shutdown this notebook server (y/[n])? y
+[C 22:32:05.624 NotebookApp] Shutdown confirmed
+[32m[I 22:32:05.624 NotebookApp](B[m Shutting down 1 kernel
+[32m[I 22:32:05.825 NotebookApp](B[m Kernel shutdown: b1c858ad-38ee-436e-867c-95927254af85
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hsscripts[32ms[32mc[32mr[32mi[32mp[32mt[32ms[39m[?1l>[?2004l
+]2;cd ~/Documenti/scripts/My-Scripts]1;scripts[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hlls[32ml[32ms[39m[?1l>[?2004l
+]2;ls --color=tty]1;ls[0m[01;34mEulerMethod[0m  [01;34mlab_notebook[0m  [01;34mRandomScripts[0m  README.md  [01;34mTaylor[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m add .[4m.[24m[?1l>[?2004l
+]2;git add .]1;git[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m commit -m £ "Jup[33m"[33mJ[33mu[39m [33mJ[39m[39m [33m"[39m[39m [33m"[33mN[39m[33mN[33mo[39m[33mo[33mt[39m[33mt[33me[39m[33me[33mb[39m[33mb[33mo[39m[33mo[33mo[39m[33mo[33mk[39m[33mk[33m [39m[33m [33me[39m[33me[33ms[39m[33ms[33mp[39m[33mp[33m2[39m[33m2[33m-[39m[33m-[33m1[39m[33m1[33m"[39m[?1l>[?2004l
+]2;git commit -m "Notebook esp2-1"]1;git[esp2 7071b85] Notebook esp2-1
+ 5 files changed, 412 insertions(+)
+ create mode 100644 lab_notebook/.ipynb_checkpoints/Esperienza2-checkpoint.ipynb
+ create mode 100644 lab_notebook/Esperienza2.ipynb
+ create mode 100644 lab_notebook/labbclass.py
+ create mode 100644 lab_notebook/presadati.py
+ create mode 100644 lab_notebook/prova.py
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m push origin master[?1l>[?2004l
+]2;git push origin master]1;gitTo github.com:Matteo294/My-Scripts.git
+ [31m! [rejected]       [m master -> master (fetch first)
+[31merror: failed to push some refs to 'git@github.com:Matteo294/My-Scripts.git'
+[m[33mhint: Updates were rejected because the remote contains work that you do[m
+[33mhint: not have locally. This is usually caused by another repository pushing[m
+[33mhint: to the same ref. You may want to first integrate the remote changes[m
+[33mhint: (e.g., 'git pull ...') before pushing again.[m
+[33mhint: See the 'Note about fast-forwards' in 'git push --help' for details.[m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m pull origin master[?1l>[?2004l
+]2;git pull origin master]1;gitremote: Enumerating objects: 5, done.[K
+remote: Counting objects:  20% (1/5)[Kremote: Counting objects:  40% (2/5)[Kremote: Counting objects:  60% (3/5)[Kremote: Counting objects:  80% (4/5)[Kremote: Counting objects: 100% (5/5)[Kremote: Counting objects: 100% (5/5), done.[K
+remote: Compressing objects:  33% (1/3)[Kremote: Compressing objects:  66% (2/3)[Kremote: Compressing objects: 100% (3/3)[Kremote: Compressing objects: 100% (3/3), done.[K
+remote: Total 3 (delta 1), reused 0 (delta 0), pack-reused 0[K
+Unpacking objects:  33% (1/3)   Unpacking objects:  66% (2/3)   Unpacking objects: 100% (3/3)   Unpacking objects: 100% (3/3), done.
+Da github.com:Matteo294/My-Scripts
+ * branch            master     -> FETCH_HEAD
+   6ab0eb8..75b0b6d  master     -> origin/master
+hint: Waiting for your editor to close the file... [?1049h[22;0;0t[1;56r(B[m[4l[?7h[39;49m[?1h=[?1h=[?1h=[?25l[39;49m(B[m[H[2J[54;99H(B[0;7m[ Reading... ](B[m[54;98H(B[0;7m[ Lette 7 righe ](B[m[H(B[0;7m  GNU nano 4.3                                                                /home/matteo/Documenti/scripts/My-Scripts/.git/MERGE_MSG                                                                             [1;210H(B[m[55d(B[0;7m^G(B[m Guida[55;18H(B[0;7m^O(B[m Salva[55;35H(B[0;7m^W(B[m Cerca[55;52H(B[0;7m^K(B[m Taglia[55;69H(B[0;7m^J(B[m Giustifica    (B[0;7m^C(B[m Posizione     (B[0;7mM-U(B[m Annulla[120G(B[0;7mM-A(B[m Marca testo  (B[0;7mM-](B[m Parentesi    (B[0;7mM-Q(B[m Precedente   (B[0;7m^B(B[m Indietro[188G(B[0;7m^◀(B[m Parola prec.[56d(B[0;7m^X(B[m Esci[56;18H(B[0;7m^R(B[m Inserisci     (B[0;7m^\(B[m Sostituisci   (B[0;7m^U(B[m Paste Text    (B[0;7m^T(B[m Ortografia    (B[0;7m^_(B[m Vai a riga    (B[0;7mM-E(B[m Ripeti[120G(B[0;7mM-6(B[m Copia[56;137H(B[0;7m^Q(B[m Cerca Ind.    (B[0;7mM-W(B[m Successiva   (B[0;7m^F(B[m Avanti[56;188H(B[0;7m^▶(B[m Parola succ.[54d[2d[39;49m(B[mMerge branch 'master' of github.com:Matteo294/My-Scripts into esp2[4d[36m# Please enter a commit message to explain why this merge is necessary,[5d# especially if it merges an updated upstream into a topic branch.[6d#[7d# Lines starting with '#' will be ignored, and an empty message aborts[8d# the commit.[2d[39m(B[m[?12l[?25h[?25l[54d[J[56;211H[?12l[?25h[56;1H[?1049l[23;0;0t[?1l>[KMerge made by the 'recursive' strategy.
+ README.md | 12 [32m+++++++++++[m[31m-[m
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hgit pull origin master[16Dsh[14C[22D[32mg[32mi[32mt[39m[19C[?1l>[?2004l
+]2;git push origin master]1;gitTo github.com:Matteo294/My-Scripts.git
+ [31m! [rejected]       [m master -> master (non-fast-forward)
+[31merror: failed to push some refs to 'git@github.com:Matteo294/My-Scripts.git'
+[m[33mhint: Updates were rejected because a pushed branch tip is behind its remote[m
+[33mhint: counterpart. Check out this branch and integrate the remote changes[m
+[33mhint: (e.g. 'git pull ...') before pushing again.[m
+[33mhint: See the 'Note about fast-forwards' in 'git push --help' for details.[m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hgit push origin master[16Dll[14C[22D[32mg[32mi[32mt[39m[19C[?1l>[?2004l
+]2;git pull origin master]1;gitDa github.com:Matteo294/My-Scripts
+ * branch            master     -> FETCH_HEAD
+Already up to date.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m add .[4m.[24m[?1l>[?2004l
+]2;git add .]1;git[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m com   [1m[31mg[1m[31mi[0m[39m[39m [0m[32mg[39m[0m[39m [39m lls[32ml[32ms[39m[?1l>[?2004l
+]2;ls --color=tty]1;ls[0m[01;34mEulerMethod[0m  [01;34mlab_notebook[0m  [01;34mRandomScripts[0m  README.md  [01;34mTaylor[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts]1;..ts/My-Scripts[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mMy-Scripts [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hccd[32mc[32md[39m lab_notebook[12D[4ml[4ma[4mb[4m_[4mn[4mo[4mt[4me[4mb[4mo[4mo[4mk[24m[?1l>[?2004l
+]2;cd lab_notebook]1;cd[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hlls[32ml[32ms[39m[?1l>[?2004l
+]2;ls --color=tty]1;lsEsperienza2.ipynb  labbclass.py  presadati.py  prova.py  [0m[01;34m__pycache__[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggir[1m[31mg[1m[31mi[1m[31mr[0m[39m tm  rm  [1m[31mg[1m[31mi[0m[39m[0m[39m [1m[31mg[1m[31mi[1m[31mt[0m[39m[0m[32mg[0m[32mi[0m[32mt[39m rm presadati.py[12D[4mp[4mr[4me[4ms[4ma[4md[4ma[4mt[4mi[4m.[4mp[4my[24m[?1l>[?2004l
+]2;git rm presadati.py]1;gitrm 'lab_notebook/presadati.py'
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hgit rm presadati.py[19D[32mg[32mi[32mt[39m[15C         [4mp[4mr[24m [4mp[24m[24m [24m   [1m[31mg[1m[31mi[0m[39m[39m [0m[32mg[39m[0m[39m [39m uundo[1m[31mu[1m[31mn[1m[31md[0m[39m [1m[31mu[1m[31mn[0m[39m[0m[39m [1m[31mu[0m[39m[0m[39m [0m[39m ggit[32mg[32mi[32mt[39m undo[?1l>[?2004l
+]2;git undo]1;gitgit: 'undo' non è un comando git. Vedi 'git --help'.
+
+The most similar command is
+	bundle
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hlls[32ml[32ms[39m[?1l>[?2004l
+]2;ls --color=tty]1;lsEsperienza2.ipynb  labbclass.py  prova.py  [0m[01;34m__pycache__[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m reset HEAD[?1l>[?2004l
+]2;git reset HEAD]1;gitUnstaged changes after reset:
+D	lab_notebook/presadati.py
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hlls[32ml[32ms[39m[?1l>[?2004l
+]2;ls --color=tty]1;lsEsperienza2.ipynb  labbclass.py  prova.py  [0m[01;34m__pycache__[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hlsgit reset HEAD[14D[32mg[32mi[32mt[39m[11C[?1l>[?2004l
+]2;git reset HEAD]1;gitUnstaged changes after reset:
+D	lab_notebook/presadati.py
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hggist[1m[31mg[1m[31mi[1m[31ms[1m[31mt[0m[39m st  [1m[31ms[0m[39m[0m[39m [1m[31mg[1m[31mi[0m[39m[0m[39m [1m[31mg[1m[31mi[1m[31mt[0m[39m[0m[32mg[0m[32mi[0m[32mt[39m stash[?1l>[?2004l
+]2;git stash]1;gitSaved working directory and index state WIP on esp2: 666d301 Merge branch 'master' of github.com:Matteo294/My-Scripts into esp2
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m reset --har   HARD[?1l>[?2004l
+]2;git reset --HARD]1;giterror: unknown option `HARD'
+uso: git reset [--mixed | --soft | --hard | --merge | --keep] [-q] [<commit>]
+   oppure: git reset [-q] [<tree-ish>] [--] <paths>...
+   oppure: git reset --patch [<tree-ish>] [--] [<paths>...]
+
+    -q, --quiet           be quiet, only report errors
+    --mixed               reset HEAD and index
+    --soft                reset only HEAD
+    --hard                reset HEAD, index and working tree
+    --merge               reset HEAD, index and working tree
+    --keep                reset HEAD but keep local changes
+    --recurse-submodules[=<reset>]
+                          control recursive updating of submodules
+    -p, --patch           select hunks interactively
+    -N, --intent-to-add   record only the fact that removed paths will be added later
+
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hgit reset --HARD[16D[32mg[32mi[32mt[39m[12C    hard[?1l>[?2004l
+]2;git reset --hard]1;gitHEAD ora si trova a 666d301 Merge branch 'master' of github.com:Matteo294/My-Scripts into esp2
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hlls[32ml[32ms[39m[?1l>[?2004l
+]2;ls --color=tty]1;lsEsperienza2.ipynb  labbclass.py  presadati.py  prova.py  [0m[01;34m__pycache__[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m stash pop[?1l>[?2004l
+]2;git stash pop]1;gitRemoving lab_notebook/presadati.py
+Sul branch esp2
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	[31mdeleted:    presadati.py[m
+
+no changes added to commit (use "git add" and/or "git commit -a")
+refs/stash@{0} eliminata (684ab17b83c9a5e13cefcca8bdac647a3f3291ed)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m reset -- presadati.py[?1l>[?2004l
+]2;git reset --presadati.py]1;giterror: unknown option `presadati.py'
+uso: git reset [--mixed | --soft | --hard | --merge | --keep] [-q] [<commit>]
+   oppure: git reset [-q] [<tree-ish>] [--] <paths>...
+   oppure: git reset --patch [<tree-ish>] [--] [<paths>...]
+
+    -q, --quiet           be quiet, only report errors
+    --mixed               reset HEAD and index
+    --soft                reset only HEAD
+    --hard                reset HEAD, index and working tree
+    --merge               reset HEAD, index and working tree
+    --keep                reset HEAD but keep local changes
+    --recurse-submodules[=<reset>]
+                          control recursive updating of submodules
+    -p, --patch           select hunks interactively
+    -N, --intent-to-add   record only the fact that removed paths will be added later
+
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m checkout HEAD presadati.py[?1l>[?2004l
+]2;git checkout HEAD presadati.py]1;git[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hò lls[32ml[32ms[39m[?1l>[?2004l
+]2;ls --color=tty]1;lsEsperienza2.ipynb  labbclass.py  presadati.py  prova.py  [0m[01;34m__pycache__[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m add .[4m.[24m[?1l>[?2004l
+]2;git add .]1;git[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m commit -m esp2-1[?1l>[?2004l
+]2;git commit -m esp2-1]1;gitSul branch esp2
+nothing to commit, working tree clean
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hjjupyter[32mj[32mu[32mp[32my[32mt[32me[32mr[39m [1m[31mj[1m[31mu[1m[31mp[1m[31my[1m[31mt[1m[31me[0m[39m[39m [1m[31mt[0m[39m[0m[39m [1m[31my[0m[39m[0m[39m [1m[31mp[0m[39m[0m[39m [1m[31mj[1m[31mu[0m[39m[0m[39m [1m[31mj[0m[39m[0m[39m [0m[39m ggit[32mg[32mi[32mt[39m sh tash pop[?1l>[?2004l
+]2;git stash pop]1;gitNo stash entries found.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[1m[31mg[1m[31mi[0m[39m [0m[32mg[39m[0m[39m [39m jjupyter[32mj[32mu[32mp[32my[32mt[32me[32mr[39m notebook[?1l>[?2004l
+]2;jupyter notebook]1;jupyter[32m[I 22:37:34.679 NotebookApp](B[m JupyterLab extension loaded from /home/matteo/anaconda3/lib/python3.7/site-packages/jupyterlab
+[32m[I 22:37:34.679 NotebookApp](B[m JupyterLab application directory is /home/matteo/anaconda3/share/jupyter/lab
+[32m[I 22:37:34.681 NotebookApp](B[m Serving notebooks from local directory: /home/matteo/Documenti/scripts/My-Scripts/lab_notebook
+[32m[I 22:37:34.681 NotebookApp](B[m The Jupyter Notebook is running at:
+[32m[I 22:37:34.681 NotebookApp](B[m http://localhost:8888/?token=5487a97969682a14d56e293f695f58fe2d6297b6d57e55cb
+[32m[I 22:37:34.681 NotebookApp](B[m  or http://127.0.0.1:8888/?token=5487a97969682a14d56e293f695f58fe2d6297b6d57e55cb
+[32m[I 22:37:34.681 NotebookApp](B[m Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[C 22:37:34.700 NotebookApp] 
+    
+    To access the notebook, open this file in a browser:
+        file:///home/matteo/.local/share/jupyter/runtime/nbserver-24817-open.html
+    Or copy and paste one of these URLs:
+        http://localhost:8888/?token=5487a97969682a14d56e293f695f58fe2d6297b6d57e55cb
+     or http://127.0.0.1:8888/?token=5487a97969682a14d56e293f695f58fe2d6297b6d57e55cb
+[32m[I 22:37:38.520 NotebookApp](B[m Kernel started: 5daf239b-3c6e-47f3-9cbe-fd436449598b
+[32m[I 22:37:42.499 NotebookApp](B[m Starting buffering for 5daf239b-3c6e-47f3-9cbe-fd436449598b:c04880d844cd492a9313d8b615074525
+[32m[I 22:37:44.525 NotebookApp](B[m Shutting down on /api/shutdown request.
+[32m[I 22:37:44.528 NotebookApp](B[m Shutting down 1 kernel
+[32m[I 22:37:44.829 NotebookApp](B[m Kernel shutdown: 5daf239b-3c6e-47f3-9cbe-fd436449598b
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hlls[32ml[32ms[39m[?1l>[?2004l
+]2;ls --color=tty]1;lsEsperienza2.ipynb  labbclass.py  presadati.py  prova.py  [0m[01;34m__pycache__[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m status[?1l>[?2004l
+]2;git status]1;gitSul branch esp2
+nothing to commit, working tree clean
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m co  pushh  origin        [4mp[24m [24m [1m[31mg[1m[31mi[0m[39m[39m [0m[32mg[39m[0m[39m [39m lls[32ml[32ms[39m[?1l>[?2004l
+]2;ls --color=tty]1;lsEsperienza2.ipynb  labbclass.py  presadati.py  prova.py  [0m[01;34m__pycache__[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m rm prova.py[8D[4mp[4mr[4mo[4mv[4ma[4m.[4mp[4my[24m[?1l>[?2004l
+]2;git rm prova.py]1;gitrm 'lab_notebook/prova.py'
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m addd  .[4m.[24m[?1l>[?2004l
+]2;git add .]1;git[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m) [33m✗[00m[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m commit -m fixed thi        "fixed[33m"[33mf[33mi[33mx[33me[33md[33m [39m[33m [33ms[39m[33ms[33mo[39m[33mo[33mm[39m[33mm[33me[39m[33me[33m [39m[33m [33ms[39m[33m [39m[39m [33m [33mt[39m[33mt[33mh[39m[33mh[33mi[39m[33mi[33mn[39m[33mn[33mg[39m[33mg[33ms[39m[33ms[33m"[39m[?1l>[?2004l
+]2;git commit -m "fixed some things"]1;git[esp2 e535f89] fixed some things
+ 1 file changed, 7 deletions(-)
+ delete mode 100644 lab_notebook/prova.py
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m push origin master[?1l>[?2004l
+]2;git push origin master]1;gitTo github.com:Matteo294/My-Scripts.git
+ [31m! [rejected]       [m master -> master (non-fast-forward)
+[31merror: failed to push some refs to 'git@github.com:Matteo294/My-Scripts.git'
+[m[33mhint: Updates were rejected because a pushed branch tip is behind its remote[m
+[33mhint: counterpart. Check out this branch and integrate the remote changes[m
+[33mhint: (e.g. 'git pull ...') before pushing again.[m
+[33mhint: See the 'Note about fast-forwards' in 'git push --help' for details.[m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hgit push origin master[22D[32mg[32mi[32mt[39m[18C-origin master[13D-origin master[13Dforigin master[13D[1Corigin master[13Drorigin master[13Dcorigin master[13Deorigin master[13D origin master[13D[?1l>[?2004l
+]2;git push --force origin master]1;gitTotal 0 (delta 0), reused 0 (delta 0)
+To github.com:Matteo294/My-Scripts.git
+ + 75b0b6d...6ab0eb8 master -> master (forced update)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m checkout [?1l>[?2004l
+]2;git checkout]1;git[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hs ggit[32mg[32mi[32mt[39m status[?1l>[?2004l
+]2;git status]1;gitSul branch esp2
+nothing to commit, working tree clean
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mesp2[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m checkout master[?1l>[?2004l
+]2;git checkout master]1;gitSi è passati al branch 'master'
+Your branch is up to date with 'origin/master'.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mmaster[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m merge esp2[?1l>[?2004l
+]2;git merge esp2]1;gitAggiornamento di 6ab0eb8..e535f89
+Fast-forward
+ README.md                                                    |  12 [32m+++++++++++[m[31m-[m
+ lab_notebook/.ipynb_checkpoints/Esperienza2-checkpoint.ipynb |  55 [32m+++++++++++++++++++++++++++++++++++++++++++++++++++++[m
+ lab_notebook/Esperienza2.ipynb                               | 116 [32m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++[m
+ lab_notebook/labbclass.py                                    | 147 [32m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++[m
+ lab_notebook/presadati.py                                    |  87 [32m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++[m
+ 5 files changed, 416 insertions(+), 1 deletion(-)
+ create mode 100644 lab_notebook/.ipynb_checkpoints/Esperienza2-checkpoint.ipynb
+ create mode 100644 lab_notebook/Esperienza2.ipynb
+ create mode 100644 lab_notebook/labbclass.py
+ create mode 100644 lab_notebook/presadati.py
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mmaster[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m branch -d esp2[?1l>[?2004l
+]2;git branch -d esp2]1;gitRamo esp2 eliminato (era e535f89).
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mmaster[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m branch[?1l>[?2004l
+]2;git branch]1;git[?1049h[22;0;0t[?1h=* [32mmaster[m[m
+[7m(END)[27m[K[K [K^X^X[K^?^?[K[7m(END)[27m[K[K[7m(END)[27m[K[K[K[7m(END)[27m[K[K[K[7m(END)[27m[K[K[K[7m(END)[27m[K[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K[K[7m(END)[27m[K[K[K[7m(END)[27m[K[K[K[7m(END)[27m[K[K[K[7m(END)[27m[K[K[?1l>[?1049l[23;0;0t[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mmaster[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m add .[4m.[24m[?1l>[?2004l
+]2;git add .]1;git[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mmaster[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m commit -mm  m[?1l>[?2004l
+]2;git commit -m m]1;gitSul branch master
+Il tuo branch è avanti rispetto a 'origin/master' di 4 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                   ]2;matteo@MatteoPC: ~/Documenti/scripts/My-Scripts/lab_notebook]1;../lab_notebook[0m[27m[24m[J[01;31m@MatteoPC ➜ [01;36mlab_notebook [01;34mgit:([31mmaster[34m)[00m[01;34m [00m[K[?1h=[?2004hggit[32mg[32mi[32mt[39m ush   push origin master[?1l>[?2004l
+]2;git push origin master]1;gitEnumerating objects: 19, done.
+Counting objects:   5% (1/19)   Counting objects:  10% (2/19)   Counting objects:  15% (3/19)   Counting objects:  21% (4/19)   Counting objects:  26% (5/19)   Counting objects:  31% (6/19)   Counting objects:  36% (7/19)   Counting objects:  42% (8/19)   Counting objects:  47% (9/19)   Counting objects:  52% (10/19)   Counting objects:  57% (11/19)   Counting objects:  63% (12/19)   Counting objects:  68% (13/19)   Counting objects:  73% (14/19)   Counting objects:  78% (15/19)   Counting objects:  84% (16/19)   Counting objects:  89% (17/19)   Counting objects:  94% (18/19)   Counting objects: 100% (19/19)   Counting objects: 100% (19/19), done.
+Delta compression using up to 8 threads
+Compressing objects:   5% (1/17)   Compressing objects:  11% (2/17)   Compressing objects:  17% (3/17)   Compressing objects:  23% (4/17)   Compressing objects:  29% (5/17)   Compressing objects:  35% (

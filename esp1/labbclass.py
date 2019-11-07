@@ -1,17 +1,16 @@
 '''
-Classe esperimenti di laboratorio. Questa classe contiene tutte le possibili funzioni e commandi che possono tornare utili nell'analisi dati di laboratorio.
+Classe esperimenti di laboratorio. Questa classe contiene le principali funzioni e commandi che possono tornare utili nell'analisi dati di laboratorio.
 Ne rimane escluso il programma per plottare in live i dati che è stato mantenuto separato per comodità di utilizzo.
-Le linee guida di utilizzo sono scritte nel file .txt in questa cartella (devo ancora scriverlo LoL)
-C'è una superclasse (Analisi) in cui sono scritte tutte le funzioni comuni, ovvero quelle funzioni che vanno bene per ogni tipo di analisi.
+C'è una superclasse (Analisi) in cui sono scritte tutte le funzioni comuni, ovvero quelle funzioni che vanno bene per ogni tipo di analisi come
+leggere i dati da un file, aggiungere le incertezze ai dati ecc.
 Ci sono poi delle sottoclassi (per ora solo LinearFit) con delle funzioni particolari per l'analisi cercata (utili per il fit lineare in questo caso).
+I parametri xscale e yscale che si trovano qua e la nelle funzioni servono per cambiare udm ai dati. In particolare si trovano nella funzione leggiDati
+(i due parametri servono per memorizzare i dati negli array con un multiplo di udm) e di nuovo nelle funzioni di plot (per facilitare la visualizzazione
+dei dati potrebbe essere comodo ri-cambiare udm)
 ''' 
-'''
-Lista di cose da aggiungere:
-chi quadro a 2 parametri, calcolo probabilità di eccedere il chi quadro, migliorare la funzione di print, grafico dei residui
-'''
 
 import numpy as np
-from scipy.stats import t
+from scipy import stats
 import math
 from matplotlib import pyplot as plt
 from numpy.linalg import inv
@@ -111,10 +110,15 @@ class LinearFit(Analisi):
             self.reg_lin(trasferisci=False)
 
     def __str__(self):
-        # Printo con 4 decimali i valori e con 1 il chi ridotto (troncamento, non approssimazione)
-        # Il codice \u00B1 è per il +-
-        return(u"\nIntercetta: {0:.4f} \u00B1 {1:.4f} \t Coefficiente angolare: {2:.4f} \u00B1 {3:.4f} \t Chi quadro ridotto: {4:.1f} ({5})\n".format(
-            self.A, self.sigma_A, self.B, self.sigma_B, self.chi_ridotto, self.xdata.size))
+        # Controllo se esistono le variabili e man mano le aggiungo alla frase di print
+        frase = ""
+        if self.A is not None:
+            frase += "Intercetta: {0:.4f} \u00B1 {1:.4f} \t".format(self.A, self.sigma_A)
+        if self.B is not None:
+            frase += "Coefficiente angolare: {0:4f} \u00B1 {1:.4f} \t".format(self.B, self.sigma_B)
+        if self.chi_ridotto is not None:
+            frase += "Chi quadro ridotto: {0:.4f} pvalue={1:.4f} su {2} dati \t".format(self.chi_ridotto, self.probabilita_chi, self.xdata.size)
+        return frase
     
     def chi_quadro(self, n_params=2):
         if n_params == 1:
@@ -123,15 +127,16 @@ class LinearFit(Analisi):
         elif n_params == 2:
             self.chi_q = sum((self.B*self.xdata + self.A - self.ydata)**2 / (self.sigma_reg)**2)
             self.chi_ridotto = self.chi_q / (self.xdata.size - 2)
+            self.probabilita_chi = stats.chi2.sf(self.chi_q, self.xdata.size - 2)
 
-    def residui(self, n_params=1, xlabel='ID Misura', ylabel='Y', title=None):
-        xticks = np.arange(0, self.xdata.size, 1) # Valori sull'asse x: interi da 1 a n misure
+
+    def residui(self, n_params=2, xlabel='ID Misura', ylabel='Y', title=None, xscale=1, yscale=1):
         if n_params == 1:
             residui = self.B*self.xdata - self.ydata
         elif n_params == 2:
-            residui = self.B*self.xdata + self.A - self.ydata
+            residui = self.ydata - (self.B*self.xdata + self.A)
 
-        params = plt.errorbar(xticks, residui, self.sigmay, self.sigmax, 'o', ecolor='red')
+        params = plt.errorbar(self.xdata*xscale, residui, self.sigma_reg, np.zeros(self.xdata.size), 'o', ecolor='red')
 
         self.residui_plot = params[0]
 
@@ -146,7 +151,7 @@ class LinearFit(Analisi):
         if title is not None:
             plt.title(title, fontsize=24)
         
-        plt.plot([0, self.xdata.size], [0, 0], '--', color='gray', linewidth=1.8)
+        plt.plot([0, max(self.xdata*xscale)], [0, 0], '--', color='gray', linewidth=1.8)
 
         plt.grid()
 
