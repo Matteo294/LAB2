@@ -97,13 +97,20 @@ class LinearFit(Analisi):
 
     # Fit lineare con una funzione A + Bx
     def reg_lin(self, trasferisci=False):
-        w = 1/self.sigma_reg
+        '''w = 1/self.sigma_reg
         delta = sum(w)*sum(self.xdata**2/w) - (sum(self.xdata/w))**2
         self.A = 1/delta * (sum(self.xdata**2/w)*sum(self.ydata/w) - sum(self.xdata/w)*sum(self.xdata*self.ydata/w))
         self.B = 1/delta * (sum(w)*sum(self.xdata*self.ydata/w) - sum(self.xdata/w)*sum(self.ydata/w))
         self.sigma_A = math.sqrt(sum(self.xdata**2 * w) / delta)
-        self.sigma_B = math.sqrt(sum(w) / delta)
-        
+        self.sigma_B = math.sqrt(sum(w) / delta)'''
+
+        w = 1 / self.sigma_reg**2
+        det = sum(w) * sum(w * (self.xdata**2)) - (sum(w * self.xdata))**2
+        self.A = 1/det * (sum(w*(self.xdata**2)) * sum(w * self.ydata) - sum(w * self.xdata) * sum(w * self.xdata * self.ydata))
+        self.B = 1/det * (sum(w) * sum(w * self.xdata * self.ydata) - sum(w * self.ydata) * sum(w * self.xdata))
+        self.sigma_A = math.sqrt(sum(self.xdata**2 * w) / det)
+        self.sigma_B = math.sqrt(sum(w) / det)
+
         if (trasferisci==True):
             sigma_trasformata = abs(self.B)*self.sigmax
             self.sigma_reg = np.sqrt(self.sigmay**2 + sigma_trasformata**2)
