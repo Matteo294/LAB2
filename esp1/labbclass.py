@@ -142,7 +142,7 @@ class LinearFit(Analisi):
         elif n_params == 2:
             residui = self.ydata - (self.B*self.xdata + self.A)
 
-        params = plt.errorbar(self.xdata*xscale, residui, self.sigma_reg, np.zeros(self.xdata.size), 'o', ecolor='red')
+        params = plt.errorbar(self.xdata*xscale, residui, self.sigma_reg, np.zeros(self.xdata.size), 'o', ecolor='#58508d')
 
         self.residui_plot = params[0]
 
@@ -162,7 +162,7 @@ class LinearFit(Analisi):
         plt.grid()
 
     def plotData(self, xlabel='X data', ylabel='Y', title=None, xscale=1, yscale=1):
-        params = plt.errorbar(xscale*self.xdata, yscale*self.ydata, self.sigmay*yscale, self.sigmax*xscale, 'o', ecolor='red', linewidth=1.8, markersize=8, label='Dati misurati')
+        params = plt.errorbar(xscale*self.xdata, yscale*self.ydata, self.sigmay*yscale, self.sigmax*xscale, 'o', ecolor=[0.25, 0.25, 0.25], linewidth=1.8, markersize=8, label='Dati misurati')
         
         # Memorizzo l'oggetto del grafico di modo da potervi accedere dall'esterno
         self.data_plot = params[0]
@@ -171,10 +171,8 @@ class LinearFit(Analisi):
         # Sistemo alcuni parametri
         self.data_plot.set_color('black')
         self.data_plot.set_alpha(0.8)
-
         plt.xlabel(xlabel, fontsize=18)
         plt.ylabel(ylabel, fontsize=18)
-
         if title is not None:
             plt.title(title, fontsize=24)   
 
