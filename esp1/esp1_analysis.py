@@ -3,7 +3,7 @@ import os
 import math
 from matplotlib import pyplot as plt
 
-enable_plots = False # Mettere True per visualizzare i grafici, False per nasconderli
+enable_plots = True # Mettere True per visualizzare i grafici, False per nasconderli
 
 file1 = 'misure/monte_10V_5mA.csv'
 file2 = 'misure/monte_50V_5mA.csv'
@@ -51,7 +51,7 @@ def main():
     valle_10v_500ua.add_resistenza_tester_ICE(5, 3)
     valle_10v_500ua.reg_lin(trasferisci=True)
     valle_10v_500ua.chi_quadro()
-
+    
     # Analisi gruppo 4
     valle_50v_5ma.leggiDati(file4, scale_y=1, scale_x=10**(-3), swap_xy=1)
     valle_50v_5ma.add_sigmas(sigmay=sigma_y_50V, sigmax=sigma_x_5ma)
