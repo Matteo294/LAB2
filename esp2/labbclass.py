@@ -85,9 +85,6 @@ class Analisi:
         raise NotImplementedError
 
 
-
-
-    
 class LinearFit(Analisi):
     # Uso l'incertezza sigma_reg per la regressione e nel chi quadro. 
     # Di default è solo sigmay, se dovrò trasferire sigmax, lo farò in reg_lin
@@ -96,17 +93,22 @@ class LinearFit(Analisi):
         self.sigma_reg = self.sigmay
 
     # Fit lineare con una funzione A + Bx
-    def reg_lin(self, trasferisci=False):
-        w = 1/self.sigma_reg
-        delta = sum(w)*sum(self.xdata**2/w) - (sum(self.xdata/w))**2
-        self.A = 1/delta * (sum(self.xdata**2/w)*sum(self.ydata/w) - sum(self.xdata/w)*sum(self.xdata*self.ydata/w))
-        self.B = 1/delta * (sum(w)*sum(self.xdata*self.ydata/w) - sum(self.xdata/w)*sum(self.ydata/w))
-        self.sigma_A = math.sqrt(sum(self.xdata**2 * w) / delta)
+    def reg_lin(self, cambiaVariabili=False, y=0, x=0, sigma=0, trasferisci=False):
+        if cambiaVariabili == False:
+            y = self.ydata
+            x = self.xdata
+            sigma = self.sigma_reg
+        print(sigma)
+        w = 1/sigma
+        delta = sum(w)*sum(x**2*w) - (sum(x*w))**2
+        self.A = 1/delta * (sum(x**2*w)*sum(y*w) - sum(x*w)*sum(x*y*w))
+        self.B = 1/delta * (sum(w)*sum(x*y*w) - sum(x*w)*sum(y*w))
+        self.sigma_A = math.sqrt(sum(x**2 * w) / delta)
         self.sigma_B = math.sqrt(sum(w) / delta)
         
         if (trasferisci==True):
             sigma_trasformata = abs(self.B)*self.sigmax
-            self.sigma_reg = np.sqrt(self.sigmay**2 + sigma_trasformata**2)
+            sigma = np.sqrt(sigma**2 + sigma_trasformata**2)
             self.reg_lin(trasferisci=False)
 
     def __str__(self):
