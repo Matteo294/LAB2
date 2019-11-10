@@ -88,46 +88,53 @@ def main():
             Per cambiare i parametri del grafico dei dati basta usare l'attributo data_plot (oggetto della classe matplotlib).
             Invece per cambiare quelli del grafico della regressione lineare basta usare l'attributo regression_plot
         '''
+        plt.subplot(1, 2, 1)
         monte_10v_5ma.plotData(xlabel='Corrente [mA]', ylabel='Tensione [V]', xscale=10**3,  title='Grafico I-V amperometro a monte con F.S. 50V - 5mA')
         monte_10v_5ma.data_plot.set_markerfacecolor('#ADFF2F') # data_plot è un oggetto matplotlib creato nella funzione plotData all'interno della classe
         monte_10v_5ma.regression_plot.set_color('gray')
         plt.legend(fontsize=18)
-        plt.show()
 
-        monte_50v_5ma.plotData(xlabel='Corrente [mA]', ylabel='Tensione [V]', xscale=10**3, title='Grafico I-V amperometro a monte con F.S. 50V - 5mA')
-        monte_50v_5ma.data_plot.set_markerfacecolor('#ADFF2F')
-        monte_50v_5ma.regression_plot.set_color('gray')
-        plt.legend(fontsize=18)
-        plt.show()
-
-        valle_10v_500ua.plotData(xlabel='Corrente [mA]', ylabel='Tensione [V]', xscale=10**3, title='Grafico I-V amperometro a valle con F.S. 10V - 500uA')
-        valle_10v_500ua.data_plot.set_markerfacecolor('#ADFF2F')
-        valle_10v_500ua.regression_plot.set_color('gray')
-        plt.legend(fontsize=18)
-        plt.show()
-
-        valle_50v_5ma.plotData(xlabel='Corrente [mA]', ylabel='Tensione [V]', xscale=10**3, title='Grafico I-V amperometro a valle con F.S. 50V - 5mA')
-        valle_50v_5ma.data_plot.set_markerfacecolor('#ADFF2F')
-        valle_50v_5ma.regression_plot.set_color('gray')
-        plt.legend(fontsize=18)
-        plt.show()
-
-        #------------ Grafici dei residui -----------#
+        plt.subplot(1,2,2)
         monte_10v_5ma.residui(xlabel = 'Corrente [mA]', ylabel='Scarto [V]', xscale=10**3)
         monte_10v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
         plt.show()
 
+
+        plt.subplot(1, 2, 1)
+        monte_50v_5ma.plotData(xlabel='Corrente [mA]', ylabel='Tensione [V]', xscale=10**3, title='Grafico I-V amperometro a monte con F.S. 50V - 5mA')
+        monte_50v_5ma.data_plot.set_markerfacecolor('#ADFF2F')
+        monte_50v_5ma.regression_plot.set_color('gray')
+        plt.legend(fontsize=18)
+
+        plt.subplot(1,2,2)
         monte_50v_5ma.residui(xlabel = 'Corrente [mA]', ylabel='ScaScarto [V]', title='Grafico dei residui amperometro a monte con F.S. 50V - 5mA', xscale=10**3)
         monte_50v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
         plt.show()
 
+
+        plt.subplot(1, 2, 1)
+        valle_10v_500ua.plotData(xlabel='Corrente [mA]', ylabel='Tensione [V]', xscale=10**3, title='Grafico I-V amperometro a valle con F.S. 10V - 500uA')
+        valle_10v_500ua.data_plot.set_markerfacecolor('#ADFF2F')
+        valle_10v_500ua.regression_plot.set_color('gray')
+        plt.legend(fontsize=18)
+
+        plt.subplot(1,2,2)
         valle_10v_500ua.residui(xlabel = 'Corrente [mA]', ylabel='Scarto [V]', title='Grafico dei residui amperometro a valle con F.S. 10V - 500uA', xscale=10**3)
         valle_10v_500ua.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
         plt.show()
 
+
+        plt.subplot(1, 2, 1)
+        valle_50v_5ma.plotData(xlabel='Corrente [mA]', ylabel='Tensione [V]', xscale=10**3, title='Grafico I-V amperometro a valle con F.S. 50V - 5mA')
+        valle_50v_5ma.data_plot.set_markerfacecolor('#ADFF2F')
+        valle_50v_5ma.regression_plot.set_color('gray')
+        plt.legend(fontsize=18)
+
+        plt.subplot(1,2,2)
         valle_50v_5ma.residui(xlabel = 'Corrente [mA]', ylabel='Scarto [V]', title='Grafico dei residui amperometro a valle con F.S. 50V - 5mA', xscale=10**3)
         valle_50v_5ma.residui_plot.set_markerfacecolor([0, 0.1, 0.6])
         plt.show()
-
+        
+        
 if __name__ == "__main__":
     main()
