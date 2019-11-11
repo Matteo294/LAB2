@@ -98,9 +98,8 @@ class LinearFit(Analisi):
             y = self.ydata
             x = self.xdata
             sigma = self.sigma_reg
-        print(sigma)
-        w = 1/sigma
-        delta = sum(w)*sum(x**2*w) - (sum(x*w))**2
+        w = 1/sigma**2
+        delta = sum(w)*sum((x**2)*w) - (sum(x*w))**2
         self.A = 1/delta * (sum(x**2*w)*sum(y*w) - sum(x*w)*sum(x*y*w))
         self.B = 1/delta * (sum(w)*sum(x*y*w) - sum(x*w)*sum(y*w))
         self.sigma_A = math.sqrt(sum(x**2 * w) / delta)
