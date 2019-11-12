@@ -1,0 +1,4 @@
+Ordine: frequenza, fase, Vout, Vin, dVout, dVin, dT
+le frequenze vanno moltiplicate per 10^3 (eccetto in R3, lì sono già in Hz)
+Vout, Vin, dVou, dVin sono gia in V
+i dT vanno moltiplicati per 10^-6 sempre
