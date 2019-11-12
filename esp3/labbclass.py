@@ -192,22 +192,31 @@ class LinearFit(Analisi):
 class FDT(Analisi):
 
     def __init__(self):
-        super(FDT, self).__init__()
+        self.Vout = np.asarray([])
         self.omega = np.asarray([])
+        self.fase = np.asarray([])
 
-    def leggiDati(self, file_lettura, swap_xy=0, scale_x=1, scale_y=1):
+    def leggiDati(self, file_lettura, scale_x=1, scale_y=1):
         myfile = os.path.join(file_lettura)
         if os.path.isfile(myfile):
             with open(file_lettura, 'r') as csvFile:
                 reader = csv.reader(csvFile)
                 # Per ogni riga del file, aggiungo la tripletta all'array di storage
                 for r in reader:
-                    row = [float(r[swap_xy]), float(r[not swap_xy]), float(r[2])] # Leggo le due colonne r[0] e r[1]. Se swap_xy = 1 scambio le due colonne (leggo prima r[1] e poi r[0])
-                    self.xdata = np.append(self.xdata, row[0] * scale_x)
-                    self.ydata = np.append(self.ydata, row[1] * scale_y)
-                    self.omega = np.append(self.omega, row[2])
+                    row = [float(r[0]), float(r[1]), float(r[2])]
+                    print(row)
+                    self.omega = np.append(self.omega, 2*np.pi*row[0] * scale_x)
+                    print(self.omega)
+                    self.Vout = np.append(self.Vout, row[1])
+                    self.fase = np.append(self.fase, np.degrees(row[2]))
         else:
             print("Problema: non trovo il file " + file_lettura)
+    
+    def setVin(self, value):
+        if isinstance(value, (int, float)):
+            self.Vin = np.full(self.omega.size, value)
+        else:
+            self.Vin = np.asarray(value)
 
     def plotFDT(self):
         self.data_magnitude, = plt.semilogx(self.omega, self.ydata/self.xdata)
@@ -226,7 +235,7 @@ class FDT(Analisi):
             w = self._w_plot
         if ampiezza is None:
             ampiezza = self._fase_plot
-        self.teorico_ampiezza, = plt.semilogx(w, ampiezza, linewidth=1.8, color=[0, 0, 0])
+        self.teorico_ampiezza, = plt.semilogx(2*np.pi*w, ampiezza, linewidth=1.8, color=[0, 0, 0])
         plt.xlabel(r"$\omega$ [rad/s]", fontsize=18)
         plt.ylabel("Ampiezza [dB]", fontsize=18)
         plt.title("Diagramma dell'ampiezza della funzione di trasferimento", fontsize=24)
@@ -240,8 +249,6 @@ class FDT(Analisi):
         plt.xlabel(r"$\omega$ [rad/s]", fontsize=18)
         plt.ylabel("Fase [°]", fontsize=18)
         plt.title('Diagramma della fase della funzione di trasferimento', fontsize=24)
-
-
 
     def __str__(self):
         print("Non ancora implementata")
