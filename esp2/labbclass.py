@@ -93,11 +93,16 @@ class LinearFit(Analisi):
         self.sigma_reg = self.sigmay
 
     # Fit lineare con una funzione A + Bx
-    def reg_lin(self, cambiaVariabili=False, y=0, x=0, sigma=0, trasferisci=False):
+    def reg_lin(self, cambiaVariabili=False, y=0, x=0, sigma=0, sigmaDaTrasferire=0, trasferisci=False):
+        # se non specifico su quali variabili fare la regressione, assumo siano y e x
         if cambiaVariabili == False:
             y = self.ydata
             x = self.xdata
-            sigma = self.sigma_reg
+            sigmaDaTrasferire = self.sigmax
+            sigma = self.sigmay
+        if sigmaDaTrasferire == 0:
+            sigmaDaTrasferire = self.sigmax
+
         w = 1/sigma**2
         delta = sum(w)*sum((x**2)*w) - (sum(x*w))**2
         self.A = 1/delta * (sum(x**2*w)*sum(y*w) - sum(x*w)*sum(x*y*w))
@@ -107,8 +112,8 @@ class LinearFit(Analisi):
         
         if (trasferisci==True):
             sigma_trasformata = abs(self.B)*self.sigmax
-            sigma = np.sqrt(sigma**2 + sigma_trasformata**2)
-            self.reg_lin(trasferisci=False)
+            self.sigma_reg = np.sqrt(sigma**2 + sigma_trasformata**2)
+            self.reg_lin(trasferisci=False, cambiaVariabili=True, y=y, x=x, sigma=self.sigma_reg)
 
     def __str__(self):
         # Controllo se esistono le variabili e man mano le aggiungo alla frase di print
