@@ -42,7 +42,7 @@ for i in range(5):
     for j in range(5):
         scariche[i,j].reg_lin(cambiaVariabili=True, y=np.log(scariche[i,j].ydata), x=scariche[i,j].xdata, sigma=scariche[i,j].sigmay/scariche[i,j].ydata, trasferisci=True)
 
-
+'''
 tau_R = LinearFit()       # per fare la regressione tra 1/tau e 1/R
 R = np.array([1,1,1,1,1]) # inserire valori resistenze usate davvero
 sigmaR = 1
@@ -60,7 +60,17 @@ for i in range(5):      # per ogni colonna i, calcolo la media delle B (B=1/tau)
 print(tau_R.sigmay)
 tau_R.reg_lin(trasferisci=True)
 print(1/tau_R.B)
-
+'''
+for tau in scariche:
+    for r in tau:
+        y = 1 / r.sigmay * np.log(r.ydata)
+        A = np.matrix.transpose(1/r.sigmay * np.asarray([np.ones(r.xdata.size), r.xdata, 1/r.ydata]))
+        B = np.dot(np.matrix.transpose(A), A)
+        r.offset_params = np.dot( np.dot(np.linalg.inv(B), np.matrix.transpose(A)), y )
+        print(r.offset_params.size)
+        print("Parametri dell'analisi offset (A, B, C):")
+        print(r.offset_params)
+ 
 # print(1/scariche[0,0].B, scariche[0,0].sigma_B)
 '''n_ripetute = 5 # numero di set per ogni misura
 scariche_tot = np.asarray([])
