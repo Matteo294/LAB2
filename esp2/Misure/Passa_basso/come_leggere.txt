@@ -1,4 +1,10 @@
-Ordine: frequenza, fase, Vout, Vin, dVout, dVin, dT
-le frequenze vanno moltiplicate per 10^3 (eccetto in R3, lì sono già in Hz)
-Vout, Vin, dVou, dVin sono gia in V
-i dT vanno moltiplicati per 10^-6 sempre
+MISURE R1, R2, R3
+    Ordine: frequenza, fase, Vout, Vin, dVout, dVin, dT
+    le frequenze vanno moltiplicate per 10^3 (eccetto in R3, lì sono già in Hz)
+    Vout, Vin, dVou, dVin sono gia in V
+    i dT vanno moltiplicati per 10^-6 sempre
+IMPEDENZA IN USCITA
+    R_load = 984.94 Ohm
+    Prime due righe con R_load, ultime due senza R_load
+    Ordine colonne: frequenza, fase, Vout, dVout, dT
+    La frequenza è gia in Hz, Vout e dVout sono gia in Volt, dT va moltiplicata per 10^-6
