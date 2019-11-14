@@ -61,15 +61,55 @@ print(tau_R.sigmay)
 tau_R.reg_lin(trasferisci=True)
 print(1/tau_R.B)
 '''
+'''  
 for tau in scariche:
     for r in tau:
-        y = 1 / r.sigmay * np.log(r.ydata)
-        A = np.matrix.transpose(1/r.sigmay * np.asarray([np.ones(r.xdata.size), r.xdata, 1/r.ydata]))
-        B = np.dot(np.matrix.transpose(A), A)
-        r.offset_params = np.dot( np.dot(np.linalg.inv(B), np.matrix.transpose(A)), y )
-        print(r.offset_params.size)
-        print("Parametri dell'analisi offset (A, B, C):")
-        print(r.offset_params)
+        index_to_del = np.where(r.ydata <= 0)
+        r.xdata = np.delete(r.xdata, index_to_del)
+        r.ydata = np.delete(r.ydata, index_to_del)
+        r.sigmay = np.delete(r.sigmax, index_to_del)
+        r.sigmax = np.delete(r.sigmax, index_to_del)
+'''
+
+# Risolvo con il metodo di Cramer la soluzione alle equazioni che massimizzano la likelihood (o minimizzano il chi2)
+# d(chi2)/da = 0, dove a è uno dei coefficienti da ricavare
+for tau in scariche:
+    print('\n\n')
+    for r in tau:
+
+        # y = A + Bt + Cx   con x = 1/Vm  e  y = log(Vm)    
+        x = 1/r.ydata
+        t = r.xdata
+        y = np.log(r.ydata)
+
+        w = 1/r.sigmay**2
+
+        M = np.asarray([
+            [np.sum(w), np.sum(w*t), np.sum(w*x)],
+            [np.sum(w*t), np.sum(w*(t**2)), np.sum(w*x*t)],
+            [np.sum(w*x), np.sum(w*x*t), np.sum(w*(x**2))]
+        ])
+
+        delta = np.linalg.det(M)
+
+        MA = np.copy(M)
+        MB = np.copy(M)
+        MC = np.copy(M)
+        MA[:,0] = [np.sum(w*y), np.sum(w*y*t), np.sum(w*x*y)]
+        MB[:,1] = [np.sum(w*y), np.sum(w*y*t), np.sum(w*y*x)]
+        MC[:,2] = [np.sum(w*y), np.sum(w*y*t), np.sum(w*y*x)]
+
+        A = np.linalg.det(MA) / delta
+        B = np.linalg.det(MB) / delta
+        C = np.linalg.det(MC) / delta
+
+        #print(M)
+        print(MA == M)
+
+        print(delta)
+        print("Risultati: A = {0:.8f} \t B = {1:.8f} \t C = {2:.8f}".format(A, B, C))
+
+
  
 # print(1/scariche[0,0].B, scariche[0,0].sigma_B)
 '''n_ripetute = 5 # numero di set per ogni misura
