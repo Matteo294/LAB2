@@ -4,6 +4,10 @@ from matplotlib import pyplot as plt
 import os
 import math
 
+enable_offset_printing = True
+C_teo = 35.5e-9
+R_teoriche = [1.001, 99.570, 21.73, 39.36, 9.94]
+
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
@@ -23,11 +27,12 @@ for i in range(5):
         total_path_txt = partial_path + suffisso_1 + suffisso_2_txt
         scariche[i,j] = LinearFit()
         scariche[i,j].leggiDati(total_path)
+        scariche[i,j].R_teorica = R_teoriche[i]
     #traslo in su se trovo valori negativi
-        for value in scariche[i,j].ydata:
+        '''for value in scariche[i,j].ydata:
             if value < min:
                 min = value
-        scariche[i,j].ydata += -min + epsilon
+        scariche[i,j].ydata += -min + epsilon'''
     #le righe che seguono servono a beccare dal txt la risoluzione dell'oscilloscopio
         with open(total_path_txt, 'r') as filetxt:
             lines = filetxt.readlines()
@@ -79,10 +84,23 @@ tau_R.reg_lin()
 
 print(1/tau_R.B)
 
+# Ritaglio i primi 200 elementi dell'array e li metto un array provvisorio in _scariche
+_scariche = np.ndarray((5,5), dtype=LinearFit)
+for tau, i in zip(scariche, range(scariche.size)):
+    _scariche[i] = [LinearFit() for R in tau]
+
+for tau, i in zip(scariche, range(scariche.size)):
+    for r, j in zip(tau, range(tau.size)):
+        _scariche[i,j].xdata = np.delete(r.xdata, np.arange(2000, r.xdata.size, 1))
+        _scariche[i,j].sigmax = np.delete(r.sigmax, np.arange(2000, r.xdata.size, 1))
+        _scariche[i,j].ydata = np.delete(r.ydata, np.arange(2000, r.xdata.size, 1))
+        _scariche[i,j].sigmay = np.delete(r.sigmay, np.arange(2000, r.xdata.size, 1))
+        _scariche[i,j].R_teorica = r.R_teorica
+
 # Risolvo con il metodo di Cramer la soluzione alle equazioni che massimizzano la likelihood (o minimizzano il chi2)
 # d(chi2)/da = 0, dove a è uno dei coefficienti da ricavare
-for tau in scariche:
-    print('\n\n')
+for tau in _scariche:
+    print('\n------------------------------------------------------------------------------------------\n')
     for r in tau:
 
         # y = A + Bt + Cx   con x = 1/Vm  e  y = log(Vm)    
@@ -110,12 +128,8 @@ for tau in scariche:
         A = np.linalg.det(MA) / delta
         B = np.linalg.det(MB) / delta
         C = np.linalg.det(MC) / delta
-
-        #print(M)
-        print(MA == M)
-
-        print(delta)
-        print("Risultati: A = {0:.8f} \t B = {1:.8f} \t C = {2:.8f}".format(A, B, C))
+        if enable_offset_printing:
+            print("Risultati: \t A = {0:.4f} \t B = {1:.4f} \t C = {2:.4f} \t resistenza reg: {3:.4f} \t resistenza teo: {4:.4f}".format(A, B, C, -1/B/C_teo/1000, r.R_teorica))
 
 
  
