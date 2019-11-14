@@ -31,50 +31,62 @@ for i in range(5):
     #le righe che seguono servono a beccare dal txt la risoluzione dell'oscilloscopio
         with open(total_path_txt, 'r') as filetxt:
             lines = filetxt.readlines()
-            numero = lines[1][11:14]
-            ris = numero[0] + numero[1] + numero[2]
-            ris = int(ris)*1e-3
-        scariche[i,j].add_sigmas(sigmay=ris)
+            dV_line = 1
+            dV_pos = [i for i in range(11,14)]
+            dV_mul = lines[dV_line][14]
+            dV = []
+            for idx in dV_pos:
+                dV += lines[dV_line][idx]
+            dV = float(''.join(dV))
+            if dV_mul=='m':
+                dV *= 1e-3
+
+            dT_line = 9
+            dT_pos = [i for i in range(36,41)]
+            dT = []
+            for idx in dT_pos:
+                dT += lines[dT_line][idx]
+            dT = float(''.join(dT))
+            dT_mul = lines[9][41]
+            if dT_mul=='u':
+                dT *= 1e-6
+            if dT_mul == 'm':
+                dT *= 1e-3
+
+        scariche[i,j].add_sigmas(sigmay=dV, sigmax=dT)
 
 
-# REGRESSIONE PER TROVARE scariche SULLE SINGOLE SCARICHE
+# REGRESSIONE PER TROVARE tau SULLE SINGOLE SCARICHE
 for i in range(5):
     for j in range(5):
-        scariche[i,j].reg_lin(cambiaVariabili=True, y=np.log(scariche[i,j].ydata), x=scariche[i,j].xdata, sigma=scariche[i,j].sigmay/scariche[i,j].ydata, trasferisci=True)
+        scariche[i,j].reg_lin(trasferisci=True, logy=True)
 
-'''
+
 tau_R = LinearFit()       # per fare la regressione tra 1/tau e 1/R
-R = np.array([1,1,1,1,1]) # inserire valori resistenze usate davvero
-sigmaR = 1
+R = np.array([1e3,99.57e3,21.73e3,39.36e3,9.94e3]) # inserire valori resistenze usate davvero
+sigmaR = 1      #temporanea
 for i in range(5):      # per ogni colonna i, calcolo la media delle B (B=1/tau)
     B_colonna = np.empty(5)   # vettore delle B per ciascun elemento della colonna
     for j in range(5):         # sulla colonna, calcolo la media delle B
             B_colonna[j] = -scariche[j, i].B
-    sigma_B = np.std(B_colonna)/(5)
-    tau_R.ydata = np.append(tau_R.ydata, np.mean(B_colonna))
+    tau_R.ydata = np.append(tau_R.ydata, np.mean(B_colonna))       #ricorda -B = 1/tau
     tau_R.xdata = np.append(tau_R.xdata, 1/R[i])
-    tau_R.sigmay = np.append(tau_R.sigmay, np.std(B_colonna)/(5))
-    print(np.mean(B_colonna))
-    tau_R.sigmax = np.append(tau_R.sigmax, 1/R[i]*sigmaR)        # non sono sicura del /n, o /(n-1), controllare
+    tau_R.sigmay = np.append(tau_R.sigmay, np.std(B_colonna)/(5))       
+    tau_R.sigma_reg = tau_R.sigmay
+    tau_R.sigmax = np.append(tau_R.sigmax, 1/R[i]*sigmaR)        
 
-print(tau_R.sigmay)
-tau_R.reg_lin(trasferisci=True)
+
+tau_R.reg_lin()
+
 print(1/tau_R.B)
-'''
-for tau in scariche:
-    for r in tau:
-        y = 1 / r.sigmay * np.log(r.ydata)
-        A = np.matrix.transpose(1/r.sigmay * np.asarray([np.ones(r.xdata.size), r.xdata, 1/r.ydata]))
-        B = np.dot(np.matrix.transpose(A), A)
-        r.offset_params = np.dot( np.dot(np.linalg.inv(B), np.matrix.transpose(A)), y )
-        print(r.offset_params.size)
-        print("Parametri dell'analisi offset (A, B, C):")
-        print(r.offset_params)
- 
-# print(1/scariche[0,0].B, scariche[0,0].sigma_B)
-'''n_ripetute = 5 # numero di set per ogni misura
-scariche_tot = np.asarray([])
 
-for scariche in scariche_tot:
-    set_misure = [LinearFit() for i in range(n_ripetute)] # Array di set: per ogni resistenza (per ogni scariche) ho 5 set
-    scariche = set_misure # scariche è un array di oggetti della LinearFit: sarà il risultato dell'analisi di questi set'''
+# for tau in scariche:
+#     for r in tau:
+#         y = 1 / r.sigmay * np.log(r.ydata)
+#         A = np.matrix.transpose(1/r.sigmay * np.asarray([np.ones(r.xdata.size), r.xdata, 1/r.ydata]))
+#         B = np.dot(np.matrix.transpose(A), A)
+#         r.offset_params = np.dot( np.dot(np.linalg.inv(B), np.matrix.transpose(A)), y )
+#         print(r.offset_params.size)
+#         print("Parametri dell'analisi offset (A, B, C):")
+#         print(r.offset_params)
+ 

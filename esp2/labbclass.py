@@ -93,27 +93,43 @@ class LinearFit(Analisi):
         self.sigma_reg = self.sigmay
 
     # Fit lineare con una funzione A + Bx
-    def reg_lin(self, cambiaVariabili=False, y=0, x=0, sigma=0, sigmaDaTrasferire=0, trasferisci=False):
-        # se non specifico su quali variabili fare la regressione, assumo siano y e x
-        if cambiaVariabili == False:
+    def reg_lin(self, trasferisci=False, logy=False, logx=False):
+        '''Trasferisci fa trasferire sigmax 
+            logy e logx applicano i logaritmi a y e x prima di effettuare la regressione'''
+        if logy == False:
             y = self.ydata
-            x = self.xdata
-            sigmaDaTrasferire = self.sigmax
-            sigma = self.sigmay
-        if sigmaDaTrasferire == 0:
-            sigmaDaTrasferire = self.sigmax
+        else:
+            y = np.log(self.ydata)
+            sigma_logy = 1/self.ydata*self.sigmay
+            try:
+                flagTrasferito          # se questo flag esiste, ho già trasferito e allora non cambio sigma_reg, che è gia quella giusta
+                print(flagTrasferito)
+            except NameError:
+                self.sigma_reg = sigma_logy
 
-        w = 1/sigma**2
+        if logx == False:
+            x = self.xdata
+            sigmax = self.sigmax
+        else:
+            x = np.log(self.xdata)
+            sigmax = 1/self.xdata*self.sigmax
+        
+
+
+        w = 1/self.sigma_reg**2
         delta = sum(w)*sum((x**2)*w) - (sum(x*w))**2
         self.A = 1/delta * (sum(x**2*w)*sum(y*w) - sum(x*w)*sum(x*y*w))
         self.B = 1/delta * (sum(w)*sum(x*y*w) - sum(x*w)*sum(y*w))
         self.sigma_A = math.sqrt(sum(x**2 * w) / delta)
         self.sigma_B = math.sqrt(sum(w) / delta)
         
+
         if (trasferisci==True):
-            sigma_trasformata = abs(self.B)*self.sigmax
-            self.sigma_reg = np.sqrt(sigma**2 + sigma_trasformata**2)
-            self.reg_lin(trasferisci=False, cambiaVariabili=True, y=y, x=x, sigma=self.sigma_reg)
+            sigma_trasformata = abs(self.B)*sigmax
+            self.sigma_reg = np.sqrt(self.sigma_reg**2 + sigma_trasformata**2)
+            flagTrasferito = 1
+            self.reg_lin(trasferisci=False, logy=logy, logx=logx)
+
 
     def __str__(self):
         # Controllo se esistono le variabili e man mano le aggiungo alla frase di print
