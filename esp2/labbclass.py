@@ -95,7 +95,7 @@ class LinearFit(Analisi):
         self.sigma_reg = self.sigmay
 
     # Fit lineare con una funzione A + Bx
-    def reg_lin(self, trasferisci=False, logy=False, logx=False):
+    def reg_lin(self, trasferisci=True, logy=False, logx=False):
         '''Trasferisci fa trasferire sigmax 
             logy e logx applicano i logaritmi a y e x prima di effettuare la regressione'''
         if logy == False:
@@ -103,10 +103,7 @@ class LinearFit(Analisi):
         else:
             y = np.log(self.ydata)
             sigma_logy = 1/self.ydata*self.sigmay
-            try:
-                flagTrasferito          # se questo flag esiste, ho già trasferito e allora non cambio sigma_reg, che è gia quella giusta
-                print(flagTrasferito)
-            except:
+            if trasferisci == True:
                 self.sigma_reg = sigma_logy
 
         if logx == False:
@@ -126,7 +123,6 @@ class LinearFit(Analisi):
         if (trasferisci==True):
             sigma_trasformata = abs(self.B)*sigmax
             self.sigma_reg = np.sqrt(self.sigma_reg**2 + sigma_trasformata**2)
-            flagTrasferito = 1
             self.reg_lin(trasferisci=False, logy=logy, logx=logx)
 
 
@@ -171,7 +167,7 @@ class LinearFit(Analisi):
         elif n_params == 2:
             residui = self.ydata - (self.B*self.xdata + self.A)
 
-        params = plt.errorbar(self.xdata*xscale, residui, self.sigma_reg, np.zeros(self.xdata.size), 'o', ecolor='red')
+        params = plt.errorbar(self.xdata*xscale, residui*yscale, self.sigma_reg*yscale, np.zeros(self.xdata.size), 'o', ecolor='red')
 
         self.residui_plot = params[0]
 
@@ -187,11 +183,10 @@ class LinearFit(Analisi):
             plt.title(title, fontsize=24)
         
         plt.plot([0, max(self.xdata*xscale)], [0, 0], '--', color='gray', linewidth=1.8)
-
         plt.grid()
 
     def plotData(self, xlabel='X data', ylabel='Y', title=None, xscale=1, yscale=1):
-        params = plt.errorbar(xscale*self.xdata, yscale*self.ydata, self.sigmay*yscale, self.sigmax*xscale, 'o', ecolor='red', linewidth=1.8, markersize=8, label='Dati misurati')
+        params = plt.errorbar(xscale*self.xdata, yscale*self.ydata, self.sigma_reg*yscale, self.sigmax*xscale, 'o', ecolor='red', linewidth=1.8, markersize=8, label='Dati misurati')
         
         # Memorizzo l'oggetto del grafico di modo da potervi accedere dall'esterno
         self.data_plot = params[0]
@@ -208,8 +203,8 @@ class LinearFit(Analisi):
             plt.title(title, fontsize=24)   
 
         # Array di 1000 punti nel range xmin-xmax dove calcolare la funzione di regressione
-        xrange = np.linspace(min(self.xdata), max(self.xdata), 1000)
-        self.regression_plot, = plt.plot(xrange * xscale, (self.A + self.B*xrange) * yscale, label='Regressione lineare')
+        x_range = np.linspace(min(self.xdata), max(self.xdata), 1000)
+        self.regression_plot, = plt.plot(x_range * xscale, (self.A + self.B*x_range) * yscale, label='Regressione lineare')
         
         plt.grid() # Griglia
 

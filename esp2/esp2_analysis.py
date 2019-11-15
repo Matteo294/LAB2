@@ -6,12 +6,12 @@ import os
 import math
 
 enable_offset_printing = True
-enable_tau_printing = False
+enable_tau_printing = True
 enable_plots = True
 ndati = 2000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
 
 C_teo = 35.5e-9
-R_teoriche = np.asarray([1.001, 99.570, 21.73, 39.36, 9.94])
+R_dmm = np.asarray([1.001, 99.570, 21.73, 39.36, 9.94])
 
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
 abspath = os.path.abspath(__file__)
@@ -32,7 +32,7 @@ for j in range(5):
         total_path_txt = partial_path + suffisso_1 + suffisso_2_txt
         scariche[i,j] = LinearFit()
         scariche[i,j].leggiDati(total_path)
-        scariche[i,j].R_teorica = R_teoriche[j]
+        scariche[i,j].R_teorica = R_dmm[j]
     #traslo in su se trovo valori negativi
         '''for value in scariche[i,j].ydata:
             if value < min:
@@ -110,17 +110,16 @@ for i in range(5):
             print(1/_scariche[i,j].B)
 
 tau_R = LinearFit()       # per fare la regressione tra 1/tau e 1/R
-R = np.array([1e3, 99.57e3, 21.73e3, 39.36e3, 9.94e3]) # inserire valori resistenze usate davvero
-sigmaR = 1      #temporanea
+sigmaR = 1/1000 * np.array([0.2, 11, 3, 1, 1])
 for j in range(5):      # per ogni colonna j, calcolo la media delle B (B=1/tau)
     B_colonna = np.empty(5)   # vettore delle B per ciascun elemento della colonna
     for i in range(5):         # sulla colonna, calcolo la media delle B
             B_colonna[i] = -_scariche[i, j].B
     tau_R.ydata = np.append(tau_R.ydata, np.mean(B_colonna))       #ricorda -B = 1/tau
-    tau_R.xdata = np.append(tau_R.xdata, 1/R[j])
+    tau_R.xdata = np.append(tau_R.xdata, 1/R_dmm[j])
     tau_R.sigmay = np.append(tau_R.sigmay, np.std(B_colonna)/(5))       
     tau_R.sigma_reg = tau_R.sigmay
-    tau_R.sigmax = np.append(tau_R.sigmax, 1/R[j]*sigmaR)        
+    tau_R.sigmax = np.append(tau_R.sigmax, 1/R_dmm[j]**2 * sigmaR[j])        
     if enable_tau_printing:
         print(1/tau_R.ydata[j])
 
