@@ -17,6 +17,8 @@ from numpy.linalg import inv
 from numpy import matrix as mat
 import os
 import csv
+from numpy import transpose as T
+
 
 class Analisi:
     
@@ -113,8 +115,6 @@ class LinearFit(Analisi):
         else:
             x = np.log(self.xdata)
             sigmax = 1/self.xdata*self.sigmax
-        
-
 
         w = 1/self.sigma_reg**2
         delta = sum(w)*sum((x**2)*w) - (sum(x*w))**2
@@ -122,7 +122,6 @@ class LinearFit(Analisi):
         self.B = 1/delta * (sum(w)*sum(x*y*w) - sum(x*w)*sum(y*w))
         self.sigmaA = math.sqrt(sum(x**2 * w) / delta)
         self.sigmaB = math.sqrt(sum(w) / delta)
-        
 
         if (trasferisci==True):
             sigma_trasformata = abs(self.B)*sigmax
@@ -213,3 +212,25 @@ class LinearFit(Analisi):
         self.regression_plot, = plt.plot(xrange * xscale, (self.A + self.B*xrange) * yscale, label='Regressione lineare')
         
         plt.grid() # Griglia
+
+class PolynomialFit():
+    # Passare i dati x in una matrice: (n_esempi x nvariabili)
+    # Passare i dati y in un array: (n_esempi)
+    def __init__(self, dati_x, dati_y, costante=True):
+        self.A = np.array(dati_x)
+        self.n_dati = self.A.shape[0]
+        self.n_params = self.A.shape[1]
+        self.y = np.array(dati_y)
+        
+    def minimizza(self):
+        self.coefficienti = np.dot(np.dot(inv(np.dot(T(self.A), self.A)), T(self.A)), self.y)
+
+    def __str__(self):
+        to_print = "Regressione eseguita su " + str(self.n_params) + " parametri e " + str(self.n_dati) + " dati. \n"
+        to_print += "I parametri che minimizzano il chi quadrato sono: \t"
+        for p,i in zip(self.coefficienti, range(len(self.coefficienti))):
+            to_print += "C" + str(i) + ": {0:.4f}   \t".format(p)
+        to_print += "\n\n"
+        return to_print
+
+

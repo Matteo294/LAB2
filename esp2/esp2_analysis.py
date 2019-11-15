@@ -1,12 +1,17 @@
 from labbclass import LinearFit
+from labbclass import PolynomialFit
 import numpy as np
 from matplotlib import pyplot as plt
 import os
 import math
 
-enable_offset_printing = False
+enable_offset_printing = True
+enable_tau_printing = False
+enable_plots = True
+ndati = 2000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
+
 C_teo = 35.5e-9
-R_teoriche = np.array([1.001, 99.570, 21.73, 39.36, 9.94])
+R_teoriche = np.asarray([1.001, 99.570, 21.73, 39.36, 9.94])
 
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
 abspath = os.path.abspath(__file__)
@@ -29,10 +34,10 @@ for j in range(5):
         scariche[i,j].leggiDati(total_path)
         scariche[i,j].R_teorica = R_teoriche[j]
     #traslo in su se trovo valori negativi
-        for value in scariche[i,j].ydata:
+        '''for value in scariche[i,j].ydata:
             if value < min:
                 min = value
-        scariche[i,j].ydata += -min + epsilon
+        scariche[i,j].ydata += -min + epsilon'''
     #le righe che seguono servono a beccare dal txt la risoluzione dell'oscilloscopio
         with open(total_path_txt, 'r') as filetxt:
             lines = filetxt.readlines()
@@ -68,60 +73,41 @@ for tau, i in zip(scariche, range(scariche.size)):
 
 for tau, i in zip(scariche, range(scariche.size)):
     for r, j in zip(tau, range(tau.size)):
-        _scariche[i,j].xdata = np.delete(r.xdata, np.arange(2000, r.xdata.size, 1))
-        _scariche[i,j].sigmax = np.delete(r.sigmax, np.arange(2000, r.xdata.size, 1))
-        _scariche[i,j].ydata = np.delete(r.ydata, np.arange(2000, r.xdata.size, 1))
-        _scariche[i,j].sigmay = np.delete(r.sigmay, np.arange(2000, r.xdata.size, 1))
+        _scariche[i,j].xdata = np.delete(r.xdata, np.arange(ndati, r.xdata.size, 1))
+        _scariche[i,j].sigmax = np.delete(r.sigmax, np.arange(ndati, r.xdata.size, 1))
+        _scariche[i,j].ydata = np.delete(r.ydata, np.arange(ndati, r.xdata.size, 1))
+        _scariche[i,j].sigmay = np.delete(r.sigmay, np.arange(ndati, r.xdata.size, 1))
         _scariche[i,j].R_teorica = r.R_teorica
 
-'''# Risolvo con il metodo di Cramer la soluzione alle equazioni che massimizzano la likelihood (o minimizzano il chi2)
-# d(chi2)/da = 0, dove a è uno dei coefficienti da ricavare
-for tau in _scariche:
-    print('\n------------------------------------------------------------------------------------------\n')
-    for r in tau:
-
+# I coefficienti che minimizzano il chi quadro (massimizzano la Likelihood) sono
+# x = inv(A' A) A' y
+for tau, i in zip(_scariche, range(scariche.size)):
+    for r, j in zip(tau, range(scariche[i].size)):
         # y = A + Bt + Cx   con x = 1/Vm  e  y = log(Vm)    
         x = 1/r.ydata
         t = r.xdata
         y = np.log(r.ydata)
-
-        w = 1/r.sigmay**2
-
-        M = np.asarray([
-            [np.sum(w), np.sum(w*t), np.sum(w*x)],
-            [np.sum(w*t), np.sum(w*(t**2)), np.sum(w*x*t)],
-            [np.sum(w*x), np.sum(w*x*t), np.sum(w*(x**2))]
-        ])
-
-        delta = np.linalg.det(M)
-
-        MA = np.copy(M)
-        MB = np.copy(M)
-        MC = np.copy(M)
-        MA[:,0] = [np.sum(w*y), np.sum(w*y*t), np.sum(w*x*y)]
-        MB[:,1] = [np.sum(w*y), np.sum(w*y*t), np.sum(w*y*x)]
-        MC[:,2] = [np.sum(w*y), np.sum(w*y*t), np.sum(w*y*x)]
-
-        A = np.linalg.det(MA) / delta
-        B = np.linalg.det(MB) / delta
-        C = np.linalg.det(MC) / delta
+        M = np.transpose(np.asarray([np.ones(r.xdata.size), t, x]) / r.sigmay)
+        offset = PolynomialFit(M, y)
+        offset.minimizza()
         if enable_offset_printing:
-            print("Risultati: \t A = {0:.4f} \t B = {1:.4f} \t C = {2:.4f} \t resistenza reg: {3:.4f} \t resistenza teo: {4:.4f}".format(A, B, C, -1/B/C_teo/1000, r.R_teorica))
-'''
+            print(offset)  
+        _scariche[i,j].ydata += offset.coefficienti[2]  # Traslo i dati
 
-scariche[2,4] = scariche[3,4]
+#scariche[2,4] = scariche[3,4]
 
 
 # REGRESSIONE PER TROVARE tau SULLE SINGOLE SCARICHE
 for i in range(5):
     for j in range(5):
-        scariche[i,j].reg_lin(trasferisci=True, logy=True)
-        scariche[i,j].chi_quadro(logy=True)
+        _scariche[i,j].reg_lin(trasferisci=True, logy=True)
+        _scariche[i,j].chi_quadro(logy=True)
 #print(scariche[0,0].chi_ridotto)
 
 for i in range(5):
     for j in range(5):
-        print(1/scariche[i,j].B)
+        if enable_tau_printing:
+            print(1/_scariche[i,j].B)
 
 tau_R = LinearFit()       # per fare la regressione tra 1/tau e 1/R
 R = np.array([1e3, 99.57e3, 21.73e3, 39.36e3, 9.94e3]) # inserire valori resistenze usate davvero
@@ -129,20 +115,22 @@ sigmaR = 1      #temporanea
 for j in range(5):      # per ogni colonna j, calcolo la media delle B (B=1/tau)
     B_colonna = np.empty(5)   # vettore delle B per ciascun elemento della colonna
     for i in range(5):         # sulla colonna, calcolo la media delle B
-            B_colonna[i] = -scariche[i, j].B
+            B_colonna[i] = -_scariche[i, j].B
     tau_R.ydata = np.append(tau_R.ydata, np.mean(B_colonna))       #ricorda -B = 1/tau
     tau_R.xdata = np.append(tau_R.xdata, 1/R[j])
     tau_R.sigmay = np.append(tau_R.sigmay, np.std(B_colonna)/(5))       
     tau_R.sigma_reg = tau_R.sigmay
     tau_R.sigmax = np.append(tau_R.sigmax, 1/R[j]*sigmaR)        
-    print(1/tau_R.ydata[j])
-
+    if enable_tau_printing:
+        print(1/tau_R.ydata[j])
 
 tau_R.reg_lin()
-
-
 tau_R.chi_quadro()
-print(tau_R)
+if enable_tau_printing:
+    print(tau_R)
 
-tau_R.plotData()
-plt.show()
+if enable_plots:
+    tau_R.plotData()
+    plt.show()
+    tau_R.residui()
+    plt.show()
