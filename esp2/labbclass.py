@@ -104,7 +104,7 @@ class LinearFit(Analisi):
             try:
                 flagTrasferito          # se questo flag esiste, ho già trasferito e allora non cambio sigma_reg, che è gia quella giusta
                 print(flagTrasferito)
-            except NameError:
+            except:
                 self.sigma_reg = sigma_logy
 
         if logx == False:
@@ -120,8 +120,8 @@ class LinearFit(Analisi):
         delta = sum(w)*sum((x**2)*w) - (sum(x*w))**2
         self.A = 1/delta * (sum(x**2*w)*sum(y*w) - sum(x*w)*sum(x*y*w))
         self.B = 1/delta * (sum(w)*sum(x*y*w) - sum(x*w)*sum(y*w))
-        self.sigma_A = math.sqrt(sum(x**2 * w) / delta)
-        self.sigma_B = math.sqrt(sum(w) / delta)
+        self.sigmaA = math.sqrt(sum(x**2 * w) / delta)
+        self.sigmaB = math.sqrt(sum(w) / delta)
         
 
         if (trasferisci==True):
@@ -148,14 +148,22 @@ class LinearFit(Analisi):
             pass
         return frase
     
-    def chi_quadro(self, n_params=2):
+    def chi_quadro(self, n_params=2, logy=False, logx=False):
+        if logy:
+            y = np.log(self.ydata)
+        else:
+            y = self.ydata
+        if logx:
+            x = np.log(self.xdata)
+        else: 
+            x = self.xdata
         if n_params == 1:
-            self.chi_q = sum((self.B*self.xdata - self.ydata)**2 / (self.sigma_reg)**2)
-            self.chi_ridotto = self.chi_q / (self.xdata.size - 1)
+            self.chi_q = sum((self.B*x - y)**2 / (self.sigma_reg)**2)
+            self.chi_ridotto = self.chi_q / (x.size - 1)
         elif n_params == 2:
-            self.chi_q = sum((self.B*self.xdata + self.A - self.ydata)**2 / (self.sigma_reg)**2)
-            self.chi_ridotto = self.chi_q / (self.xdata.size - 2)
-            self.probabilita_chi = stats.chi2.sf(self.chi_q, self.xdata.size - 2)
+            self.chi_q = sum((self.B*x + self.A - y)**2 / (self.sigma_reg)**2)
+            self.chi_ridotto = self.chi_q / (x.size - 2)
+            self.probabilita_chi = stats.chi2.sf(self.chi_q, x.size - 2)
 
 
     def residui(self, n_params=2, xlabel='ID Misura', ylabel='Y', title=None, xscale=1, yscale=1):
