@@ -8,7 +8,7 @@ import math
 enable_offset_printing = True
 enable_tau_printing = True
 enable_plots = True
-ndati = 2000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
+ndati = 3000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
 
 C_teo = 35.5e-9
 R_dmm = np.asarray([1.001, 99.570, 21.73, 39.36, 9.94])
@@ -82,6 +82,8 @@ for tau, i in zip(scariche, range(scariche.size)):
 # I coefficienti che minimizzano il chi quadro (massimizzano la Likelihood) sono
 # x = inv(A' A) A' y
 for tau, i in zip(_scariche, range(scariche.size)):
+    if enable_offset_printing:
+        print("------------------------------------------------------------------------------------------------------------------------- \n")
     for r, j in zip(tau, range(scariche[i].size)):
         # y = A + Bt + Cx   con x = 1/Vm  e  y = log(Vm)    
         x = 1/r.ydata

@@ -225,7 +225,7 @@ class PolynomialFit():
         to_print += "I parametri che minimizzano il chi quadrato sono: \t"
         for p,i in zip(self.coefficienti, range(len(self.coefficienti))):
             to_print += "C" + str(i) + ": {0:.4f}   \t".format(p)
-        to_print += "\n\n"
+        to_print += "\n"
         return to_print
 
 
