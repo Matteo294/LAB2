@@ -5,13 +5,13 @@ from matplotlib import pyplot as plt
 import os
 import math
 
-enable_offset_printing = True
+enable_offset_printing = False
 enable_tau_printing = True
 enable_plots = True
 ndati = 3000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
 
 C_teo = 35.5e-9
-R_dmm = np.asarray([1.001, 99.570, 21.73, 39.36, 9.94])
+R_dmm = np.asarray([1.001e3, 99.570e3, 21.73e3, 39.36e3, 9.94e3])
 
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
 abspath = os.path.abspath(__file__)
@@ -50,7 +50,8 @@ for j in range(5):
                 dV += lines[dV_line][idx]
             dV = float(''.join(dV))
             if dV_mul=='m':
-                dV *= 1e-3
+                dV *= 1e-3 / math.sqrt(12)
+                #dV = (dV*0.1 + 0.03*8*dV + 2e-3 ) / math.sqrt(12)
             # dT
             dT_line = 9
             dT_pos = [i for i in range(36,41)]
@@ -60,9 +61,9 @@ for j in range(5):
             dT = float(''.join(dT))
             dT_mul = lines[9][41]
             if dT_mul=='u':
-                dT *= 1e-6
+                dT *= 1e-6 / math.sqrt(12)
             if dT_mul == 'm':
-                dT *= 1e-3
+                dT *= 1e-3 / math.sqrt(12)
         scariche[i,j].add_sigmas(sigmay=dV, sigmax=dT)
 
 
@@ -96,7 +97,6 @@ for tau, i in zip(_scariche, range(scariche.size)):
             print(offset)  
         _scariche[i,j].ydata += offset.coefficienti[2]  # Traslo i dati
 
-#scariche[2,4] = scariche[3,4]
 
 
 # REGRESSIONE PER TROVARE tau SULLE SINGOLE SCARICHE
@@ -109,10 +109,11 @@ for i in range(5):
 for i in range(5):
     for j in range(5):
         if enable_tau_printing:
-            print(1/_scariche[i,j].B)
+            print(_scariche[i,j].sigmay)
 
 tau_R = LinearFit()       # per fare la regressione tra 1/tau e 1/R
 sigmaR = 1/1000 * np.array([0.2, 11, 3, 1, 1])
+
 for j in range(5):      # per ogni colonna j, calcolo la media delle B (B=1/tau)
     B_colonna = np.empty(5)   # vettore delle B per ciascun elemento della colonna
     for i in range(5):         # sulla colonna, calcolo la media delle B
@@ -128,7 +129,8 @@ for j in range(5):      # per ogni colonna j, calcolo la media delle B (B=1/tau)
 tau_R.reg_lin()
 tau_R.chi_quadro()
 if enable_tau_printing:
-    print(tau_R)
+    print(1/tau_R.B)
+
 
 if enable_plots:
     tau_R.plotData()

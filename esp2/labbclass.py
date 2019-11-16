@@ -126,22 +126,6 @@ class LinearFit(Analisi):
             self.reg_lin(trasferisci=False, logy=logy, logx=logx)
 
 
-    def __str__(self):
-        # Controllo se esistono le variabili e man mano le aggiungo alla frase di print
-        frase = ""
-        try:
-            frase += "Intercetta: {0:.4f} \u00B1 {1:.4f} \t".format(self.A, self.sigma_A)
-        except:
-            pass
-        try:
-            frase += "Coefficiente angolare: {0:4f} \u00B1 {1:.4f} \t".format(self.B, self.sigma_B)
-        except:
-            pass
-        try :
-            frase += "Chi quadro ridotto: {0:.4f} pvalue={1:.4f} su {2} dati \t".format(self.chi_ridotto, self.probabilita_chi, self.xdata.size)
-        except:
-            pass
-        return frase
     
     def chi_quadro(self, n_params=2, logy=False, logx=False):
         if logy:
@@ -207,6 +191,24 @@ class LinearFit(Analisi):
         self.regression_plot, = plt.plot(x_range * xscale, (self.A + self.B*x_range) * yscale, label='Regressione lineare')
         
         plt.grid() # Griglia
+
+    def __str__(self):
+        # Controllo se esistono le variabili e man mano le aggiungo alla frase di print
+        frase = ""
+        try:
+            frase += "Intercetta: {0:.4f} \u00B1 {1:.4f} \t".format(self.A, self.sigma_A)
+        except:
+            pass
+        try:
+            frase += "Coefficiente angolare: {0:4f} \u00B1 {1:.4f} \t".format(self.B, self.sigma_B)
+        except:
+            pass
+        try :
+            frase += "Chi quadro ridotto: {0:.4f} pvalue={1:.4f} su {2} dati \t".format(self.chi_ridotto, self.probabilita_chi, self.xdata.size)
+        except:
+            pass
+        return frase
+    
 
 class PolynomialFit():
     # Passare i dati x in una matrice: (n_esempi x nvariabili)
