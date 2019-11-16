@@ -253,3 +253,16 @@ class FDT(Analisi):
     def __str__(self):
         print("Non ancora implementata")
 
+
+# Classe molto semplice per memorizzare i dati nel formato misura-incertezza
+class Misura:
+    def __init__(self, value, sigma):
+        if isinstance(value, (int, float)):
+            self.val = value
+            self.sigma = sigma
+        else:
+            self.val = np.array(value)
+            if isinstance(sigma, (int, float)):
+                self.sigma = np.full(self.val.size, sigma)
+            else:
+                self.sigma = np.array(sigma)
