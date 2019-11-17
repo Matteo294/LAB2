@@ -192,34 +192,36 @@ class LinearFit(Analisi):
 class FDT(Analisi):
 
     def __init__(self):
-        self.Vout = np.asarray([])
-        self.omega = np.asarray([])
-        self.fase = np.asarray([])
+        self.Vout = np.array([])
+        self.freq = np.array([])
+        self.fase = np.array([])
+        self.Vin = np.array([])
 
-    def leggiDati(self, file_lettura, scale_x=1, scale_y=1):
+    def leggiDati(self, file_lettura, scale_f=1, scale_Vout=1, scale_Vin=1):
         myfile = os.path.join(file_lettura)
         if os.path.isfile(myfile):
             with open(file_lettura, 'r') as csvFile:
                 reader = csv.reader(csvFile)
-                # Per ogni riga del file, aggiungo la tripletta all'array di storage
+                # Per ogni riga del file, aggiungo all'array di storage.
+                # Le colonne sono: freq, Vout, fase(°), Vin
                 for r in reader:
-                    row = [float(r[0]), float(r[1]), float(r[2])]
-                    print(row)
-                    self.omega = np.append(self.omega, 2*np.pi*row[0] * scale_x)
-                    print(self.omega)
-                    self.Vout = np.append(self.Vout, row[1])
-                    self.fase = np.append(self.fase, np.degrees(row[2]))
+                    row = [float(r[0]), float(r[1]), float(r[2]), float(r[3])]
+                    self.freq = np.append(self.freq, row[0] * scale_f)
+                    self.Vout = np.append(self.Vout, row[1] * scale_Vout)
+                    self.fase = np.append(self.fase, row[2])
+                    self.Vin = np.append(self.Vin, row[3] * scale_Vin)
         else:
             print("Problema: non trovo il file " + file_lettura)
     
+    # Eventualmente è possibile fissare "manualmente" la Vin (comoda se è Vin=cost.)
     def setVin(self, value):
         if isinstance(value, (int, float)):
-            self.Vin = np.full(self.omega.size, value)
+            self.Vin = np.full(self.freq.size, value)
         else:
             self.Vin = np.asarray(value)
 
     def plotFDT(self):
-        self.data_magnitude, = plt.semilogx(self.omega, self.ydata/self.xdata)
+        self.dataplot_magnitude, = plt.semilogx(self.freq, self.ydata/self.xdata)
 
     # numeratore: coefficienti del polinomio a numeratore della fdt potenza decrescente.
     # denominatore: coefficienti del polinomio a denominatore della fdt potenza decrescente
@@ -228,41 +230,46 @@ class FDT(Analisi):
     # se plot=1 viene plottata in automatico la fdtteorica
     def fdt_teorica(self, numeratore=1, denominatore=1, plot=False):
         fdt = signal.lti(numeratore, denominatore)
-        self._w_plot, self._ampiezza_plot, self._fase_plot = signal.bode(fdt, n = 500)        
+        _w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, n = 500) 
+        self._f_teo = _w_plot / (2 * np.pi)       
+        self._fase_teo = _fase_teo # rad -> deg
     
-    def plot_teorica_ampiezza(self, w=None, ampiezza=None):
-        if w is None:
-            w = self._w_plot
+    # I parametri f e ampiezza servono per plottare un eventuale fdt creata all'esterno
+    def plot_teorica_ampiezza(self, f=None, ampiezza=None):
+        if f is None:
+            f = self._f_teo
         if ampiezza is None:
-            ampiezza = self._fase_plot
-        self.teorico_ampiezza, = plt.semilogx(2*np.pi*w, ampiezza, linewidth=1.8, color=[0, 0, 0])
+            ampiezza = self._ampiezza_teo
+
+        self.teoplot_ampiezza, = plt.semilogx(f, ampiezza, linewidth=1.8, color=[0, 0, 0])
         plt.xlabel(r"$\omega$ [rad/s]", fontsize=18)
         plt.ylabel("Ampiezza [dB]", fontsize=18)
-        plt.title("Diagramma dell'ampiezza della funzione di trasferimento", fontsize=24)
+        plt.title("Diagramma dell'ampiezza della f.d.t.", fontsize=24)
 
-    def plot_teorica_fase(self, w=None, fase=None):
-        if w is None:
-            w = self._w_plot
+    def plot_teorica_fase(self, f=None, fase=None):
+        if f is None:
+            f = self._f_teo
         if fase is None:
-            fase = self._fase_plot
-        self.teorico_fase, = plt.semilogx(w, np.degrees(fase))
+            fase = self._fase_teo
+
+        self.teoplot_fase, = plt.semilogx(f, fase)
         plt.xlabel(r"$\omega$ [rad/s]", fontsize=18)
         plt.ylabel("Fase [°]", fontsize=18)
-        plt.title('Diagramma della fase della funzione di trasferimento', fontsize=24)
+        plt.title("Diagramma della fase della f.d.t.", fontsize=24)
 
     def __str__(self):
-        print("Non ancora implementata")
+        return "Print non ancora implementata"
 
 
 # Classe molto semplice per memorizzare i dati nel formato misura-incertezza
 class Misura:
     def __init__(self, value, sigma):
         if isinstance(value, (int, float)):
-            self.val = value
+            self.valore = value
             self.sigma = sigma
         else:
-            self.val = np.array(value)
+            self.valore = np.array(value)
             if isinstance(sigma, (int, float)):
-                self.sigma = np.full(self.val.size, sigma)
+                self.sigma = np.full(self.valore.size, sigma)
             else:
                 self.sigma = np.array(sigma)
