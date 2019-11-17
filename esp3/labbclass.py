@@ -227,10 +227,10 @@ class FDT(Analisi):
     # denominatore: coefficienti del polinomio a denominatore della fdt potenza decrescente
     # Esemio: H(w) = (t1*(jw)^2 + t2*(jw) + 5) / (3*(jw) + 4) --> 
     # --> numeratore = [t1, t2, 5] e denominatore = [3, 4]
-    # se plot=1 viene plottata in automatico la fdtteorica
-    def fdt_teorica(self, numeratore=1, denominatore=1, plot=False):
+    # Se auto_f = True, il range di f viene basato sui dati misurati
+    def fdt_teorica(self, numeratore=1, denominatore=1):
         fdt = signal.lti(numeratore, denominatore)
-        _w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, n = 500) 
+        _w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, n = 1000) 
         self._f_teo = _w_plot / (2 * np.pi)       
         self._fase_teo = _fase_teo # rad -> deg
     
@@ -244,7 +244,7 @@ class FDT(Analisi):
         self.teoplot_ampiezza, = plt.semilogx(f, ampiezza, linewidth=1.8, color=[0, 0, 0])
         plt.xlabel(r"$\omega$ [rad/s]", fontsize=18)
         plt.ylabel("Ampiezza [dB]", fontsize=18)
-        plt.title("Diagramma dell'ampiezza della f.d.t.", fontsize=24)
+        plt.title("Diagramma dell'ampiezza della F.D.T.", fontsize=24)
 
     def plot_teorica_fase(self, f=None, fase=None):
         if f is None:
@@ -252,10 +252,10 @@ class FDT(Analisi):
         if fase is None:
             fase = self._fase_teo
 
-        self.teoplot_fase, = plt.semilogx(f, fase)
+        self.teoplot_fase, = plt.semilogx(f, fase, linewidth=1.8, color=[0, 0, 0])
         plt.xlabel(r"$\omega$ [rad/s]", fontsize=18)
         plt.ylabel("Fase [°]", fontsize=18)
-        plt.title("Diagramma della fase della f.d.t.", fontsize=24)
+        plt.title("Diagramma della fase della F.D.T.", fontsize=24)
 
     def __str__(self):
         return "Print non ancora implementata"

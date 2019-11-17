@@ -10,10 +10,10 @@ plot_grafici = True # Se True stampa tutti i grafici
 # E' possibile indicare da cmd quali visualizzare
 grafici_da_plottare = []
 if len(sys.argv) > 1:
-    for plot in sys.argv:
+    for plot in sys.argv[1:]:
         grafici_da_plottare.append(int(plot))
 else:
-    grafici_da_plottare = [2]
+    grafici_da_plottare = [1]
 
 # Resistenze e capacità usate: valore misurato e incertezza (vedi classe Misura in labbclass.py)
 R = [Misura(146.27, 0.02), Misura(1600, 0.2), Misura(16000, 2)]
@@ -34,7 +34,7 @@ for r,i in zip(R, range(len(R))):
     if i == 2:
         fdt[i].leggiDati(files[i])
     else:
-        fdt[i].leggiDati(files[i], scale_f = 10e3)
+        fdt[i].leggiDati(files[i], scale_f = 1e3)
     fdt[i].fase = -fdt[i].fase
     fdt[i].tau = r.valore*C.valore
 
@@ -48,13 +48,13 @@ if plot_grafici is not False:
 
         # Plot ampiezze misurate sul grafico teorico
         fdt[i].plot_teorica_ampiezza()
-        plt.semilogx(fdt[i].freq, 20*np.log10(fdt[i].Vout / fdt[i].Vin), '.')
+        plt.semilogx(fdt[i].freq, 20*np.log10(fdt[i].Vout / fdt[i].Vin), '.', markersize=10)
         plt.grid()
         plt.show()
 
         # Plot fasi misurate sul grafico teorico
         fdt[i].plot_teorica_fase()
-        plt.semilogx(fdt[i].freq, fdt[i].fase, '.')
+        plt.semilogx(fdt[i].freq, fdt[i].fase, '.', markersize=10)
         plt.grid()
         plt.show()
     
