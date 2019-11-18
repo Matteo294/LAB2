@@ -32,17 +32,17 @@ for R, f in zip(resistenze, resistenze_files):
     
     rlc = FDT()
     rlc.leggiDati(f)
-    rlc.fdt_teorica(numeratore=[L/R.valore, 0], denominatore=[L*C, L/R.valore, 1]) # Plotto la fdt teorica per un circuito RLC ideale
-    rlc.w_ris = 1 / np.sqrt(L*C)
+    rlc.fdt_teorica(numeratore=[L.valore/R.valore, 0], denominatore=[L.valore*C.valore, L.valore/R.valore, 1]) # Plotto la fdt teorica per un circuito RLC ideale
+    rlc.w_ris = 1 / np.sqrt(L.valore*C.valore)
     
     if enable_plots and resistenze.index(R) in grafici_da_plottare:
 
-        rlc.plot_teorica_ampiezza
+        rlc.plot_teorica_ampiezza()
         plt.semilogx(rlc.freq, 20*np.log10(rlc.Vout / rlc.Vin), '.', markersize=10)
         plt.grid()
         plt.show()
 
-        rlc.plot_teorica_ampiezza
-        plt.semilogx(rlc.freq, 20*np.log10(rlc.Vout / rlc.Vin), '.', markersize=10)
+        rlc.plot_teorica_fase()
+        plt.semilogx(rlc.freq, 20*np.log10(rlc.Vout / rlc.fase), '.', markersize=10)
         plt.grid()
         plt.show()
