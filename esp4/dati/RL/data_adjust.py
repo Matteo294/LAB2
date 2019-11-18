@@ -2,7 +2,7 @@ import csv
 import os
 import numpy as np 
 
-cartella = 'sistemati/' # cartella dove mettere i sistemati
+cartella = '../sistemati/' # cartella dove mettere i sistemati
 
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
 abspath = os.path.abspath(__file__)
