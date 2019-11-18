@@ -242,7 +242,7 @@ class FDT(Analisi):
             ampiezza = self._ampiezza_teo
 
         self.teoplot_ampiezza, = plt.semilogx(f, ampiezza, linewidth=1.8, color=[0, 0, 0])
-        plt.xlabel(r"$\omega$ [rad/s]", fontsize=18)
+        plt.xlabel("Frequenza [Hz]", fontsize=18)
         plt.ylabel("Ampiezza [dB]", fontsize=18)
         plt.title("Diagramma dell'ampiezza della F.D.T.", fontsize=24)
 
@@ -253,7 +253,7 @@ class FDT(Analisi):
             fase = self._fase_teo
 
         self.teoplot_fase, = plt.semilogx(f, fase, linewidth=1.8, color=[0, 0, 0])
-        plt.xlabel(r"$\omega$ [rad/s]", fontsize=18)
+        plt.xlabel("Frequenza [Hz]", fontsize=18)
         plt.ylabel("Fase [°]", fontsize=18)
         plt.title("Diagramma della fase della F.D.T.", fontsize=24)
 
