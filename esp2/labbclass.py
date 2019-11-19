@@ -43,11 +43,11 @@ class Analisi:
         if isinstance(sigmax, (int, float)):
             self.sigmax = np.full(self.xdata.size, sigmax)
         else:
-            self.sigmax = np.asarray(sigmax)
+            self.sigmax = np.array(sigmax)
         if isinstance(sigmay, (int, float)):
             self.sigmay = np.full(self.ydata.size, sigmay)
         else:
-            self.sigmay = np.asarray(sigmay)
+            self.sigmay = np.array(sigmay)
 
     def add_resistenza_tester_ICE(self, input_amp, input_vol):
         ''' input_amp: 1=5A; 2=500mA; 3=50mA; 4=5mA; 5=500uA; 6=50uA
@@ -182,4 +182,32 @@ class LinearFit(Analisi):
         xrange = np.linspace(min(self.xdata), max(self.xdata), 1000)
         self.regression_plot, = plt.plot(xrange * xscale, (self.A + self.B*xrange) * yscale, label='Regressione lineare')
         
+<<<<<<< Updated upstream
         plt.grid() # Griglia
+=======
+    def minimizza(self):
+        self.coefficienti = np.dot(np.dot(inv(np.dot(T(self.A), self.A)), T(self.A)), self.y)
+
+    def __str__(self):
+        to_print = "Regressione eseguita su " + str(self.n_params) + " parametri e " + str(self.n_dati) + " dati. \n"
+        to_print += "I parametri che minimizzano il chi quadrato sono: \t"
+        for p,i in zip(self.coefficienti, range(len(self.coefficienti))):
+            to_print += "C" + str(i) + ": {0:.4f}   \t".format(p)
+        to_print += "\n"
+        return to_print
+
+# Classe molto semplice per memorizzare i dati nel formato misura-incertezza
+class Misura:
+    def __init__(self, value, sigma):
+        if isinstance(value, (int, float)):
+            self.valore = value
+            self.sigma = sigma
+        else:
+            self.valore = np.array(value)
+            if isinstance(sigma, (int, float)):
+                self.sigma = np.full(self.valore.size, sigma)
+            else:
+                self.sigma = np.array(sigma)
+
+
+>>>>>>> Stashed changes
