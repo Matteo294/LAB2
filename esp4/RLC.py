@@ -23,12 +23,10 @@ abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
 
-<<<<<<< HEAD
-resistenze_files = ['dati/R1.csv', 'dati/R2.csv'] # un file per ogni resistenza
-resistenze = [Misura(9939, 2), Misura(5.10353e3, 2)] # da cambiare !!
+resistenze_files = ['dati/R1.csv', 'dati/R2.csv', 'dati/R3.csv'] # un file per ogni resistenza
+resistenze = [Misura(9939, 2), Misura(5.10353e3, 2), Misura(467.34, 0.2)] # da cambiare !!
 L = Misura(2.2e-3, 0.01) # da cambiare !!
 C = Misura(48.2e-9, 0.2e-9) # incertezza da cambiare
-=======
 
 # PLOT SIMULAZIONE
 file_lettura = "simulazione.csv"
@@ -49,13 +47,6 @@ if enable_simulation_plot:
     plt.plot(freq, ampl, '-')
     plt.show()
 
-'''
-resistenze_files = ['dati/R1.csv'] # un file per ogni resistenza
-resistenze = [Misura(160, 0.02)] # da cambiare !!
-L = Misura(10, 0.01) # da cambiare !!
-C = Misura(35.5e-9, 0.2e-9)
->>>>>>> ed6f654ec26f71858635e5828989bec592f3f6ba
-
 # Creo l'oggetto dalla classe FDT e leggo i dati dal file nel formato: freq Vout fase Vin
 for R, f in zip(resistenze, resistenze_files):
     
@@ -64,7 +55,6 @@ for R, f in zip(resistenze, resistenze_files):
     rlc.fdt_teorica(numeratore=[L.valore/R.valore, 0], denominatore=[L.valore*C.valore, L.valore/R.valore, 1]) # Plotto la fdt teorica per un circuito RLC ideale
     rlc.f_ris = 1 / (2*np.pi * np.sqrt(L.valore*C.valore))
     
-    print('sì')
     if enable_plots and resistenze.index(R) in grafici_da_plottare:
         rlc.plot_teorica_ampiezza()
         plt.semilogx(rlc.freq, 20*np.log10(rlc.Vout / rlc.Vin), '.', markersize=10)
@@ -79,4 +69,3 @@ for R, f in zip(resistenze, resistenze_files):
         plt.legend()
         plt.grid()
         plt.show()
-        '''
