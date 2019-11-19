@@ -1,4 +1,5 @@
 from labbclass import LinearFit
+from numpy.linalg import inv
 from labbclass import PolynomialFit
 import numpy as np
 from matplotlib import pyplot as plt
@@ -9,15 +10,15 @@ import math
 enable_offset_printing = False
 enable_tau_printing = True
 enable_plots = True
-ndati = 3000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
+ndati = 5000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
 
 # parametri noti
 R_gen = 50
-R_dmm = np.asarray([50, 100, 150, 200, 250])        
-sigmaR = 1/1000 * np.array([0.2, 11, 3, 1, 1])             # PROVVISORIE, NON SONO GIUSTE
+R_dmm = np.asarray([99.5, 46.75, 99.5+46.75, 99.5*46.75/(99.5+46.75) + 99.13, 99.13+99.5])        
+sigmaR = np.array([0.01, 0.01, 0.01, 0.01, 0.01])             # PROVVISORIE, NON SONO GIUSTE
 n_scariche = 5
 n_resistenze = 5
-L_teorico = 0 #!!!! mettere
+L_teorico = 2e-3 #!!!! mettere
 
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
 abspath = os.path.abspath(__file__)

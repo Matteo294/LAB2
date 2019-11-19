@@ -13,6 +13,8 @@ import numpy as np
 from scipy import stats
 from scipy import signal
 import math
+from numpy.linalg import inv
+from numpy import transpose as T
 from matplotlib import pyplot as plt
 #from numpy.linalg import inv
 #from numpy import matrix as mat
@@ -99,18 +101,35 @@ class LinearFit(Analisi):
         self.sigma_reg = self.sigmay
 
     # Fit lineare con una funzione A + Bx
-    def reg_lin(self, trasferisci=False):
-        w = 1/self.sigma_reg
-        delta = sum(w)*sum(self.xdata**2/w) - (sum(self.xdata/w))**2
-        self.A = 1/delta * (sum(self.xdata**2/w)*sum(self.ydata/w) - sum(self.xdata/w)*sum(self.xdata*self.ydata/w))
-        self.B = 1/delta * (sum(w)*sum(self.xdata*self.ydata/w) - sum(self.xdata/w)*sum(self.ydata/w))
-        self.sigma_A = math.sqrt(sum(self.xdata**2 * w) / delta)
-        self.sigma_B = math.sqrt(sum(w) / delta)
-        
+    def reg_lin(self, trasferisci=True, logy=False, logx=False):
+        '''Trasferisci fa trasferire sigmax 
+            logy e logx applicano i logaritmi a y e x prima di effettuare la regressione'''
+        if logy == False:
+            y = self.ydata
+        else:
+            y = np.log(self.ydata)
+            sigma_logy = 1/self.ydata*self.sigmay
+            if trasferisci == True:
+                self.sigma_reg = sigma_logy
+
+        if logx == False:
+            x = self.xdata
+            sigmax = self.sigmax
+        else:
+            x = np.log(self.xdata)
+            sigmax = 1/self.xdata*self.sigmax
+
+        w = 1/self.sigma_reg**2
+        delta = sum(w)*sum((x**2)*w) - (sum(x*w))**2
+        self.A = 1/delta * (sum(x**2*w)*sum(y*w) - sum(x*w)*sum(x*y*w))
+        self.B = 1/delta * (sum(w)*sum(x*y*w) - sum(x*w)*sum(y*w))
+        self.sigmaA = math.sqrt(sum(x**2 * w) / delta)
+        self.sigmaB = math.sqrt(sum(w) / delta)
+
         if (trasferisci==True):
-            sigma_trasformata = abs(self.B)*self.sigmax
-            self.sigma_reg = np.sqrt(self.sigmay**2 + sigma_trasformata**2)
-            self.reg_lin(trasferisci=False)
+            sigma_trasformata = abs(self.B)*sigmax
+            self.sigma_reg = np.sqrt(self.sigma_reg**2 + sigma_trasformata**2)
+            self.reg_lin(trasferisci=False, logy=logy, logx=logx)
 
     def __str__(self):
         # Controllo se esistono le variabili e man mano le aggiungo alla frase di print
@@ -129,15 +148,22 @@ class LinearFit(Analisi):
             pass
         return frase
     
-    def chi_quadro(self, n_params=2):
+    def chi_quadro(self, n_params=2, logy=False, logx=False):
+        if logy:
+            y = np.log(self.ydata)
+        else:
+            y = self.ydata
+        if logx:
+            x = np.log(self.xdata)
+        else: 
+            x = self.xdata
         if n_params == 1:
-            self.chi_q = sum((self.B*self.xdata - self.ydata)**2 / (self.sigma_reg)**2)
-            self.chi_ridotto = self.chi_q / (self.xdata.size - 1)
+            self.chi_q = sum((self.B*x - y)**2 / (self.sigma_reg)**2)
+            self.chi_ridotto = self.chi_q / (x.size - 1)
         elif n_params == 2:
-            self.chi_q = sum((self.B*self.xdata + self.A - self.ydata)**2 / (self.sigma_reg)**2)
-            self.chi_ridotto = self.chi_q / (self.xdata.size - 2)
-            self.probabilita_chi = stats.chi2.sf(self.chi_q, self.xdata.size - 2)
-
+            self.chi_q = sum((self.B*x + self.A - y)**2 / (self.sigma_reg)**2)
+            self.chi_ridotto = self.chi_q / (x.size - 2)
+            self.probabilita_chi = stats.chi2.sf(self.chi_q, x.size - 2)
 
     def residui(self, n_params=2, xlabel='ID Misura', ylabel='Y', title=None, xscale=1, yscale=1):
         if n_params == 1:
@@ -186,6 +212,28 @@ class LinearFit(Analisi):
         self.regression_plot, = plt.plot(xrange * xscale, (self.A + self.B*xrange) * yscale, label='Regressione lineare')
         
         plt.grid() # Griglia
+
+class PolynomialFit():
+    # Passare i dati x in una matrice: (n_esempi x nvariabili)
+    # Passare i dati y in un array: (n_esempi)
+    def __init__(self, dati_x, dati_y, costante=True):
+        self.A = np.array(dati_x)
+        self.n_dati = self.A.shape[0]
+        self.n_params = self.A.shape[1]
+        self.y = np.array(dati_y)
+        
+    def minimizza(self):
+        self.coefficienti = np.dot(np.dot(inv(np.dot(T(self.A), self.A)), T(self.A)), self.y)
+
+    def __str__(self):
+        to_print = "Regressione eseguita su " + str(self.n_params) + " parametri e " + str(self.n_dati) + " dati. \n"
+        to_print += "I parametri che minimizzano il chi quadrato sono: \t"
+        for p,i in zip(self.coefficienti, range(len(self.coefficienti))):
+            to_print += "C" + str(i) + ": {0:.4f}   \t".format(p)
+        to_print += "\n"
+        return to_print
+
+
 
 # Classe per l'analisi di funzioni di trasferimento
 # In questo caso con x si intende Vin e con y Vout
