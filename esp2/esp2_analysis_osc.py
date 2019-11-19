@@ -8,7 +8,7 @@ import math
 enable_offset_printing = False
 enable_tau_printing = True
 enable_plots = True
-ndati = 3000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
+ndati = 1000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
 
 C_teo = 35.5e-9
 R_dmm = np.asarray([1.001e3, 99.570e3, 21.73e3, 39.36e3, 9.94e3])
@@ -20,7 +20,7 @@ os.chdir(dname)
 
 # LETTURA FILE
 scariche = np.ndarray((5,5), dtype=LinearFit)     # matrice: in una colonna hai i 5 scariche fatte con la stessa resistenza; colonne diverse per resistenze diverse
-partial_path = 'Misure/Ctot/sistemati/r'
+partial_path = 'Misure/Cosc/sistemati/r'
 for j in range(5):
     suffisso_1 = str(j+1) + '_'
     min = 0
@@ -96,7 +96,6 @@ for tau, i in zip(_scariche, range(scariche.size)):
         if enable_offset_printing:
             print(offset)  
         _scariche[i,j].ydata += offset.coefficienti[2]  # Traslo i dati
-
 
 
 # REGRESSIONE PER TROVARE tau SULLE SINGOLE SCARICHE

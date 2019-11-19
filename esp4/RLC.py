@@ -4,9 +4,10 @@ from matplotlib import pyplot as plt
 import os
 import sys
 import numpy as np 
+import csv
 
 enable_plots = True
-
+enable_simulation_plot = False
 # E' possibile indicare da cmd quali grafici visualizzare 
 # indicando un numero da 0 a n_resistenze - 1. Mettere x per non plottare
 grafici_da_plottare = []
@@ -22,10 +23,38 @@ abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
 
+<<<<<<< HEAD
 resistenze_files = ['dati/R1.csv', 'dati/R2.csv'] # un file per ogni resistenza
 resistenze = [Misura(9939, 2), Misura(5.10353e3, 2)] # da cambiare !!
 L = Misura(2.2e-3, 0.01) # da cambiare !!
 C = Misura(48.2e-9, 0.2e-9) # incertezza da cambiare
+=======
+
+# PLOT SIMULAZIONE
+file_lettura = "simulazione.csv"
+myfile = os.path.join(file_lettura)
+freq = np.array([])
+ampl = np.array([])
+if os.path.isfile(myfile):
+    with open(file_lettura, 'r') as csvFile:
+        reader = csv.reader(csvFile)
+        # Per ogni riga del file, leggo i valori frequenza e ampiezza
+        for r in reader:
+            row = [float(r[0]), float(r[1])] 
+            freq = np.append(freq, row[0])
+            ampl = np.append(ampl, row[1])
+else:
+    print("Problema: non trovo il file " + file_lettura)
+if enable_simulation_plot:
+    plt.plot(freq, ampl, '-')
+    plt.show()
+
+'''
+resistenze_files = ['dati/R1.csv'] # un file per ogni resistenza
+resistenze = [Misura(160, 0.02)] # da cambiare !!
+L = Misura(10, 0.01) # da cambiare !!
+C = Misura(35.5e-9, 0.2e-9)
+>>>>>>> ed6f654ec26f71858635e5828989bec592f3f6ba
 
 # Creo l'oggetto dalla classe FDT e leggo i dati dal file nel formato: freq Vout fase Vin
 for R, f in zip(resistenze, resistenze_files):
@@ -50,3 +79,4 @@ for R, f in zip(resistenze, resistenze_files):
         plt.legend()
         plt.grid()
         plt.show()
+        '''

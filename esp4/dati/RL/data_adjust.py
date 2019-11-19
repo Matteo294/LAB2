@@ -1,14 +1,16 @@
 import csv
 import os
 import numpy as np 
-from shutil import copy2
 
-cartella = 'sistemati/' # cartella dove mettere i sistemati
+cartella = '../sistemati/' # cartella dove mettere i sistemati
 
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
+
+rawDataDir = dname + "/grezzi"
+os.chdir(rawDataDir)
 
 onlyfiles = [f for f in os.listdir() if os.path.isfile(os.path.join(f))]
 print(len(onlyfiles))
