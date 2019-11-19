@@ -45,11 +45,11 @@ class Analisi:
         if isinstance(sigmax, (int, float)):
             self.sigmax = np.full(self.xdata.size, sigmax)
         else:
-            self.sigmax = np.asarray(sigmax)
+            self.sigmax = np.array(sigmax)
         if isinstance(sigmay, (int, float)):
             self.sigmay = np.full(self.ydata.size, sigmay)
         else:
-            self.sigmay = np.asarray(sigmay)
+            self.sigmay = np.array(sigmay)
 
     def add_resistenza_tester_ICE(self, input_amp, input_vol):
         ''' input_amp: 1=5A; 2=500mA; 3=50mA; 4=5mA; 5=500uA; 6=50uA
@@ -218,7 +218,8 @@ class PolynomialFit():
         self.n_dati = self.A.shape[0]
         self.n_params = self.A.shape[1]
         self.y = np.array(dati_y)
-        
+        plt.grid() # Griglia
+
     def minimizza(self):
         self.coefficienti = np.dot(np.dot(inv(np.dot(T(self.A), self.A)), T(self.A)), self.y)
 
@@ -230,4 +231,16 @@ class PolynomialFit():
         to_print += "\n"
         return to_print
 
+# Classe molto semplice per memorizzare i dati nel formato misura-incertezza
+class Misura:
+    def __init__(self, value, sigma):
+        if isinstance(value, (int, float)):
+            self.valore = value
+            self.sigma = sigma
+        else:
+            self.valore = np.array(value)
+            if isinstance(sigma, (int, float)):
+                self.sigma = np.full(self.valore.size, sigma)
+            else:
+                self.sigma = np.array(sigma)
 
