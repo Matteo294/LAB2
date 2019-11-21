@@ -245,6 +245,7 @@ class FDT(Analisi):
         self.fase = np.array([])
         self.Vin = np.array([])
 
+
     def leggiDati(self, file_lettura, scale_f=1, scale_Vout=1, scale_Vin=1):
         myfile = os.path.join(file_lettura)
         if os.path.isfile(myfile):
