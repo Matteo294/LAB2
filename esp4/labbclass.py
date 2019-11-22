@@ -279,8 +279,8 @@ class FDT(Analisi):
     # Se auto_f = True, il range di f viene basato sui dati misurati
     def fdt_teorica(self, numeratore=1, denominatore=1):
         fdt = signal.lti(numeratore, denominatore)
-        _w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, n = 1000) 
-        self._f_teo = _w_plot / (2 * np.pi)       
+        self._w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, n = 1000) 
+        self._f_teo = self._w_plot / (2 * np.pi)       
         self._fase_teo = _fase_teo # rad -> deg
     
     # I parametri f e ampiezza servono per plottare un eventuale fdt creata all'esterno
