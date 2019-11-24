@@ -11,10 +11,11 @@ dei dati potrebbe essere comodo ri-cambiare udm)
 
 import numpy as np
 from scipy import stats
+from scipy import signal
 import math
 from matplotlib import pyplot as plt
-from numpy.linalg import inv
-from numpy import matrix as mat
+#from numpy.linalg import inv
+#from numpy import matrix as mat
 import os
 import csv
 
@@ -37,6 +38,8 @@ class Analisi:
                     row = [float(r[swap_xy]), float(r[not swap_xy])] # Leggo le due colonne r[0] e r[1]. Se swap_xy = 1 scambio le due colonne (leggo prima r[1] e poi r[0])
                     self.xdata = np.append(self.xdata, row[0] * scale_x)
                     self.ydata = np.append(self.ydata, row[1] * scale_y)
+        else:
+            print("Problema: non trovo il file " + file_lettura)
 
     def add_sigmas(self, sigmax=0, sigmay=0):
         # Se il parametro passato è una costante, creo un array di costanti. Altrimenti copio l'array.
@@ -97,13 +100,13 @@ class LinearFit(Analisi):
 
     # Fit lineare con una funzione A + Bx
     def reg_lin(self, trasferisci=False):
-        w = 1 / self.sigma_reg**2
-        det = sum(w) * sum(w * (self.xdata**2)) - (sum(w * self.xdata))**2
-        self.A = 1/det * (sum(w*(self.xdata**2)) * sum(w * self.ydata) - sum(w * self.xdata) * sum(w * self.xdata * self.ydata))
-        self.B = 1/det * (sum(w) * sum(w * self.xdata * self.ydata) - sum(w * self.ydata) * sum(w * self.xdata))
-        self.sigma_A = math.sqrt(sum(self.xdata**2 * w) / det)
-        self.sigma_B = math.sqrt(sum(w) / det)
-
+        w = 1/self.sigma_reg
+        delta = sum(w)*sum(self.xdata**2/w) - (sum(self.xdata/w))**2
+        self.A = 1/delta * (sum(self.xdata**2/w)*sum(self.ydata/w) - sum(self.xdata/w)*sum(self.xdata*self.ydata/w))
+        self.B = 1/delta * (sum(w)*sum(self.xdata*self.ydata/w) - sum(self.xdata/w)*sum(self.ydata/w))
+        self.sigma_A = math.sqrt(sum(self.xdata**2 * w) / delta)
+        self.sigma_B = math.sqrt(sum(w) / delta)
+        
         if (trasferisci==True):
             sigma_trasformata = abs(self.B)*self.sigmax
             self.sigma_reg = np.sqrt(self.sigmay**2 + sigma_trasformata**2)
@@ -142,7 +145,7 @@ class LinearFit(Analisi):
         elif n_params == 2:
             residui = self.ydata - (self.B*self.xdata + self.A)
 
-        params = plt.errorbar(self.xdata*xscale, residui, self.sigma_reg, np.zeros(self.xdata.size), 'o', ecolor='#58508d')
+        params = plt.errorbar(self.xdata*xscale, residui, self.sigma_reg, np.zeros(self.xdata.size), 'o', ecolor='red')
 
         self.residui_plot = params[0]
 
@@ -162,7 +165,7 @@ class LinearFit(Analisi):
         plt.grid()
 
     def plotData(self, xlabel='X data', ylabel='Y', title=None, xscale=1, yscale=1):
-        params = plt.errorbar(xscale*self.xdata, yscale*self.ydata, self.sigmay*yscale, self.sigmax*xscale, 'o', ecolor=[0.25, 0.25, 0.25], linewidth=1.8, markersize=8, label='Dati misurati')
+        params = plt.errorbar(xscale*self.xdata, yscale*self.ydata, self.sigmay*yscale, self.sigmax*xscale, 'o', ecolor='red', linewidth=1.8, markersize=8, label='Dati misurati')
         
         # Memorizzo l'oggetto del grafico di modo da potervi accedere dall'esterno
         self.data_plot = params[0]
@@ -171,8 +174,10 @@ class LinearFit(Analisi):
         # Sistemo alcuni parametri
         self.data_plot.set_color('black')
         self.data_plot.set_alpha(0.8)
+
         plt.xlabel(xlabel, fontsize=18)
         plt.ylabel(ylabel, fontsize=18)
+
         if title is not None:
             plt.title(title, fontsize=24)   
 
@@ -181,3 +186,90 @@ class LinearFit(Analisi):
         self.regression_plot, = plt.plot(xrange * xscale, (self.A + self.B*xrange) * yscale, label='Regressione lineare')
         
         plt.grid() # Griglia
+
+# Classe per l'analisi di funzioni di trasferimento
+# In questo caso con x si intende Vin e con y Vout
+class FDT(Analisi):
+
+    def __init__(self):
+        self.Vout = np.array([])
+        self.freq = np.array([])
+        self.fase = np.array([])
+        self.Vin = np.array([])
+
+    def leggiDati(self, file_lettura, scale_f=1, scale_Vout=1, scale_Vin=1):
+        myfile = os.path.join(file_lettura)
+        if os.path.isfile(myfile):
+            with open(file_lettura, 'r') as csvFile:
+                reader = csv.reader(csvFile)
+                # Per ogni riga del file, aggiungo all'array di storage.
+                # Le colonne sono: freq, Vout, fase(°), Vin
+                for r in reader:
+                    row = [float(r[0]), float(r[1]), float(r[2]), float(r[3])]
+                    self.freq = np.append(self.freq, row[0] * scale_f)
+                    self.Vout = np.append(self.Vout, row[1] * scale_Vout)
+                    self.fase = np.append(self.fase, row[2])
+                    self.Vin = np.append(self.Vin, row[3] * scale_Vin)
+        else:
+            print("Problema: non trovo il file " + file_lettura)
+    
+    # Eventualmente è possibile fissare "manualmente" la Vin (comoda se è Vin=cost.)
+    def setVin(self, value):
+        if isinstance(value, (int, float)):
+            self.Vin = np.full(self.freq.size, value)
+        else:
+            self.Vin = np.asarray(value)
+
+    def plotFDT(self):
+        self.dataplot_magnitude, = plt.semilogx(self.freq, self.ydata/self.xdata)
+
+    # numeratore: coefficienti del polinomio a numeratore della fdt potenza decrescente.
+    # denominatore: coefficienti del polinomio a denominatore della fdt potenza decrescente
+    # Esemio: H(w) = (t1*(jw)^2 + t2*(jw) + 5) / (3*(jw) + 4) --> 
+    # --> numeratore = [t1, t2, 5] e denominatore = [3, 4]
+    # Se auto_f = True, il range di f viene basato sui dati misurati
+    def fdt_teorica(self, numeratore=1, denominatore=1):
+        fdt = signal.lti(numeratore, denominatore)
+        _w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, n = 1000) 
+        self._f_teo = _w_plot / (2 * np.pi)       
+        self._fase_teo = _fase_teo # rad -> deg
+    
+    # I parametri f e ampiezza servono per plottare un eventuale fdt creata all'esterno
+    def plot_teorica_ampiezza(self, f=None, ampiezza=None):
+        if f is None:
+            f = self._f_teo
+        if ampiezza is None:
+            ampiezza = self._ampiezza_teo
+
+        self.teoplot_ampiezza, = plt.semilogx(f, ampiezza, linewidth=1.8, color=[0, 0, 0])
+        plt.xlabel("Frequenza [Hz]", fontsize=18)
+        plt.ylabel("Ampiezza [dB]", fontsize=18)
+        plt.title("Diagramma dell'ampiezza della F.D.T.", fontsize=24)
+
+    def plot_teorica_fase(self, f=None, fase=None):
+        if f is None:
+            f = self._f_teo
+        if fase is None:
+            fase = self._fase_teo
+
+        self.teoplot_fase, = plt.semilogx(f, fase, linewidth=1.8, color=[0, 0, 0])
+        plt.xlabel("Frequenza [Hz]", fontsize=18)
+        plt.ylabel("Fase [°]", fontsize=18)
+        plt.title("Diagramma della fase della F.D.T.", fontsize=24)
+
+    def __str__(self):
+        return "Print non ancora implementata"
+
+
+# Classe molto semplice per memorizzare i dati nel formato misura-incertezza
+class Misura:
+    def __init__(self, value, sigma):
+        if isinstance(value, (int, float)):
+            self.valore = value
+            self.sigma = sigma
+        else:
+            self.valore = np.array(value)
+            if isinstance(sigma, (int, float)):
+                self.sigma = np.full(self.valore.size, sigma)
+            else:
+                self.sigma = np.array(sigma)

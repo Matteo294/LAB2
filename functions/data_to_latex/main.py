@@ -53,10 +53,7 @@ for f in files:
         ffile = open(filepath, 'r')
         data = ffile.read()
         print(f)
-        print(data)
-        print('\n')
         # chiamo la funzione definita a inizio programma
-        print(f[:-4])
         latex_writer(data, f[:-4])
         ffile.close()
     except:
