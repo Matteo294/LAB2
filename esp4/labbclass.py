@@ -81,6 +81,28 @@ class Analisi:
             for i in range(input_vol):
                 R_entrata += R_terminali_vol[i]
             self.R_vol = R_parallelo_int + R_entrata
+        
+    # dy/dx = (f(x+dx) - f(x)) / dx
+    def derivata_numerica(self, x, f, sigmax=1, sigmay=1, passo=1):
+        dy = np.array(f[passo:] - f[:-passo])
+        dx = np.array(x[passo:] - x[:-passo])
+        dy_dx = dy / dx
+
+        if isinstance(sigmax, (int, float)):
+            sigma_x = np.full(dy_dx.size + 1, sigmax)
+        else:
+            sigma_x = np.array(sigmax)
+        if isinstance(sigmay, (int, float)):
+            sigma_y = np.full(dy_dx.size + 1, sigmay)
+        else:
+            sigma_y = np.array(sigmay)
+
+        for i in range(dy_dx.size):
+            sigma_dy = np.sqrt(sigma_y[i]**2 + sigma_y[i+1]**2)
+            sigma_dx = np.sqrt(sigma_x[i]**2 + sigma_x[i+1]**2)
+            sigma_dy_dx = np.sqrt( (sigma_dy/dx)**2 + (dy*sigma_dx/(dx)**2)**2 )
+        
+        return (dy_dx, sigma_dy_dx)
 
     # Queste funzioni devono essere implementate nelle sottoclassi. Se non lo si fa, lancio un errore
     def __str__(self):
