@@ -244,6 +244,8 @@ class FDT(Analisi):
         self.freq = np.array([])
         self.fase = np.array([])
         self.Vin = np.array([])
+        self.sigmaVout = np.array([])
+        self.sigmaT = np.array([])
 
 
     def leggiDati(self, file_lettura, scale_f=1, scale_Vout=1, scale_Vin=1):
@@ -252,13 +254,15 @@ class FDT(Analisi):
             with open(file_lettura, 'r') as csvFile:
                 reader = csv.reader(csvFile)
                 # Per ogni riga del file, aggiungo all'array di storage.
-                # Le colonne sono: freq, Vout, fase(°), Vin
+                # Le colonne sono: freq, Vout, fase(°), Vin, dVout, dT (ho saltato dVin, non mi serve per ora)
                 for r in reader:
-                    row = [float(r[0]), float(r[1]), float(r[2]), float(r[3])]
+                    row = [float(r[0]), float(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[6])]
                     self.freq = np.append(self.freq, row[0] * scale_f)
                     self.Vout = np.append(self.Vout, row[1] * scale_Vout)
                     self.fase = np.append(self.fase, row[2])
                     self.Vin = np.append(self.Vin, row[3] * scale_Vin)
+                    self.sigmaVout = np.append(self.sigmaVout, row[4]*8*3/100)    # 3% full scale
+                    self.sigmaT = np.append(self.sigmaT, row[5]*10*3/100)
         else:
             print("Problema: non trovo il file " + file_lettura)
     
@@ -284,27 +288,29 @@ class FDT(Analisi):
         self._fase_teo = _fase_teo # rad -> deg
     
     # I parametri f e ampiezza servono per plottare un eventuale fdt creata all'esterno
-    def plot_teorica_ampiezza(self, f=None, ampiezza=None):
+    def plot_teorica_ampiezza(self, f=None, ampiezza=None, axislabel=True):
         if f is None:
             f = self._f_teo
         if ampiezza is None:
             ampiezza = self._ampiezza_teo
 
-        self.teoplot_ampiezza, = plt.semilogx(f, ampiezza, linewidth=1.8, color=[0, 0, 0])
-        plt.xlabel("Frequenza [Hz]", fontsize=18)
-        plt.ylabel("Ampiezza [dB]", fontsize=18)
-        plt.title("Diagramma dell'ampiezza della F.D.T.", fontsize=24)
+        self.teoplot_ampiezza, = plt.semilogx(f, ampiezza, linewidth=1.8, color='gray', label="Ampiezza teorica")
+        if axislabel:
+            plt.xlabel("Frequenza [Hz]", fontsize=18)
+            plt.ylabel("Ampiezza [dB]", fontsize=18)
+        #plt.title("Diagramma dell'ampiezza della F.D.T.", fontsize=24)
 
-    def plot_teorica_fase(self, f=None, fase=None):
+    def plot_teorica_fase(self, f=None, fase=None, axislabel=True):
         if f is None:
             f = self._f_teo
         if fase is None:
             fase = self._fase_teo
 
-        self.teoplot_fase, = plt.semilogx(f, fase, linewidth=1.8, color=[0, 0, 0])
-        plt.xlabel("Frequenza [Hz]", fontsize=18)
-        plt.ylabel("Fase [°]", fontsize=18)
-        plt.title("Diagramma della fase della F.D.T.", fontsize=24)
+        self.teoplot_fase, = plt.semilogx(f, fase, linewidth=1.8, color='gray', label="Fase teorica")
+        if axislabel:
+            plt.xlabel("Frequenza [Hz]", fontsize=18)
+            plt.ylabel("Fase [°]", fontsize=18)
+        #plt.title("Diagramma della fase della F.D.T.", fontsize=24)
 
 
 
@@ -324,3 +330,19 @@ class Misura:
                 self.sigma = np.full(self.valore.size, sigma)
             else:
                 self.sigma = np.array(sigma)
+
+# funzione per fare una generica regressione lineare
+def regressione(ydata, xdata, sigmay, sigmax, trasferisci=True):
+    w = 1/sigmay**2
+    delta = sum(w)*sum(xdata**2*w) - (sum(xdata*w))**2
+    A = 1/delta * (sum(xdata**2*w)*sum(ydata*w) - sum(xdata*w)*sum(xdata*ydata*w))
+    B = 1/delta * (sum(w)*sum(xdata*ydata*w) - sum(xdata*w)*sum(ydata*w))
+    sigma_A = math.sqrt(1/delta * sum(xdata**2*w))
+    sigma_B = math.sqrt(1/delta * sum(w))
+    
+    if (trasferisci):
+        sigma_trasformata = abs(B)*sigmax
+        sigma_regressione = np.sqrt(sigmay**2 + sigma_trasformata**2)
+        A, B, sigma_A, sigma_B = regressione(ydata, xdata, sigma_regressione, sigmax, trasferisci=False)
+
+    return A, B, sigma_A, sigma_B
