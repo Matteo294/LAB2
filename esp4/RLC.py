@@ -3,6 +3,7 @@ from labbclass import Misura
 from labbclass import regressione
 from matplotlib import pyplot as plt 
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 import os
 import sys
 import numpy as np 
@@ -98,26 +99,39 @@ for R, f in zip(resistenze, resistenze_files):
     print(rlc.f_ris_regressione)
     
     if enable_plots and resistenze.index(R) in grafici_da_plottare:
+        # INCERTEZZE ERRORBAR DA CORREGGERE IN ENTRAMBI
+        # Grafico ampiezza  
         plt.subplot(1,2,1)
         rlc.plot_teorica_ampiezza()
-        plt.semilogx(rlc.freq, 20*np.log10(rlc.Vout / rlc.Vin), '.', color=[0.6350, 0.0780, 0.1840], markersize=10, label="Valori sperimentali")
+        plt.errorbar(rlc.freq, 20*np.log10(rlc.Vout / rlc.Vin), 1/(rlc.Vout/rlc.Vin) *rlc.sigmaVout, rlc.sigmaT,'.', ecolor=[0.6350, 0.0780, 0.1840], color=[0.6350, 0.0780, 0.1840], markersize=10,linewidth=1.8,  label="Valori sperimentali")
         plt.plot([rlc.f_ris_teo, rlc.f_ris_teo], [min(rlc._ampiezza_teo), max(rlc._ampiezza_teo)], '--', linewidth=1.8, color=[0.4660, 0.6740, 0.1880], label="Frequenza di risonanza teorica")
         plt.plot([rlc.f_ris_regressione, rlc.f_ris_regressione], [min(rlc._ampiezza_teo), max(rlc._ampiezza_teo)], '--', linewidth=1.8, color=[0, 0.4470, 0.7410], label="Frequenza di risonanza per regressione")
-        
-        plt.legend()
         plt.grid(which='both')
+        primary_ax = plt.gca()
 
+        zoom = inset_axes(primary_ax, loc='upper left', borderpad=3, width="40%", height="45%")
+        plt.sca(zoom)
+        rlc.plot_teorica_ampiezza(axislabel=False)
+        plt.errorbar(rlc.freq, 20*np.log10(rlc.Vout / rlc.Vin), 20*math.log(10)*1/(rlc.Vout/rlc.Vin) *rlc.sigmaVout, rlc.sigmaT,'.', ecolor=[0.6350, 0.0780, 0.1840], color=[0.6350, 0.0780, 0.1840], markersize=10, linewidth=1.5, label="Valori sperimentali")
+        plt.plot([rlc.f_ris_teo, rlc.f_ris_teo], [min(rlc._ampiezza_teo), max(rlc._ampiezza_teo)], '--', linewidth=1.8, color=[0.4660, 0.6740, 0.1880], label="Frequenza di risonanza teorica")
+        plt.plot([rlc.f_ris_regressione, rlc.f_ris_regressione], [min(rlc._ampiezza_teo), max(rlc._ampiezza_teo)], '--', linewidth=1.5, color=[0, 0.4470, 0.7410], label="Frequenza di risonanza per regressione")
+        plt.grid(which='both')
+        zoom.set_xlim(16.5e3, 21e3)
+        zoom.set_ylim(-10, 0)
+        mark_inset(primary_ax, zoom, loc1=2, loc2=4, fc="none", ec="0.5")
 
+        # Grafico fase
         plt.subplot(1,2,2)
         rlc.plot_teorica_fase()
-        plt.plot(rlc.freq, rlc.fase, '.', color=[0.6350, 0.0780, 0.1840], markersize=10, label="Valori sperimentali")
-        plt.plot([rlc.f_ris_teo, rlc.f_ris_teo], [min(rlc._fase_teo), max(rlc._fase_teo)], '--', linewidth=1.8, color=[0.4660, 0.6740, 0.1880], label="Frequenza di risonanza")
+        plt.errorbar(rlc.freq, rlc.fase, rlc.sigmaT, rlc.sigmaT, '.', ecolor=[0.6350, 0.0780, 0.1840], color=[0.6350, 0.0780, 0.1840], markersize=10, linewidth=1.8, label="Valori sperimentali")
+        plt.plot([rlc.f_ris_teo, rlc.f_ris_teo], [min(rlc._fase_teo), max(rlc._fase_teo)], '--', linewidth=1.5, color=[0.4660, 0.6740, 0.1880], label="Frequenza di risonanza")
         plt.plot([rlc.f_ris_regressione, rlc.f_ris_regressione], [min(rlc._fase_teo), max(rlc._fase_teo)], '--', linewidth=1.8, color=[0, 0.4470, 0.7410], label="Frequenza di risonanza per regressione")
-        plt.xlim(1, 1e8)
-        plt.legend()
+        #plt.xlim(1, 1e8)
+        #plt.legend()
         plt.grid(which='both')
 
-        zoom = inset_axes(plt.gca(), loc=1, width="30%", height="40%", borderpad=1)
+        primary_ax = plt.gca()
+        zoom = inset_axes(primary_ax, loc=3, borderpad=3, width="30%", height="40%")
         plt.sca(zoom)
         rlc.plot_teorica_fase(axislabel=False)
         plt.plot(rlc.freq, rlc.fase, '.', color=[0.6350, 0.0780, 0.1840], markersize=10, label="Valori sperimentali")
@@ -125,5 +139,7 @@ for R, f in zip(resistenze, resistenze_files):
         plt.plot([rlc.f_ris_regressione, rlc.f_ris_regressione], [min(rlc._fase_teo), max(rlc._fase_teo)], '--', linewidth=1.8, color=[0, 0.4470, 0.7410], label="Frequenza di risonanza per regressione")
         zoom.set_xlim(16.5e3, 21e3)
         zoom.set_ylim(-20,20)
+        mark_inset(primary_ax, zoom, loc1=2, loc2=4, fc="none", ec="0.5")
+
         plt.grid(which='both')
         plt.show()
