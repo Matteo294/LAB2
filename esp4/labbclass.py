@@ -267,7 +267,11 @@ class FDT(Analisi):
         self.fase = np.array([])
         self.Vin = np.array([])
         self.sigmaVout = np.array([])
+        self.sigmaVin = np.array([])
         self.sigmaT = np.array([])
+        self.sigmaFreq = np.array([])
+        self.sigmaFase = np.array([])
+        self.sigma_ampiezza_dB = np.array([])
 
 
     def leggiDati(self, file_lettura, scale_f=1, scale_Vout=1, scale_Vin=1):
@@ -276,18 +280,23 @@ class FDT(Analisi):
             with open(file_lettura, 'r') as csvFile:
                 reader = csv.reader(csvFile)
                 # Per ogni riga del file, aggiungo all'array di storage.
-                # Le colonne sono: freq, Vout, fase(°), Vin, dVout, dT (ho saltato dVin, non mi serve per ora)
+                # Le colonne sono: freq, Vout, fase(°), Vin, dVout, dVin, dT
                 for r in reader:
-                    row = [float(r[0]), float(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[6])]
+                    row = [float(r[0]), float(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[5]), float(r[6])]
                     self.freq = np.append(self.freq, row[0] * scale_f)
                     self.Vout = np.append(self.Vout, row[1] * scale_Vout)
                     self.fase = np.append(self.fase, row[2])
                     self.Vin = np.append(self.Vin, row[3] * scale_Vin)
                     self.sigmaVout = np.append(self.sigmaVout, row[4]*8*3/100)    # 3% full scale
-                    self.sigmaT = np.append(self.sigmaT, row[5]*10*3/100)
+                    self.sigmaVin = np.append(self.sigmaVin, row[5]*8*3/100)
+                    self.sigmaT = np.append(self.sigmaT, row[6]*10*8*1e-4)
+                    self.sigmaFreq = np.append(self.sigmaFreq, 0.1)
         else:
             print("Problema: non trovo il file " + file_lettura)
-    
+        self.sigma_ampiezza_dB = 20*1/math.log(10) * np.sqrt(self.sigmaVout**2/self.Vout**2 + self.sigmaVin**2/self.Vin**2)
+        self.sigmaFase = self.sigmaT*2*math.pi*self.freq
+
+
     # Eventualmente è possibile fissare "manualmente" la Vin (comoda se è Vin=cost.)
     def setVin(self, value):
         if isinstance(value, (int, float)):
@@ -305,12 +314,12 @@ class FDT(Analisi):
     # Se auto_f = True, il range di f viene basato sui dati misurati
     def fdt_teorica(self, numeratore=1, denominatore=1):
         fdt = signal.lti(numeratore, denominatore)
-        self._w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, n = 1000) 
+        self._w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, n = 10000) 
         self._f_teo = self._w_plot / (2 * np.pi)       
         self._fase_teo = _fase_teo # rad -> deg
     
     # I parametri f e ampiezza servono per plottare un eventuale fdt creata all'esterno
-    def plot_teorica_ampiezza(self, f=None, ampiezza=None, axislabel=True):
+    def plot_teorica_ampiezza(self, f=None, ampiezza=None, axislabel=True, title=""):
         if f is None:
             f = self._f_teo
         if ampiezza is None:
@@ -320,9 +329,9 @@ class FDT(Analisi):
         if axislabel:
             plt.xlabel("Frequenza [Hz]", fontsize=18)
             plt.ylabel("Ampiezza [dB]", fontsize=18)
-        #plt.title("Diagramma dell'ampiezza della F.D.T.", fontsize=24)
+            plt.title(title, fontsize=24)
 
-    def plot_teorica_fase(self, f=None, fase=None, axislabel=True):
+    def plot_teorica_fase(self, f=None, fase=None, axislabel=True, title=""):
         if f is None:
             f = self._f_teo
         if fase is None:
@@ -332,7 +341,7 @@ class FDT(Analisi):
         if axislabel:
             plt.xlabel("Frequenza [Hz]", fontsize=18)
             plt.ylabel("Fase [°]", fontsize=18)
-        #plt.title("Diagramma della fase della F.D.T.", fontsize=24)
+            plt.title(title, fontsize=24)
 
 
 
