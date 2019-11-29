@@ -73,7 +73,6 @@ for j in range(n_resistenze):
                 dT *= 1e-3 / math.sqrt(12)
         scariche[i,j].add_sigmas(sigmay=dV, sigmax=dT)
 
-
 # Ritaglio i primi 200 elementi dell'array e li metto un array provvisorio in _scariche
 _scariche = np.ndarray((5,5), dtype=LinearFit)
 for tau, i in zip(scariche, range(scariche.size)):
@@ -104,19 +103,11 @@ for tau, i in zip(_scariche, range(scariche.size)):
             print(offset)  
         _scariche[i,j].ydata += offset.coefficienti[2]  # Traslo i dati
 
-
-
 # REGRESSIONE PER TROVARE 1/tau SULLE SINGOLE SCARICHE
 for i in range(5):
     for j in range(5):
         _scariche[i,j].reg_lin(trasferisci=True, logy=True)
         _scariche[i,j].chi_quadro(logy=True)
-#print(scariche[0,0].chi_ridotto)
-
-# for i in range(5):
-#     for j in range(5):
-#         if enable_tau_printing:
-#             print(_scariche[i,j].sigmay)
 
 tau_R = LinearFit()                         # per fare la regressione tra 1/tau e 1/R
 
@@ -129,7 +120,6 @@ for j in range(n_resistenze):               # per ogni colonna j, calcolo la med
     tau_R.sigmay = np.append(tau_R.sigmay, np.std(B_colonna)/(n_scariche))       
     tau_R.sigma_reg = tau_R.sigmay
     tau_R.sigmax = np.append(tau_R.sigmax, sigmaR[j])        
-    
 
 tau_R.reg_lin()
 tau_R.chi_quadro()
@@ -138,7 +128,6 @@ if enable_tau_printing:
     print("L = ", 1/tau_R.B, " +- ", 1/tau_R.B**2 * tau_R.sigmaB)
     print("L teorico = ", L_teorico)
     print("R_gen + R_L = ", tau_R.A / tau_R.B, " (teorico 50.5 ohm circa)")
-
 
 if enable_plots:
     tau_R.plotData()
