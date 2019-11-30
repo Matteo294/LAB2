@@ -38,6 +38,7 @@ C = Misura(34.61e-9, 0.2e-9) # incertezza da cambiare
 C_l = Misura(1.335e-10, 0.01e-9)    # incertezza da cambiare
 C_osc = Misura(128.63e-12, 0.02e-12)
 R_osc = 1e5
+C_tot = Misura(C_l.valore + C_osc.valore + C.valore, math.sqrt(C.sigma**2 + C_l.sigma**2 + C_osc.sigma**2))
 # PLOT SIMULAZIONE
 file_lettura = "simulazione.csv"
 myfile = os.path.join(file_lettura)
@@ -85,8 +86,8 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     rlc.leggiDati(f)
     # do in pasto alla fdt il numeratore e denominatore trovati di H
     rlc.fdt_teorica(numeratore=num, denominatore=den)
-    rlc.f_ris_teo = 1/(2*math.pi*math.sqrt(L.valore*(C.valore+C_osc.valore+C_l.valore)))
-    rlc.sigma_f_ris_teo = 
+    rlc.f_ris_teo = 1/(2*math.pi*math.sqrt(L.valore*(C_tot.valore)))
+    rlc.sigma_f_ris_teo = 1/(2*math.pi) * math.sqrt(1/(4*(L.valore*C_tot.valore)**3) * ((L.valore*C_tot.sigma)**2 + (C_tot.valore*L.sigma)**2))
     
 
     # regressione lineare delle fasi attorno alla freq di risonanza
@@ -158,6 +159,6 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
         plt.show()
 
     if enable_data_printing:
-        print("\nResistenza %i \nF ris teorica = %f" %(idx+1, rlc.f_ris_teo))
+        print("\nResistenza %i \nF ris teorica = %f +- %f" %(idx+1, rlc.f_ris_teo, rlc.sigma_f_ris_teo))
         print("F ris sperimentale = %f" %(rlc.f_ris_regressione))
 
