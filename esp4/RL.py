@@ -15,7 +15,7 @@ ndati = 5000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scarich
 # parametri noti
 R_gen = 50
 R_dmm = np.asarray([99.5, 46.75, 99.5+46.75, 99.5*46.75/(99.5+46.75) + 99.13, 99.13+99.5])*1000        
-sigmaR = np.array([11, 10, 15, 6000, 16])
+sigmaR = np.array([11, 10, 15, 60, 16])
 n_scariche = 5
 n_resistenze = 5
 L_teorico = 2e-3 #!!!! mettere
