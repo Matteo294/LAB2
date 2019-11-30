@@ -314,7 +314,7 @@ class FDT(Analisi):
     # Se auto_f = True, il range di f viene basato sui dati misurati
     def fdt_teorica(self, numeratore=1, denominatore=1):
         fdt = signal.lti(numeratore, denominatore)
-        self._w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, n = 10000) 
+        self._w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, w = np.linspace(3e2, 10e5, 10000)) 
         self._f_teo = self._w_plot / (2 * np.pi)       
         self._fase_teo = _fase_teo # rad -> deg
     
@@ -326,10 +326,12 @@ class FDT(Analisi):
             ampiezza = self._ampiezza_teo
 
         self.teoplot_ampiezza, = plt.semilogx(f, ampiezza, linewidth=1.8, color='gray', label="Ampiezza teorica")
+        plt.xlim(1e2, 1e5)
         if axislabel:
             plt.xlabel("Frequenza [Hz]", fontsize=18)
             plt.ylabel("Ampiezza [dB]", fontsize=18)
             plt.title(title, fontsize=24)
+            
 
     def plot_teorica_fase(self, f=None, fase=None, axislabel=True, title=""):
         if f is None:
@@ -338,9 +340,10 @@ class FDT(Analisi):
             fase = self._fase_teo
 
         self.teoplot_fase, = plt.semilogx(f, fase, linewidth=1.8, color='gray', label="Fase teorica")
+        plt.xlim(1e2, 1e5)
         if axislabel:
             plt.xlabel("Frequenza [Hz]", fontsize=18)
-            plt.ylabel("Fase [°]", fontsize=18)
+            plt.ylabel("Sfasamento [°]", fontsize=18)
             plt.title(title, fontsize=24)
 
 
