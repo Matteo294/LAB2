@@ -69,7 +69,7 @@ for tau, i in zip(scariche, range(scariche.size)):
     _scariche[i] = [LinearFit() for R in tau]
 for tau, i in zip(scariche, range(scariche.size)):
     for r, j in zip(tau, range(tau.size)):
-        indici = np.where(r.ydata <= 0)
+        indici = np.where(r.ydata <= 0.1)
         _scariche[i,j].xdata = np.delete(r.xdata, indici)
         _scariche[i,j].sigmax = np.delete(r.sigmax, indici)
         _scariche[i,j].ydata = np.delete(r.ydata, indici)
