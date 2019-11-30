@@ -31,9 +31,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 resistenze_files = ['dati/RLC/R1.csv', 'dati/RLC/R2.csv', 'dati/RLC/R3.csv'] # un file per ogni resistenza
-R_dmm = np.asarray([99.5, 46.75, 99.5+46.75, 99.5*46.75/(99.5+46.75) + 99.13, 99.13+99.5])*1000        
-sigmaR = np.array([11, 10, 15, 6000, 16])
-resistenze = [Misura(valore, sigma) for valore, sigma in zip(R_dmm, sigmaR)]
+resistenze = [Misura(9939, 2), Misura(5.10353e3, 2), Misura(467.34, 0.2)] # da cambiare !!
 L = Misura(2.09e-3, 0.0004) # da cambiare !!
 R_l = Misura(0.5, 0.004)     # mettere più cifre significative
 #C = Misura(34.61e-9, 0.2e-9)
