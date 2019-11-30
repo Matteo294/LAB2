@@ -73,6 +73,9 @@ z_Cosc = 1/(jw*C_osc.valore)
 z_Rosc = R_osc
 z_tot = 1/(1/z_L_tot + 1/z_C + 1/z_Cosc + 1/z_Rosc)
 
+outputf = open("output_dati.csv", 'w')
+outputf.write("Resistenza,\"$f_{ris,teo}$[Hz]\",\"$f_r{ris,exp}$[Hz]\",Larghezza picco teorica [Hz],Larghezza picco sperimentale [Hz]\n")
+
 # Ciclo per calcolare funzione di trasferimento, f_ris teorica e sperimentale, f3dB
 for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     # calcolo la funzione di trasferimento, la separo in numeratore e denominatore e li rendo polinomi
@@ -106,6 +109,8 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     sigma_freq_fasi_vicine_zero = np.array([rlc.sigmaT[i] for i in range(np.size(rlc.fase)) if (abs(rlc.fase[i])<=fase_limite and rlc.freq[i]> 1e3)])
     A,B,sigma_A,sigma_B = regressione(fasi_vicine_zero, freq_fasi_vicine_zero, sigma_fasi_vicine_zero, sigma_freq_fasi_vicine_zero)
     rlc.f_ris_regressione = -A/B
+    rlc.sigma_f_ris_regressione = rlc.f_ris_regressione * math.sqrt((sigma_A/A)**2 + (sigma_B/B)**2)
+
 
     # F3DB PASSA ALTO E PASSA BASSO
     # Le f3db sono a H = max/sqrt(2), trovo i due dati più vicini e interpolo tra loro
@@ -206,9 +211,18 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
 
     if enable_data_printing:
         print("\nResistenza %i \nF ris teorica = %f +- %f" %(idx+1, rlc.f_ris_teo, rlc.sigma_f_ris_teo))
-        print("F ris sperimentale = %f" %(rlc.f_ris_regressione))
-        print("F3db passa alto = %f +- %f " %(rlc.f3db_passaalto.valore, rlc.f3db_passaalto.sigma))
-        print("F3db passa basso = %f +- %f" %(rlc.f3db_passabasso.valore, rlc.f3db_passabasso.sigma))
+        print("F ris sperimentale = %f +- %f" %(rlc.f_ris_regressione, rlc.sigma_f_ris_regressione))
+        # print("F3db passa alto = %f +- %f " %(rlc.f3db_passaalto.valore, rlc.f3db_passaalto.sigma))
+        # print("F3db passa basso = %f +- %f" %(rlc.f3db_passabasso.valore, rlc.f3db_passabasso.sigma))
         print("Larghezza picco = %f +- %f" %(rlc.f3db_passabasso.valore - rlc.f3db_passaalto.valore, math.sqrt(rlc.f3db_passabasso.sigma**2 + rlc.f3db_passaalto.sigma**2)))
         print("Larghezza picco teorica = %f" %(rlc.f_ris_teo/rlc.Q_teorico))
+    
+    outputf.write("${} \\pm{}$,${}\\pm{}$,${} \\pm {}$,${}\\pm 0$,${}\\pm {}$\n".format(R.valore, R.sigma, rlc.f_ris_teo, rlc.sigma_f_ris_teo, rlc.f_ris_regressione, rlc.sigma_f_ris_regressione, rlc.f_ris_teo/rlc.Q_teorico, rlc.f3db_passabasso.valore - rlc.f3db_passaalto.valore, math.sqrt(rlc.f3db_passabasso.sigma**2 + rlc.f3db_passaalto.sigma**2)))
+
+outputf.close()
+    
+
+
+
+
 
