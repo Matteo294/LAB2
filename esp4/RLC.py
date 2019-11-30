@@ -91,6 +91,7 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     rlc.fdt_teorica(numeratore=num, denominatore=den)
     rlc.f_ris_teo = 1/(2*math.pi*math.sqrt(L.valore*C_tot.valore))
     rlc.sigma_f_ris_teo = 1/(2*math.pi) * math.sqrt(1/(4*(L.valore*C_tot.valore)**3) * ((L.valore*C_tot.sigma)**2 + (C_tot.valore*L.sigma)**2))
+    #rlc.sigma_f_ris_teo = 1/np.pi * (C.valore/(2*L.valore*C.valore)**(3/2)*L.sigma + L.valore/(2*L.valore*C.valore)**(3/2)*C.sigma)
     
     # F RIS SPERIMENTALE
     # regressione lineare delle fasi attorno alla freq di risonanza
