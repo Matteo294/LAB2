@@ -14,6 +14,7 @@ from sympy import I, re, im
 
 enable_plots = True
 enable_simulation_plot = False
+enable_data_printing = True
 # E' possibile indicare da cmd quali grafici visualizzare 
 # indicando un numero da 0 a n_resistenze - 1. Mettere x per non plottare
 grafici_da_plottare = []
@@ -30,7 +31,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 resistenze_files = ['dati/RLC/R1.csv', 'dati/RLC/R2.csv', 'dati/RLC/R3.csv'] # un file per ogni resistenza
-resistenze = [Misura(9939, 2), Misura(5.10353e3, 2), Misura(467.34, 0.2)] # da cambiare !!
+resistenze = [Misura(9939, 2), Misura(5.105e3, 2), Misura(467.34, 0.2)] # 5.10353e3
 L = Misura(2.09e-3, 0.01) # da cambiare !!
 R_l = Misura(0.5, 0.01)     # mettere più cifre significative
 C = Misura(34.61e-9, 0.2e-9) # incertezza da cambiare
@@ -85,6 +86,7 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     # do in pasto alla fdt il numeratore e denominatore trovati di H
     rlc.fdt_teorica(numeratore=num, denominatore=den)
     rlc.f_ris_teo = 1/(2*math.pi*math.sqrt(L.valore*(C.valore+C_osc.valore+C_l.valore)))
+    rlc.sigma_f_ris_teo = 
     
 
     # regressione lineare delle fasi attorno alla freq di risonanza
@@ -96,7 +98,7 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     sigma_freq_fasi_vicine_zero = np.array([rlc.sigmaT[i] for i in range(np.size(rlc.fase)) if (abs(rlc.fase[i])<=fase_limite and rlc.freq[i]> 1e3)])
     A,B,sigma_A,sigma_B = regressione(fasi_vicine_zero, freq_fasi_vicine_zero, sigma_fasi_vicine_zero, sigma_freq_fasi_vicine_zero)
     rlc.f_ris_regressione = -A/B
-    print(rlc.f_ris_regressione)
+
     
     if enable_plots and resistenze.index(R) in grafici_da_plottare:
         # INCERTEZZE ERRORBAR DA CORREGGERE IN ENTRAMBI
@@ -154,3 +156,8 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
 
         plt.grid(which='both')
         plt.show()
+
+    if enable_data_printing:
+        print("\nResistenza %i \nF ris teorica = %f" %(idx+1, rlc.f_ris_teo))
+        print("F ris sperimentale = %f" %(rlc.f_ris_regressione))
+
