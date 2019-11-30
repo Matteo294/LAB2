@@ -20,7 +20,7 @@ n_scariche = 5
 n_resistenze = 5
 L_teorico = 2e-3 #!!!! mettere
 
-passo = [50, 50, 50, 50, 50]
+passo = [150, 200, 200, 150, 200] # utile per la derivata numerica (valori scelti osservando i grafici della derivata)
 
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
 abspath = os.path.abspath(__file__)
@@ -109,9 +109,10 @@ for t, i in zip(dati, range(dati.size)):
         tau[j].ydata = np.append(tau[j].ydata, valori)
         tau[j].xdata = np.append(tau[j].xdata, r.ydata[:-passo[i]])
         tau[j].add_sigmas(sigmax=r.sigmay[:-passo[i]], sigmay=sigma)
+        #plt.plot(tau[j].xdata, tau[j].ydata, '.')
+        #plt.show()
         tau[j].reg_lin()
         tau[j].chi_quadro()  
-        print(R_dmm[i] / tau[j].B, r.R_teorica)
         _da_mediare = np.append(_da_mediare, tau[j].B)
 
     tau_R.ydata = np.append(tau_R.ydata, np.mean(_da_mediare))
@@ -127,5 +128,5 @@ tau_R.chi_quadro()
 tau_R.plotData()
 plt.show()
 
-print(f"L = {1/tau_R.B} \u00B1 {tau_R.sigmaB/tau_R.B**2}")
-print(f"Rgen + RL = {tau_R.A/tau_R.B}")
+print(f"L = {-1/tau_R.B} \u00B1 {tau_R.sigmaB/tau_R.B**2}")
+print(f"Rgen + RL = {tau_R.A/tau_R.B} \u00B1 {math.sqrt( (tau_R.sigmaA/tau_R.B)**2 + (tau_R.A*tau_R.sigmaB/tau_R.B**2)**2 )}")
