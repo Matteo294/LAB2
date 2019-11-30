@@ -7,10 +7,8 @@ import os
 import math
 
 # per non far apparire tremila scritte e grafici
-enable_offset_printing = False
-enable_tau_printing = True
-enable_plots = True
-ndati = 5000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scariche invece di scariche !!!!!!!!!!!!!!
+enable_plots = True # Scegliere se visualizzare i grafici
+ndati = 5000 # Utile per selezionare una porzione di dati
 
 # parametri noti
 R_gen = 50
@@ -103,14 +101,11 @@ sigma_y = np.array([])
 for t, i in zip(dati, range(dati.size)):
     tau = [LinearFit() for i in range(t.size)]
     _da_mediare = np.array([])
-    print("\n----------------------------------------------------------------------------------------------------\n")
     for r, j in zip(t, range(t.size)):
         valori, sigma = r.derivata_numerica(r.xdata, r.ydata, sigmax=r.sigmax, sigmay=r.sigmay, passo=passo[i])
         tau[j].ydata = np.append(tau[j].ydata, valori)
         tau[j].xdata = np.append(tau[j].xdata, r.ydata[:-passo[i]])
         tau[j].add_sigmas(sigmax=r.sigmay[:-passo[i]], sigmay=sigma)
-        #plt.plot(tau[j].xdata, tau[j].ydata, '.')
-        #plt.show()
         tau[j].reg_lin()
         tau[j].chi_quadro()  
         _da_mediare = np.append(_da_mediare, tau[j].B)
@@ -125,8 +120,17 @@ sigma_x = np.copy(sigmaR)
 tau_R.add_sigmas(sigmax=sigma_x, sigmay=sigma_y)
 tau_R.reg_lin()
 tau_R.chi_quadro()
-tau_R.plotData()
-plt.show()
+
+if enable_plots:
+
+    plt.subplot(2,1,1)
+    tau_R.plotData(xlabel=r"Resistenza [$\Omega$]", ylabel=r"[$1/\tau$ \t $[\frac{\Omega}{H}]$]")
+
+    plt.subplot(2,1,2)
+    tau_R.residui(xlabel=r"Resistenza [$\Omega$]", ylabel="Residui")
+
+    plt.show()
 
 print(f"L = {-1/tau_R.B} \u00B1 {tau_R.sigmaB/tau_R.B**2}")
 print(f"Rgen + RL = {tau_R.A/tau_R.B} \u00B1 {math.sqrt( (tau_R.sigmaA/tau_R.B)**2 + (tau_R.A*tau_R.sigmaB/tau_R.B**2)**2 )}")
+print(tau_R)

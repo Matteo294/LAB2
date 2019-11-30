@@ -188,6 +188,7 @@ class LinearFit(Analisi):
             self.probabilita_chi = stats.chi2.sf(self.chi_q, x.size - 2)
 
     def residui(self, n_params=2, xlabel='ID Misura', ylabel='Y', title=None, xscale=1, yscale=1):
+       
         if n_params == 1:
             residui = self.B*self.xdata - self.ydata
         elif n_params == 2:
