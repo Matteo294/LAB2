@@ -110,7 +110,7 @@ for t, i in zip(dati, range(dati.size)):
         tau[j].chi_quadro()  
         _da_mediare = np.append(_da_mediare, tau[j].B)
 
-    tau_R.ydata = np.append(tau_R.ydata, np.mean(_da_mediare))
+    tau_R.ydata = np.append(tau_R.ydata, -np.mean(_da_mediare))
     sigma_y = np.append(sigma_y, np.std(_da_mediare) / np.sqrt(5))
     tau_R.xdata = np.append(tau_R.xdata, R_dmm[i])
     del tau 
@@ -124,11 +124,12 @@ tau_R.chi_quadro()
 if enable_plots:
 
     plt.subplot(2,1,1)
-    tau_R.plotData(xlabel=r"Resistenza [$\Omega$]", ylabel=r"[$1/\tau$ \t $[\frac{\Omega}{H}]$]")
+    tau_R.plotData(xlabel=r"Resistenza [$\Omega$]", ylabel=r"$\frac{1}{\tau}$  $[\frac{\Omega}{H}]$")
+    tau_R.data_plot.set_markersize(2)
 
     plt.subplot(2,1,2)
     tau_R.residui(xlabel=r"Resistenza [$\Omega$]", ylabel="Residui")
-
+    tau_R.residui_plot.set_markersize(2)
     plt.show()
 
 print(f"L = {-1/tau_R.B} \u00B1 {tau_R.sigmaB/tau_R.B**2}")
