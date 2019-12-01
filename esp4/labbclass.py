@@ -291,7 +291,7 @@ class FDT(Analisi):
                     self.sigmaVout = np.append(self.sigmaVout, row[4]*8*3/100)    # 3% full scale
                     self.sigmaVin = np.append(self.sigmaVin, row[5]*8*3/100)
                     self.sigmaT = np.append(self.sigmaT, row[6]*10*8*1e-4)
-                    self.sigmaFreq = np.append(self.sigmaFreq, 0.1)
+                    self.sigmaFreq = np.append(self.sigmaFreq, 0.001)
         else:
             print("Problema: non trovo il file " + file_lettura)
         self.sigma_ampiezza_dB = 20*1/math.log(10) * np.sqrt(self.sigmaVout**2/self.Vout**2 + self.sigmaVin**2/self.Vin**2)
