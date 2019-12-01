@@ -272,7 +272,7 @@ class FDT(Analisi):
         self.sigmaT = np.array([])
         self.sigmaFreq = np.array([])
         self.sigmaFase = np.array([])
-        self.sigma_ampiezza_dB = np.array([])
+        self.sigma_amp_dB = np.array([])
 
 
     def leggiDati(self, file_lettura, scale_f=1, scale_Vout=1, scale_Vin=1):
@@ -294,7 +294,7 @@ class FDT(Analisi):
                     self.sigmaFreq = np.append(self.sigmaFreq, 0.001)
         else:
             print("Problema: non trovo il file " + file_lettura)
-        self.sigma_ampiezza_dB = 20*1/math.log(10) * np.sqrt(self.sigmaVout**2/self.Vout**2 + self.sigmaVin**2/self.Vin**2)
+        self.sigma_amp_dB = 20*1/math.log(10) * np.sqrt(self.sigmaVout**2/self.Vout**2 + self.sigmaVin**2/self.Vin**2)
         self.sigmaFase = self.sigmaT*2*math.pi*self.freq
 
 
@@ -315,22 +315,22 @@ class FDT(Analisi):
     # Se auto_f = True, il range di f viene basato sui dati misurati
     def fdt_teorica(self, numeratore=1, denominatore=1):
         fdt = signal.lti(numeratore, denominatore)
-        self._w_plot, self._ampiezza_teo, _fase_teo = signal.bode(fdt, w = np.linspace(3e2, 10e5, 10000)) 
+        self._w_plot, self._amp_teo, _fase_teo = signal.bode(fdt, w = np.linspace(3e2, 10e5, 10000)) 
         self._f_teo = self._w_plot / (2 * np.pi)       
         self._fase_teo = _fase_teo # rad -> deg
     
-    # I parametri f e ampiezza servono per plottare un eventuale fdt creata all'esterno
-    def plot_teorica_ampiezza(self, f=None, ampiezza=None, axislabel=True, title=""):
+    # I parametri f e amp servono per plottare un eventuale fdt creata all'esterno
+    def plot_teorica_amp(self, f=None, amp=None, axislabel=True, title=""):
         if f is None:
             f = self._f_teo
-        if ampiezza is None:
-            ampiezza = self._ampiezza_teo
+        if amp is None:
+            amp = self._amp_teo
 
-        self.teoplot_ampiezza, = plt.semilogx(f, ampiezza, linewidth=1.8, color='gray', label="Ampiezza teorica")
+        self.teoplot_amp, = plt.semilogx(f, amp, linewidth=1.8, color='gray', label="amp teorica")
         plt.xlim(1e2, 1e5)
         if axislabel:
             plt.xlabel("Frequenza [Hz]", fontsize=18)
-            plt.ylabel("Ampiezza [dB]", fontsize=18)
+            plt.ylabel("amp [dB]", fontsize=18)
             plt.title(title, fontsize=24)
             
 
@@ -346,7 +346,6 @@ class FDT(Analisi):
             plt.xlabel("Frequenza [Hz]", fontsize=18)
             plt.ylabel("Sfasamento [°]", fontsize=18)
             plt.title(title, fontsize=24)
-
 
 
     def __str__(self):
@@ -381,3 +380,52 @@ def regressione(ydata, xdata, sigmay, sigmax, trasferisci=True):
         A, B, sigma_A, sigma_B = regressione(ydata, xdata, sigma_regressione, sigmax, trasferisci=False)
 
     return A, B, sigma_A, sigma_B
+
+def interpola(y1, y2, x1, x2):
+    m = (y2-y1)/(x2-x1)
+    q = (x2*y1 - x1*y2)/(x2-x1)
+    return q, m
+
+def findWidth(amp, freq, fris, teorici=False):
+    #sigma_picco = sigma_amp[list(amp).index(picco)]
+    amp_dB = 20*np.log10(amp)
+    amp_3db = 20*np.log10(max(amp)/math.sqrt(2))
+    #sigma_amp_db = 20*1/math.log(10) * 1/amp * sigma_amp
+    
+    
+
+    # passa alto
+    amp_sinistra = amp_dB[np.where(freq < fris)]
+    print(amp_3db)
+    #sigma_amp_sinistra = sigma_amp_db[np.where(freq < fris)]
+    freq_sinistra = freq[np.where(freq < fris)]
+    #sigma_freq_sinistra = sigma_freq[np.where(freq < fris)]
+
+    punto1_passaalto = max(amp_sinistra[np.where(amp_sinistra<=amp_3db)])
+    #punto1_passaalto = punto1_passaalto #Misura(punto1_passaalto, sigma_amp_sinistra[list(amp_sinistra).index(punto1_passaalto)])
+    punto2_passaalto = amp_sinistra[list(amp_sinistra).index(punto1_passaalto)+1] #Misura(amp_sinistra[list(amp_sinistra).index(punto1_passaalto.valore)+1], sigma_amp_sinistra[list(amp_sinistra).index(punto1_passaalto.valore)+1])
+    f1_passaalto = freq_sinistra[list(amp_sinistra).index(punto1_passaalto)] #Misura(freq_sinistra[list(amp_sinistra).index(punto1_passaalto.valore)], sigma_freq_sinistra[list(amp_sinistra).index(punto1_passaalto.valore)])
+    f2_passaalto = freq_sinistra[list(amp_sinistra).index(punto2_passaalto)+1] #Misura(freq_sinistra[list(amp_sinistra).index(punto2_passaalto.valore)+1], sigma_freq_sinistra[list(amp_sinistra).index(punto1_passaalto.valore)+1])
+    #regressione
+    A_alto, B_alto = interpola(punto1_passaalto, punto2_passaalto, f1_passaalto, f2_passaalto)
+    f3db_passaalto = (amp_3db - A_alto)/B_alto
+    sigma_alto = max(f3db_passaalto-f1_passaalto, f2_passaalto - f3db_passaalto)/math.sqrt(12)
+
+    # passa basso
+    amp_destra = amp_dB[np.where(freq > fris)]
+    #sigma_amp_destra = sigma_amp_db[np.where(freq > fris)]
+    freq_destra = freq[np.where(freq > fris)]
+    #sigma_freq_destra = sigma_freq[np.where(freq > fris)]
+
+    punto1_passabasso = max(amp_destra[amp_destra<=amp_3db])
+    #punto1_passabasso = Misura(punto1_passabasso, sigma_amp_destra[list(amp_destra).index(punto1_passabasso)])
+    f1_passabasso = freq_destra[list(amp_destra).index(punto1_passabasso)] #Misura(freq_destra[list(amp_destra).index(punto1_passabasso.valore)], sigma_freq_destra[list(amp_destra).index(punto1_passabasso.valore)])
+    punto2_passabasso = amp_destra[list(amp_destra).index(punto1_passabasso)-1] #Misura(amp_destra[list(amp_destra).index(punto1_passabasso.valore)-1], sigma_amp_destra[list(amp_destra).index(punto1_passabasso.valore)-1])
+    f2_passabasso = freq_destra[list(amp_destra).index(punto2_passabasso)-1] #Misura(freq_destra[list(amp_destra).index(punto2_passabasso.valore)-1], sigma_freq_destra[list(amp_destra).index(punto1_passabasso.valore)-1])
+    #regressione
+    A_basso, B_basso = interpola(min(punto1_passabasso, punto2_passabasso), max(punto1_passabasso, punto2_passabasso), min(f1_passabasso, f2_passabasso), max(f1_passabasso, f2_passabasso))
+    f3db_passabasso = (amp_3db - A_basso)/B_basso
+    sigma_basso = max(f3db_passabasso - f1_passabasso, f2_passabasso - f3db_passabasso)/math.sqrt(12)
+
+    sigmatot = math.sqrt(sigma_alto**2 + sigma_basso**2)
+    return f3db_passabasso - f3db_passaalto, sigmatot
