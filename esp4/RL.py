@@ -13,7 +13,8 @@ ndati = 5000 # Utile per selezionare una porzione di dati
 # parametri noti
 R_gen = 50
 R_dmm = np.array([99.5, 46.75, 99.5+46.75, 99.5*46.75/(99.5+46.75) + 99.13, 99.13+99.5])  
-sigmaR = np.array([11, 10, 15, 6000, 16]) / 1000
+print(R_dmm)
+sigmaR = np.array([0.01, 0.009, 0.01, 0.01, 0.01]) 
 n_scariche = 5
 n_resistenze = 5
 L_teorico = 2e-3 #!!!! mettere
