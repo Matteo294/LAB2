@@ -15,6 +15,7 @@ from sympy import I, re, im
 enable_plots = True
 enable_simulation_plot = False
 enable_data_printing = True
+enable_correzione_non_ohmica = False
 # E' possibile indicare da cmd quali grafici visualizzare 
 # indicando un numero da 0 a n_resistenze - 1. Mettere x per non plottare
 grafici_da_plottare = []
@@ -32,22 +33,21 @@ os.chdir(dname)
 
 resistenze_files = ['dati/RLC/R1.csv', 'dati/RLC/R2.csv', 'dati/RLC/R3.csv'] # un file per ogni resistenza
 resistenze = [Misura(9939, 2), Misura(5.105e3, 2), Misura(467.34, 0.2)]
-L = Misura(2.222e-3, 4e-6) # da cambiare !!
-R_l = Misura(0.5, 0.004)     # mettere più cifre significative
+L = Misura(2.216e-3, 4e-6)      # risultato della regressione
+R_l = Misura(0.606, 0.004)    
 #C = Misura(34.61e-9, 0.2e-9)
 C = Misura(38.43e-9, 0.0624e-9) # risultato della regressione
-C_l = Misura(1.335e-10, 0.01e-9)    # incertezza da cambiare
-C_osc = Misura(128.63e-12, 0.02e-12)
+C_l = Misura(1.26585e-10, 7.986e-12)    
+C_osc = Misura(128.63e-12, 0.02e-12)    
 R_osc = 1e5
 C_tot = Misura(C_l.valore + C_osc.valore + C.valore, math.sqrt(C.sigma**2 + C_l.sigma**2 + C_osc.sigma**2))
-# PLOT SIMULAZIONE
+
+
+# grafico bode teorico fatto da simulatore (in realtà non usato)
 file_lettura = "simulazione.csv"
 myfile = os.path.join(file_lettura)
 freq = np.array([])
 ampl = np.array([])
-
-
-# grafico bode teorico fatto da simulatore (in realtà non usato)
 if os.path.isfile(myfile):
     with open(file_lettura, 'r') as csvFile:
         reader = csv.reader(csvFile)
@@ -65,7 +65,11 @@ if enable_simulation_plot:
 
 # calcolo l'impedenza totale formata dal parallelo di L, C, Osc
 jw = sym.Symbol('jw')   # poi mi serviranno i coefficienti di jw, la metto come variabile
-z_L = jw*L.valore
+if enable_correzione_non_ohmica:
+    d = 0.01
+    z_L = jw*L.valore*(1-I*d)
+else:
+    z_L = jw*L.valore
 z_Cl = 1/(jw*C_l.valore)
 z_L_tot = 1/(1/(z_L + R_l.valore) + 1/z_Cl)
 z_C = 1/(jw*C.valore)
@@ -74,7 +78,7 @@ z_Rosc = R_osc
 z_tot = 1/(1/z_L_tot + 1/z_C + 1/z_Cosc + 1/z_Rosc)
 
 outputf = open("output_dati.csv", 'w')
-outputf.write("Resistenza,\"$f_{ris,teo}$[Hz]\",\"$f_r{ris,exp}$[Hz]\",Larghezza picco teorica [Hz],Larghezza picco sperimentale [Hz]\n")
+outputf.write("Resistenza,\"$f_{ris,teo}$[Hz]\",\"$f_r{ris,exp}$[Hz]\",\\makecell{Valore di \\ picco sperimentale},Larghezza picco teorica [Hz],Larghezza picco sperimentale [Hz]\n")
 
 # Ciclo per calcolare funzione di trasferimento, f_ris teorica e sperimentale, f3dB
 for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
@@ -97,7 +101,7 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     rlc.sigma_f_ris_teo = 1/(2*math.pi) * math.sqrt(1/(4*(L.valore*C_tot.valore)**3) * ((L.valore*C_tot.sigma)**2 + (C_tot.valore*L.sigma)**2))
 
     rlc.Q_teorico = R.valore * C_tot.valore * 2*math.pi * rlc.f_ris_teo
-    #rlc.sigma_f_ris_teo = 1/np.pi * (C.valore/(2*L.valore*C.valore)**(3/2)*L.sigma + L.valore/(2*L.valore*C.valore)**(3/2)*C.sigma)
+    rlc.sigma_Q_teorico = rlc.Q_teorico * 2*math.pi* math.sqrt((R.sigma/R.valore)**2 + (C_tot.sigma/C_tot.valore)**2 + (rlc.sigma_f_ris_teo/rlc.f_ris_teo)**2)
     
     # F RIS SPERIMENTALE
     # regressione lineare delle fasi attorno alla freq di risonanza
@@ -114,14 +118,16 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
 
     # F3DB PASSA ALTO E PASSA BASSO
     # Le f3db sono a H = max/sqrt(2), trovo i due dati più vicini e interpolo tra loro
-
     rlc.ampiezza = rlc.Vout/rlc.Vin
     rlc.sigma_ampiezza = rlc.ampiezza * np.sqrt((rlc.sigmaVout/rlc.Vout)**2 + (rlc.sigmaVin/rlc.Vin)**2)
-    picco = max(rlc.ampiezza)
-    ampiezza_3db = picco/math.sqrt(2)
+    rlc.picco = max(rlc.ampiezza)
+    rlc.sigma_picco = rlc.sigma_ampiezza[list(rlc.ampiezza).index(rlc.picco)]
+
+    rlc.ampiezza_dB = 20*np.log(rlc.Vout/rlc.Vin)
+    ampiezza_3db = 20*np.log(max(rlc.Vout/rlc.Vin)/math.sqrt(2))
     # passa alto
-    ampiezza_sinistra = rlc.ampiezza[np.where(rlc.freq < rlc.f_ris_regressione)]
-    sigma_ampiezza_sinistra = rlc.sigma_ampiezza[np.where(rlc.freq < rlc.f_ris_regressione)]
+    ampiezza_sinistra = rlc.ampiezza_dB[np.where(rlc.freq < rlc.f_ris_regressione)]
+    sigma_ampiezza_sinistra = rlc.sigma_ampiezza_dB[np.where(rlc.freq < rlc.f_ris_regressione)]
     freq_sinistra = rlc.freq[np.where(rlc.freq < rlc.f_ris_regressione)]
     sigma_freq_sinistra = rlc.sigmaFreq[np.where(rlc.freq < rlc.f_ris_regressione)]
 
@@ -133,12 +139,12 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
 
     #regressione
     A_alto, B_alto, sigmaA_alto, sigmaB_alto = regressione(np.array([punto1_passaalto.valore, punto2_passaalto.valore]), np.array([f1_passaalto.valore, f2_passaalto.valore]), np.array([punto1_passaalto.sigma, punto2_passaalto.sigma]), np.array([f1_passaalto.sigma, f2_passaalto.sigma]))
-    rlc.f3db_passaalto = Misura((ampiezza_3db - A_alto)/B_alto, math.sqrt((sigmaA_alto/B_alto)**2 + ((ampiezza_3db-A_alto)*sigmaB_alto/B_alto**2)**2))
+    rlc.f3db_passaalto = Misura((ampiezza_3db - A_alto)/B_alto, math.sqrt((sigmaA_alto/B_alto)**2 + ((ampiezza_3db-A_alto)*sigmaB_alto/B_alto**2)**2)) 
     
 
     # passa basso
-    ampiezza_destra = rlc.ampiezza[np.where(rlc.freq > rlc.f_ris_regressione)]
-    sigma_ampiezza_destra = rlc.sigma_ampiezza[np.where(rlc.freq > rlc.f_ris_regressione)]
+    ampiezza_destra = rlc.ampiezza_dB[np.where(rlc.freq > rlc.f_ris_regressione)]
+    sigma_ampiezza_destra = rlc.sigma_ampiezza_dB[np.where(rlc.freq > rlc.f_ris_regressione)]
     freq_destra = rlc.freq[np.where(rlc.freq > rlc.f_ris_regressione)]
     sigma_freq_destra = rlc.sigmaFreq[np.where(rlc.freq > rlc.f_ris_regressione)]
 
@@ -156,7 +162,7 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     
 
     # GRAFICI: CERCARE DI CAPIRE IL CODICE A PROPRIO RISCHIO E PERICOLO
-    if enable_plots and resistenze.index(R) in grafici_da_plottare:
+    if enable_plots and not enable_correzione_non_ohmica and resistenze.index(R) in grafici_da_plottare:
         # Grafico ampiezza  
         fig = plt.subplot(2,1,1)
         if(resistenze[idx].sigma >= 1):
@@ -183,7 +189,7 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
             zoom.set_xlim(1e4, 3e4)
             zoom.set_ylim(-10, 2)
         else:
-            zoom.set_xlim(16.5e3, 21e3)
+            zoom.set_xlim(1.5e4, 2e4)
             zoom.set_ylim(-15, 0.5)
         plt.grid(which='both')
         mark_inset(primary_ax, zoom, loc1=2, loc2=4, fc="none", ec="0.5")
@@ -209,15 +215,33 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
         plt.grid(which='both')
         plt.show()
 
+    if enable_plots and enable_correzione_non_ohmica and resistenze.index(R) in grafici_da_plottare:
+        if(resistenze[idx].sigma >= 1):
+            plt.suptitle(r'R = %1.f $\Omega$ $\pm$ %1.f $\Omega$' %(resistenze[idx].valore, resistenze[idx].sigma), fontsize=24)
+        else:
+            plt.suptitle(r'R = %.1f $\Omega$ $\pm$ %.1f $\Omega$' %(resistenze[idx].valore, resistenze[idx].sigma), fontsize=24)
+        rlc.plot_teorica_ampiezza()
+        plt.errorbar(rlc.freq, 20*np.log10(rlc.Vout / rlc.Vin), rlc.sigma_ampiezza_dB, rlc.sigmaFreq,'.', ecolor=[0.6350, 0.0780, 0.1840], color=[0.6350, 0.0780, 0.1840], markersize=10,linewidth=1.8,  label="Valori sperimentali")
+        plt.plot([rlc.f_ris_teo, rlc.f_ris_teo], [min(rlc._ampiezza_teo), max(rlc._ampiezza_teo)], '--', linewidth=1.8, color=[0.4660, 0.6740, 0.1880], label="Frequenza di risonanza teorica")
+        plt.plot([rlc.f_ris_regressione, rlc.f_ris_regressione], [min(rlc._ampiezza_teo), max(rlc._ampiezza_teo)], '--', linewidth=1.8, color=[0, 0.4470, 0.7410], label="Frequenza di risonanza per regressione")
+        if (idx==2):
+            plt.xlim(1.5e4, 2e4)
+            plt.ylim(-10, 2)
+        else:
+            plt.xlim(1.5e4, 2e4)
+            plt.ylim(-15, 0.5)
+        plt.grid(which='both')
+        plt.show()
+
     if enable_data_printing:
         print("\nResistenza %i \nF ris teorica = %f +- %f" %(idx+1, rlc.f_ris_teo, rlc.sigma_f_ris_teo))
         print("F ris sperimentale = %f +- %f" %(rlc.f_ris_regressione, rlc.sigma_f_ris_regressione))
         # print("F3db passa alto = %f +- %f " %(rlc.f3db_passaalto.valore, rlc.f3db_passaalto.sigma))
         # print("F3db passa basso = %f +- %f" %(rlc.f3db_passabasso.valore, rlc.f3db_passabasso.sigma))
         print("Larghezza picco = %f +- %f" %(rlc.f3db_passabasso.valore - rlc.f3db_passaalto.valore, math.sqrt(rlc.f3db_passabasso.sigma**2 + rlc.f3db_passaalto.sigma**2)))
-        print("Larghezza picco teorica = %f" %(rlc.f_ris_teo/rlc.Q_teorico))
+        print("Larghezza picco teorica = %f +- %f" %(rlc.f_ris_teo/rlc.Q_teorico, rlc.sigma_Q_teorico))
     
-    outputf.write("${} \\pm{}$,${}\\pm{}$,${} \\pm {}$,${}\\pm 0$,${}\\pm {}$\n".format(R.valore, R.sigma, rlc.f_ris_teo, rlc.sigma_f_ris_teo, rlc.f_ris_regressione, rlc.sigma_f_ris_regressione, rlc.f_ris_teo/rlc.Q_teorico, rlc.f3db_passabasso.valore - rlc.f3db_passaalto.valore, math.sqrt(rlc.f3db_passabasso.sigma**2 + rlc.f3db_passaalto.sigma**2)))
+    outputf.write("${} \\pm{}$,${}\\pm{}$,${} \\pm {}$,${} \\pm {}$,${}\\pm {}$,${}\\pm {}$\n".format(R.valore, R.sigma, rlc.f_ris_teo, rlc.sigma_f_ris_teo, rlc.f_ris_regressione, rlc.sigma_f_ris_regressione, rlc.picco, rlc.sigma_picco, rlc.f_ris_teo/rlc.Q_teorico, rlc.sigma_Q_teorico, rlc.f3db_passabasso.valore - rlc.f3db_passaalto.valore, math.sqrt(rlc.f3db_passabasso.sigma**2 + rlc.f3db_passaalto.sigma**2)))
 
 outputf.close()
     
