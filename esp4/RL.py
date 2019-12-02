@@ -124,13 +124,17 @@ tau_R.chi_quadro()
 
 if enable_plots:
 
-    plt.subplot(2,1,1)
-    tau_R.plotData(xlabel=r"Resistenza [$\Omega$]", ylabel=r"$\frac{1}{\tau}$  $[\frac{\Omega}{H}]$")
-    tau_R.data_plot.set_markersize(2)
+    print(tau_R.xdata)
 
-    plt.subplot(2,1,2)
+    ax1 = plt.subplot(2,1,1)
+    tau_R.plotData(xlabel=r"Resistenza [$\Omega$]", ylabel=r"$\frac{1}{\tau}$  $[\frac{\Omega}{H}]$")
+    tau_R.data_plot.set_markersize(6)
+
+    plt.subplot(2,1,2, sharex=ax1)
     tau_R.residui(xlabel=r"Resistenza [$\Omega$]", ylabel="Residui")
-    tau_R.residui_plot.set_markersize(2)
+    tau_R.residui_plot.set_markersize(6)
+
+    plt.xlim(35, 210)
     plt.show()
 
 print(f"L = {-1/tau_R.B} \u00B1 {tau_R.sigmaB/tau_R.B**2}")

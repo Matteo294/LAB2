@@ -123,8 +123,9 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     rlc.picco = max(rlc.ampiezza)
     rlc.sigma_picco = rlc.sigma_ampiezza[list(rlc.ampiezza).index(rlc.picco)]
 
-    rlc.ampiezza_dB = 20*np.log(rlc.Vout/rlc.Vin)
-    ampiezza_3db = 20*np.log(max(rlc.Vout/rlc.Vin)/math.sqrt(2))
+    rlc.ampiezza_dB = 20*np.log10(rlc.Vout/rlc.Vin)
+    ampiezza_3db = 20*np.log10(max(rlc.Vout/rlc.Vin)/math.sqrt(2))
+    print(f"Ampiezza 3dB {ampiezza_3db}")
     # passa alto
     ampiezza_sinistra = rlc.ampiezza_dB[np.where(rlc.freq < rlc.f_ris_regressione)]
     sigma_ampiezza_sinistra = rlc.sigma_ampiezza_dB[np.where(rlc.freq < rlc.f_ris_regressione)]
@@ -140,6 +141,7 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     #regressione
     A_alto, B_alto, sigmaA_alto, sigmaB_alto = regressione(np.array([punto1_passaalto.valore, punto2_passaalto.valore]), np.array([f1_passaalto.valore, f2_passaalto.valore]), np.array([punto1_passaalto.sigma, punto2_passaalto.sigma]), np.array([f1_passaalto.sigma, f2_passaalto.sigma]))
     rlc.f3db_passaalto = Misura((ampiezza_3db - A_alto)/B_alto, math.sqrt((sigmaA_alto/B_alto)**2 + ((ampiezza_3db-A_alto)*sigmaB_alto/B_alto**2)**2)) 
+    print(sigmaB_alto/B_alto, sigmaA_alto/A_alto)
     
 
     # passa basso
@@ -158,7 +160,9 @@ for R, f, idx in zip(resistenze, resistenze_files, range(len(resistenze))):
     #regressione
     A_basso, B_basso, sigmaA_basso, sigmaB_basso = regressione(np.array([punto1_passabasso.valore, punto2_passabasso.valore]), np.array([f1_passabasso.valore, f2_passabasso.valore]), np.array([punto1_passabasso.sigma, punto2_passabasso.sigma]), np.array([f1_passabasso.sigma, f2_passabasso.sigma]))
     rlc.f3db_passabasso = Misura((ampiezza_3db - A_basso)/B_basso, math.sqrt((sigmaA_basso/B_basso)**2 + ((ampiezza_3db-A_basso)*sigmaB_basso/B_basso**2)**2))
-    
+    print((sigmaA_basso/B_basso))
+    print(sigmaB_basso/B_basso, sigmaA_basso/A_basso)
+    print(B_basso, A_basso)
     
 
     # GRAFICI: CERCARE DI CAPIRE IL CODICE A PROPRIO RISCHIO E PERICOLO

@@ -12,6 +12,7 @@ ndati = 1000 # !!!!!!!!!!!! VALE PER TUTTO IL PROGRAMMA: ovunque ci sia _scarich
 
 C_teo = 35.5e-9
 R_dmm = np.asarray([1.001e3, 99.570e3, 21.73e3, 39.36e3, 9.94e3])
+sigmaR = np.array([0.2, 11, 3, 1, 1])
 
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
 abspath = os.path.abspath(__file__)
@@ -111,8 +112,6 @@ for i in range(5):
 #             print(_scariche[i,j].sigmay)
 
 tau_R = LinearFit()       # per fare la regressione tra 1/tau e 1/R
-sigmaR = 1/1000 * np.array([0.2, 11, 3, 1, 1])
-
 for j in range(5):      # per ogni colonna j, calcolo la media delle B (B=1/tau)
     B_colonna = np.empty(5)   # vettore delle B per ciascun elemento della colonna
     for i in range(5):         # sulla colonna, calcolo la media delle B
@@ -128,8 +127,8 @@ tau_R.reg_lin()
 tau_R.chi_quadro()
 
 if enable_tau_printing:
-    print("Ctot = ", 1/tau_R.B, " +- ", 1/tau_R.B**2 * tau_R.sigmaB)
-
+    print("Cosc = ", 1/tau_R.B, " +- ", 1/tau_R.B**2 * tau_R.sigmaB)
+    print(f"Rosc = {tau_R.B/tau_R.A} \u00B1 {math.sqrt((tau_R.sigmaB/tau_R.A)**2 + (tau_R.sigmaA*tau_R.B/tau_R.A**2)**2)}")
 
 if enable_plots:
     tau_R.plotData()
