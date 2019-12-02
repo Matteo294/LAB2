@@ -203,8 +203,8 @@ class LinearFit(Analisi):
         self.residui_plot.set_alpha(0.8)
         self.residui_plot.set_markersize(8)
         
-        plt.xlabel(xlabel, fontsize=18)
-        plt.ylabel(ylabel, fontsize=18)
+        plt.xlabel(xlabel, fontsize=22)
+        plt.ylabel(ylabel, fontsize=22)
 
         if title is not None:
             plt.title(title, fontsize=24)
@@ -224,8 +224,8 @@ class LinearFit(Analisi):
         self.data_plot.set_color('black')
         self.data_plot.set_alpha(0.8)
 
-        plt.xlabel(xlabel, fontsize=18)
-        plt.ylabel(ylabel, fontsize=18)
+        plt.xlabel(xlabel, fontsize=22)
+        plt.ylabel(ylabel, fontsize=22)
 
         if title is not None:
             plt.title(title, fontsize=24)   
