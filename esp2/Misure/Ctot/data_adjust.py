@@ -1,6 +1,7 @@
 import csv
 import os
 import numpy as np 
+from shutil import copy2
 
 cartella = 'sistemati/' # cartella dove mettere i sistemati
 
