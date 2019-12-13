@@ -12,11 +12,10 @@ os.chdir(dname)
 C = Misura(220e-6, 1e-6) # Incertezza arbitraria
 R3 = Misura(1.0015e-3, 0.1) # Incertezza sulla lettura
 R = Misura(99.653, 0.01) # Incertezza sulla lettura
-da_plottare = []
+da_plottare = [] # Grafici da plottare
 
-
-for grafico in sys,argv[1:]:
-
+for grafico in sys.argv[1:]:
+    da_plottare.append(int(grafico))
 
 
 
@@ -25,8 +24,10 @@ for grafico in sys,argv[1:]:
 soloC = LinearFit()
 soloC.leggiDati('Misure/soloC.csv')
 soloC.add_sigmas(0, 0)
-plt.plot(1/soloC.xdata, soloC.ydata, '.')
-plt.show()
+if 1 in da_plottare:
+    plt.plot(soloC.ydata/soloC.xdata, soloC.ydata, '.')
+    plt.grid()
+    plt.show()
 # ---------------------------------------------------------------------------------------#
 
 
@@ -38,6 +39,8 @@ plt.show()
 zener = LinearFit()
 zener.leggiDati('Misure/zener.csv')
 zener.add_sigmas(0, 0)
-plt.plot(1/zener.xdata, zener.ydata, '.')
-plt.show()
+if 2 in da_plottare:
+    plt.plot(1/zener.xdata, zener.ydata, '.')
+    plt.grid()
+    plt.show()
 # ---------------------------------------------------------------------------------------#
