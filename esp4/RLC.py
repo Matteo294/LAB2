@@ -35,10 +35,11 @@ os.chdir(dname)
 resistenze_files = ['dati/RLC/R1.csv', 'dati/RLC/R2.csv', 'dati/RLC/R3.csv'] # un file per ogni resistenza
 resistenze = [Misura(9939, 2), Misura(5.105e3, 2), Misura(467.34, 0.2)]
 L = Misura(2.216e-3, 4e-6)      # risultato della regressione
-R_l = Misura(0.606, 0.004)    
+R_l = Misura(1.606, 0.004)    
 #C = Misura(34.61e-9, 0.2e-9)
 C = Misura(38.43e-9, 0.0624e-9) # risultato della regressione
-C_l = Misura(1.26585e-10, 7.986e-12)    
+#C_l = Misura(1.26585e-10, 7.986e-12)    
+C_l = Misura(2.7e-10, 7.986e-12)
 C_osc = Misura(128.63e-12, 0.02e-12)    
 R_osc = 1e5
 C_tot = Misura(C_l.valore + C_osc.valore + C.valore, math.sqrt(C.sigma**2 + C_l.sigma**2 + C_osc.sigma**2))
