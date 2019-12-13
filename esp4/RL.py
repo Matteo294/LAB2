@@ -13,7 +13,8 @@ ndati = 5000 # Utile per selezionare una porzione di dati
 # parametri noti
 R_gen = 50
 R_dmm = np.array([99.5, 46.75, 99.5+46.75, 99.5*46.75/(99.5+46.75) + 99.13, 99.13+99.5])  
-sigmaR = np.array([11, 10, 15, 6000, 16]) / 1000
+print(R_dmm)
+sigmaR = np.array([0.01, 0.009, 0.01, 0.01, 0.01]) 
 n_scariche = 5
 n_resistenze = 5
 L_teorico = 2e-3 #!!!! mettere
@@ -123,13 +124,17 @@ tau_R.chi_quadro()
 
 if enable_plots:
 
-    plt.subplot(2,1,1)
-    tau_R.plotData(xlabel=r"Resistenza [$\Omega$]", ylabel=r"$\frac{1}{\tau}$  $[\frac{\Omega}{H}]$")
-    tau_R.data_plot.set_markersize(2)
+    print(tau_R.xdata)
 
-    plt.subplot(2,1,2)
+    ax1 = plt.subplot(2,1,1)
+    tau_R.plotData(xlabel=r"Resistenza [$\Omega$]", ylabel=r"$\frac{1}{\tau}$  $[\frac{\Omega}{H}]$")
+    tau_R.data_plot.set_markersize(6)
+
+    plt.subplot(2,1,2, sharex=ax1)
     tau_R.residui(xlabel=r"Resistenza [$\Omega$]", ylabel="Residui")
-    tau_R.residui_plot.set_markersize(2)
+    tau_R.residui_plot.set_markersize(6)
+
+    plt.xlim(35, 210)
     plt.show()
 
 print(f"L = {-1/tau_R.B} \u00B1 {tau_R.sigmaB/tau_R.B**2}")
