@@ -25,17 +25,19 @@ C = 200e-6
 R = 1020
 tau_C = R*C
 
+Vin = lambda t: V0*np.sin(w*t) # Tensione in ingresso al ponte
+
 # Tensione dopo il ponte. Quando Vin < 2Vd, la tensione in uscita dal ponte è 0
 def Vponte(t):
     V = 0
     if t < t0:
         V = 0
     elif t < (T/2 - t0):
-        V = Vp*np.abs(np.sin(w*t))
+        V = np.abs(Vin(t)) - 2*Vd
     elif t < (T/2 + t0):
         V = 0
     elif t < (T - t0):
-        V = Vp*np.abs(np.sin(w*t))
+        V = np.abs(Vin(t)) - 2*Vd
     return V
 
 def Vc(t):
@@ -44,8 +46,6 @@ def Vc(t):
     else:
         V = Vp*np.exp(-(t-(np.pi/2/w))/tau_C) # Scarica del condensatore
     return V
-    
-Vin = lambda t: V0*np.sin(w*t) # Tensione in ingresso al ponte
 
 def func(t):
     return Vponte(t) - Vc(t)
@@ -62,7 +62,7 @@ delta_t = graetz.risolvi_numericamente(V_vettorizzata, np.pi/w, 3/2*np.pi/w)
 # Print dei risultati
 print("Tempo di scarica: ", delta_t)
 print("Tensione a fine scarica: ",  Vc(delta_t))
-print("Tensione di ripple: ", Vc(np.pi/2/w) - Vc(delta_t))
+print("Tensione di ripple: ", Vc(np.pi/2/w + t0) - Vc(delta_t))
 
 # Grafico cos'è successo
 t = np.linspace(np.pi/2/w + t0, 2*np.pi/w, 1000)
@@ -70,7 +70,7 @@ plt.plot(t, Vponte_vettorizzata(t), label="$V_{ponte}$", linewidth=1.8)
 plt.plot(t, Vc_vettorizzata(t), label="$V_c$", linewidth=1.8)
 plt.plot(t, Vin_vettorizzata(t), label="$V_{in}$", linewidth=1.8)
 plt.plot([delta_t, delta_t], [0, Vc(delta_t)], '--', linewidth=1.8)
-plt.plot([0, 2*np.pi/w], [Vc(np.pi/2/w), Vc(np.pi/2/w)])
+plt.plot([0, 2*np.pi/w], [Vponte(np.pi/2/w + t0), Vponte(np.pi/2/w + t0)])
 plt.plot([0, 2*np.pi/w], [Vc(delta_t), Vc(delta_t)])
 plt.title("Grafico tensioni")
 plt.xlabel("Tempo [s]")
