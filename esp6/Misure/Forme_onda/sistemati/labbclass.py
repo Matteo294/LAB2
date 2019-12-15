@@ -103,17 +103,6 @@ class Analisi:
             sigma_dy_dx = np.sqrt( (sigma_dy/dx)**2 + (dy*sigma_dx/(dx)**2)**2 )
         
         return (dy_dx, sigma_dy_dx)
-    
-    # Tenta di risolvere numericamente un'equazione del tipo f(x)=0. Il parametro func è la funzione che va passato come una funzione o lambda-function.
-    # I parametri a e b sono gli estremi del dominio di ricerca, mentre nsteps è il numero di intervalli in cui viene suddiviso il dominio di ricerca.
-    # Resituisce una variabile (un array) contenente la soluzione (le soluzioni).
-    def risolvi_numericamente(self, func, a, b, nsteps=1000):
-        x = np.linspace(a, b, num=nsteps)
-        f = np.abs(func(x))
-        index = np.where(f == min(f))
-        plt.plot(x, f)
-        plt.show()
-        return x[index]
 
     # Queste funzioni devono essere implementate nelle sottoclassi. Se non lo si fa, lancio un errore
     def __str__(self):

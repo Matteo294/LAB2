@@ -40,7 +40,7 @@ zener = LinearFit()
 zener.leggiDati('Misure/zener.csv')
 zener.add_sigmas(0, 0)
 if 2 in da_plottare:
-    plt.plot(1/zener.xdata, zener.ydata, '.')
+    plt.plot(zener.ydata/zener.xdata, zener.ydata, '.')
     plt.grid()
     plt.show()
 # ---------------------------------------------------------------------------------------#
