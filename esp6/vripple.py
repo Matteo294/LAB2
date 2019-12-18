@@ -1,5 +1,4 @@
-''' Questo script serve per costruire il plot necessario per spiegare le modalità con cui è stata calcolata
-la tensione di ripple, nel circuito del ponte di Graetz, senza diodo zener '''
+''' Questo script serve per calcolare le tensioni di ripple e produrre un grafico per spiegare come si sono calcolate '''
 
 #from sympy import Eq, plot, symbols, solveset, sin, init_printing, Interval
 import math
@@ -81,6 +80,7 @@ graetz = Analisi()
 graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
 print("Resistenze: ", graetz.resistenze, '\n\n')
 graetz.ripple = graetz.leggi_colonna(file_soloC, 3)
+graetz.ripple_teo = np.array([])
 
 for R, i in zip(graetz.resistenze, range(len(graetz.resistenze))):
 
@@ -88,7 +88,8 @@ for R, i in zip(graetz.resistenze, range(len(graetz.resistenze))):
 
     # Risoluzione numerica dell'equazione
     #t0 = graetz.risolvi_numericamente(deltaV_vettorizzata, 0, np.pi/4/w, nsteps=10000) # Tempo al quale Vin(t) = 2Vd
-    print("t0: ", t0)
+    #print("t0: ", t0)
+
     # Risoluzione numerica dell'equazione
     delta_t = graetz.risolvi_numericamente(V_vettorizzata, np.pi/w, 3/2*np.pi/w, nsteps=10000, params=tau_C)
 
@@ -96,15 +97,19 @@ for R, i in zip(graetz.resistenze, range(len(graetz.resistenze))):
     print("Resistenza: ", R)
     print("Tempo di scarica: ", delta_t)
     print("Tensione a fine scarica: ",  Vc(delta_t, tau_C))
-    print("Ripple calcolato: ", Vc(np.pi/2/w + t0, tau_C) - Vc(delta_t, tau_C), "\t Ripple misurato: ", graetz.ripple[i])
+    print("Ripple calcolato: ", Vc(np.pi/2/w + t0, tau_C) - Vc(delta_t, tau_C), "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
 
+    graetz.ripple_teo = np.append(graetz.ripple_teo, Vc(np.pi/2/w + t0, tau_C) - Vc(delta_t, tau_C))
+    
+    # Vanno messe le barre d'errore
     if i in da_plottare:
         # Grafico cos'è successo
         t = np.linspace(np.pi/2/w + t0, 2*np.pi/w, 1000)
-        plt.plot(t, Vponte_vettorizzata(t), label="$V_{ponte}$", linewidth=1.8)
-        plt.plot(t, Vc_vettorizzata(t, tau_C), label="$V_c$", linewidth=1.8)
-        plt.plot(t, Vin_vettorizzata(t), label="$V_{in}$", linewidth=1.8)
-        plt.plot([delta_t, delta_t], [-V0, Vc(delta_t, tau_C)], '--', linewidth=1.8)
+        plt.plot(t, Vponte_vettorizzata(t), label="$V_{ponte}$", linewidth=2, color=[0, 0, 0.9], alpha=0.7)
+        plt.plot(t, Vc_vettorizzata(t, tau_C), label="$V_c$", linewidth=2, color=[1, 0.5, 0], alpha=0.7)
+        plt.plot(t, Vin_vettorizzata(t), label="$V_{in}$", linewidth=2, alpha=0.7, color="gray")
+        plt.plot([delta_t, delta_t], [-V0, Vc(delta_t, tau_C)], '--', linewidth=2, color="gray")
+        plt.plot([delta_t, delta_t], [Vponte(delta_t), V0 - 2*Vd], color="Black", linewidth=2, label='Ripple')
         #plt.plot([0, 2*np.pi/w], [Vponte(np.pi/2/w + t0), Vponte(np.pi/2/w + t0)])
         #plt.plot([0, 2*np.pi/w], [Vc(delta_t, tau_C), Vc(delta_t, tau_C)])
         plt.title("Grafico tensioni")
@@ -115,3 +120,12 @@ for R, i in zip(graetz.resistenze, range(len(graetz.resistenze))):
         plt.show()
     
     print("\n")
+
+plt.semilogx(graetz.resistenze, graetz.ripple, '.',  markersize=16, label="Ripple misurato")
+plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=16, label="Ripple calcolato")
+plt.xlabel(r"Resistenza [$\Omega$]")
+plt.ylabel("Ripple [V]")
+plt.title("Tensioni di ripple")
+plt.legend()
+plt.grid()
+plt.show()
