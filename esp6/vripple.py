@@ -32,8 +32,8 @@ file_zener = 'Misure/zener.csv'
 # Costanti
 Vrms = 7.5 # V efficace all'uscita dal trasformatore
 V0 = Vrms * math.sqrt(2) # Valore di picco
-Vd = 0.7 # Tensione su ciascun diodo
-Vp = V0 - 2*Vd # Valore di picco dopo il ponte (caduta su due diodi)
+Vd = 0.65 # Tensione su ciascun diodo
+Vp = V0 - 2*Vd # Vmax in uscita
 f = 50 # Frequenza
 w = 2*math.pi*f # Pulsazione
 T = 1/f # Periodo
@@ -42,38 +42,27 @@ t0 = np.arcsin(2*Vd/V0) / w
 
 Vin = lambda t: V0*np.sin(w*t) # Tensione in ingresso al ponte
 
-# Tensione dopo il ponte. Quando Vin < 2Vd, la tensione in uscita dal ponte è 0
-def Vponte(t):
-    V = 0
-    if t < t0:
-        V = 0
-    elif t < (T/2 - t0):
-        V = np.abs(Vin(t)) - 2*Vd
-    elif t < (T/2 + t0):
-        V = 0
-    elif t < (T - t0):
-        V = np.abs(Vin(t)) - 2*Vd
-    return V
-
-def Vc(t, tau):
+def Vc(t, R):
     if t < np.pi/2/w:
-        V = Vponte(t)
+        V = 0
     else:
-        V = Vp*np.exp(-(t-(np.pi/2/w))/tau) # Scarica del condensatore
+        V = Vp*np.exp(-(t-(np.pi/2/w))/R*C) # Scarica del condensatore
     return V
 
-# Funzioni ausiliarie comode per la risoluzione numerica delle equazioni
-def func(t, tau):
-    return Vponte(t) - Vc(t, tau)
-def func2(t):
-    return Vin(t) - 2*Vd
+# Curva caratteristica del diodo ricostruita sperimentalmente
+def Vdiodo(i):
+    if i > 0:
+        return 0.9096 + 0.04596*np.log(i)
+    elif i == 0:
+        return 0
+# Funzione ausiliaria per la linea di carico
+func = lambda t, R: Vin_vettorizzata(t) - 32435*Vdiodo_vettorizzata(Vc_vettorizzata(t, R)/R) - Vc_vettorizzata(t, R)/R
 
-V_vettorizzata = np.vectorize(func, [float]) # Questa funzione vettorizza la chiamata della funzione qualora la si dovesse usare per un array di parametri.
-Vponte_vettorizzata = np.vectorize(Vponte, [float])
+# Vettorizzazione le funzioni delle tensioni: utile quando si devono applicare ad un array di valori
 Vc_vettorizzata = np.vectorize(Vc, [float])
 Vin_vettorizzata = np.vectorize(Vin, [float])
-deltaV_vettorizzata = np.vectorize(func2, [float])
-
+Vdiodo_vettorizzata = np.vectorize(Vdiodo, [float])
+func_vettorizzata = np.vectorize(func, [float])
 
 #--------------------------- Inizio analisi -------------------------------------
 graetz = Analisi()
@@ -85,33 +74,26 @@ graetz.ripple_teo = np.array([])
 for R, i in zip(graetz.resistenze, range(len(graetz.resistenze))):
 
     tau_C = R*C
-
+    print(func(np.pi/w, R))
     # Risoluzione numerica dell'equazione
-    #t0 = graetz.risolvi_numericamente(deltaV_vettorizzata, 0, np.pi/4/w, nsteps=10000) # Tempo al quale Vin(t) = 2Vd
-    #print("t0: ", t0)
-
-    # Risoluzione numerica dell'equazione
-    delta_t = graetz.risolvi_numericamente(V_vettorizzata, np.pi/w, 3/2*np.pi/w, nsteps=10000, params=tau_C)
+    t = graetz.risolvi_numericamente(func_vettorizzata, 2*np.pi/w, 5/2*np.pi/w, nsteps=10000, params=R)
+    Vmin = Vc(t, R)
 
     # Print dei risultati
     print("Resistenza: ", R)
-    print("Tempo di scarica: ", delta_t)
-    print("Tensione a fine scarica: ",  Vc(delta_t, tau_C))
-    print("Ripple calcolato: ", Vc(np.pi/2/w + t0, tau_C) - Vc(delta_t, tau_C), "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
+    print("Tensione a fine scarica: ",  Vmin)
+    print("Ripple calcolato: ", Vc(np.pi/2/w + t0, tau_C) - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
 
-    graetz.ripple_teo = np.append(graetz.ripple_teo, Vc(np.pi/2/w + t0, tau_C) - Vc(delta_t, tau_C))
+    graetz.ripple_teo = np.append(graetz.ripple_teo, Vc(np.pi/2/w + t0, tau_C) - Vmin)
     
     # Vanno messe le barre d'errore
     if i in da_plottare:
         # Grafico cos'è successo
         t = np.linspace(np.pi/2/w + t0, 2*np.pi/w, 1000)
-        plt.plot(t, Vponte_vettorizzata(t), label="$V_{ponte}$", linewidth=2, color=[0, 0, 0.9], alpha=0.7)
+        #plt.plot(t, Vponte_vettorizzata(t), label="$V_{ponte}$", linewidth=2, color=[0, 0, 0.9], alpha=0.7)
         plt.plot(t, Vc_vettorizzata(t, tau_C), label="$V_c$", linewidth=2, color=[1, 0.5, 0], alpha=0.7)
         plt.plot(t, Vin_vettorizzata(t), label="$V_{in}$", linewidth=2, alpha=0.7, color="gray")
-        plt.plot([delta_t, delta_t], [-V0, Vc(delta_t, tau_C)], '--', linewidth=2, color="gray")
-        plt.plot([delta_t, delta_t], [Vponte(delta_t), V0 - 2*Vd], color="Black", linewidth=2, label='Ripple')
-        #plt.plot([0, 2*np.pi/w], [Vponte(np.pi/2/w + t0), Vponte(np.pi/2/w + t0)])
-        #plt.plot([0, 2*np.pi/w], [Vc(delta_t, tau_C), Vc(delta_t, tau_C)])
+        plt.plot([t, t], [-V0, Vmin], '--', linewidth=2, color="gray")
         plt.title("Grafico tensioni")
         plt.xlabel("Tempo [s]")
         plt.ylabel("Tensione [V]")

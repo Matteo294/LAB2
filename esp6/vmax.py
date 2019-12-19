@@ -16,7 +16,7 @@ os.chdir(dname)
 # Da terminale si può selezionare se plottare i grafici: 0 -> non plottare, 1 -> plotta
 enable_plots = 0
 if len(sys.argv) > 1:
-    enable_plots = int(argv[1])
+    enable_plots = int(sys.argv[1])
 
 # Impostazioni per i grafici
 plt.rc('text', usetex=True) 
@@ -32,27 +32,33 @@ file_zener = 'Misure/zener.csv'
 # Costanti
 Vrms = 7.5 # V efficace all'uscita dal trasformatore
 V0 = Vrms * math.sqrt(2) # Valore di picco
-Vd = 0.7 # Tensione su ciascun diodo
-Vp = V0 - 2*Vd # Valore di picco dopo il ponte (caduta su due diodi)
 f = 50 # Frequenza
 w = 2*math.pi*f # Pulsazione
 T = 1/f # Periodo
 C = 200e-6
-t0 = np.arcsin(2*Vd/V0) / w
 
 graetz = Analisi()
 graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
-graetz.Vout = graetz.leggi_colonna(file_soloC, 2)
+graetz.Vout = graetz.leggi_colonna(file_soloC, 1)
 graetz.I = graetz.Vout / graetz.resistenze
 
-# !!!!!!!!!! Caratteristica del diodo !!!!!!!!!!
-# # Vdiodo = lambda i: e^i....                          <----------------- # DA INSERIRE!!: vanno passati anche gli altri parametri ma non so quali siano
-# Vdiodo_vettorizzata = np.vectorize(Vdiodo, [float])
+# Caratteristica del diodo
+def Vdiodo(i):
+    if i > 0:
+        return 0.9096 + 0.04596*np.log(i)
+    elif i == 0:
+        return 0
+Vdiodo_vettorizzata = np.vectorize(Vdiodo, [float])
 
-graetz.Vmax = V0 - 2*Vdiodo_vettorizzata(graetz.I)
+# Funzione ausiliaria
+func = lambda V, R: V0 - 2*Vdiodo_vettorizzata(V/R) - V - V/R*10
+func_vettorizzata = np.vectorize(func, [float])
 
-for Vmax, Vout in zip(graetz.Vout, graetz.Vmax):
-    print(f"Vmax: {Vmax} \t Vout: {Vout}") # Aggiungere incertezze
+graetz.Vmax = np.array([])
+for R in graetz.resistenze:
+    graetz.Vmax = np.append(graetz.Vmax, graetz.risolvi_numericamente(func, 5, 12, nsteps=10000, params=R))
+for R, Vout, Vmax in zip(graetz.resistenze, graetz.Vout, graetz.Vmax):
+    print("R: {0:.1f}   \t Vmax: {1:.4f} \t Vout: {2:.4f}".format(R, Vmax, Vout)) 
 
 # Vanno messe le barre d'errore
 if enable_plots:
@@ -61,7 +67,7 @@ if enable_plots:
     plt.xlabel(r"Resistenza [$\Omega$]")
     plt.ylabel("Vmax [V]")
     plt.title("Tensione massima in uscita dal ponte di Graetz")
-    plt.label()
+    plt.legend()
     plt.grid()
     plt.show()
 

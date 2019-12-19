@@ -120,12 +120,13 @@ class Analisi:
     # Tenta di risolvere numericamente un'equazione del tipo f(x)=0. Il parametro func è la funzione che va passato come una funzione o lambda-function.
     # I parametri a e b sono gli estremi del dominio di ricerca, mentre nsteps è il numero di intervalli in cui viene suddiviso il dominio di ricerca.
     # Resituisce una variabile (un array) contenente la soluzione (le soluzioni).
-    def risolvi_numericamente(self, func, a, b, nsteps=1000, params=None):
+    def risolvi_numericamente(self, func, a, b, nsteps=10000, params=None):
         x = np.linspace(a, b, num=nsteps)
         if params is None:
             f = np.abs(func(x))
         else:
             f = np.abs(func(x, params))
+        print("Soluzione equazione: ", f)
         index = np.where(f == min(f))
         #plt.plot(x, f)
         #plt.show()
