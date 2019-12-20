@@ -51,7 +51,7 @@ def Vdiodo(i):
 Vdiodo_vettorizzata = np.vectorize(Vdiodo, [float])
 
 # Funzione ausiliaria
-func = lambda V, R: V0 - 2*Vdiodo_vettorizzata(V/R) - V - V/R*10
+func = lambda V, R: V0 - 2*Vdiodo_vettorizzata(V/R) - V
 func_vettorizzata = np.vectorize(func, [float])
 
 graetz.Vmax = np.array([])

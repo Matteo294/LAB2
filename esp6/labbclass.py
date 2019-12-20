@@ -125,11 +125,11 @@ class Analisi:
         if params is None:
             f = np.abs(func(x))
         else:
+            f = func(x, params)
+            print("OK")
             f = np.abs(func(x, params))
         print("Soluzione equazione: ", f)
         index = np.where(f == min(f))
-        #plt.plot(x, f)
-        #plt.show()
         return x[index]
 
     # Queste funzioni devono essere implementate nelle sottoclassi. Se non lo si fa, lancio un errore

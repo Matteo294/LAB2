@@ -40,13 +40,10 @@ T = 1/f # Periodo
 C = 200e-6
 t0 = np.arcsin(2*Vd/V0) / w
 
-Vin = lambda t: V0*np.sin(w*t) # Tensione in ingresso al ponte
+Vin = lambda t: V0*np.cos(w*t) # Tensione in ingresso al ponte
 
-def Vc(t, R):
-    if t < np.pi/2/w:
-        V = 0
-    else:
-        V = Vp*np.exp(-(t-(np.pi/2/w))/R*C) # Scarica del condensatore
+def Vc(t, R, Vmax):
+    V = Vmax*np.exp(-t/(R*C)) # Scarica del condensatore
     return V
 
 # Curva caratteristica del diodo ricostruita sperimentalmente
@@ -56,7 +53,12 @@ def Vdiodo(i):
     elif i == 0:
         return 0
 # Funzione ausiliaria per la linea di carico
-func = lambda t, R: Vin_vettorizzata(t) - 32435*Vdiodo_vettorizzata(Vc_vettorizzata(t, R)/R) - Vc_vettorizzata(t, R)/R
+# Parametro 1: R, parametro 2: Vmax
+def func(t, param1, param2): 
+    R = param1
+    Vmax = param2
+    print(Vmax)
+    return Vin_vettorizzata(t) - 2*Vdiodo_vettorizzata(Vc_vettorizzata(t, R)/R) - Vc_vettorizzata(t, R, Vmax)/R
 
 # Vettorizzazione le funzioni delle tensioni: utile quando si devono applicare ad un array di valori
 Vc_vettorizzata = np.vectorize(Vc, [float])
@@ -70,21 +72,21 @@ graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
 print("Resistenze: ", graetz.resistenze, '\n\n')
 graetz.ripple = graetz.leggi_colonna(file_soloC, 3)
 graetz.ripple_teo = np.array([])
+graetz.Vmax = graetz.leggi_colonna(file_soloC, 1)
 
-for R, i in zip(graetz.resistenze, range(len(graetz.resistenze))):
+for R, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vmax):
 
     tau_C = R*C
-    print(func(np.pi/w, R))
     # Risoluzione numerica dell'equazione
-    t = graetz.risolvi_numericamente(func_vettorizzata, 2*np.pi/w, 5/2*np.pi/w, nsteps=10000, params=R)
-    Vmin = Vc(t, R)
+    t0 = graetz.risolvi_numericamente(func_vettorizzata, 3/2*np.pi/w, 2*np.pi/w, nsteps=10000, param1=R, param2=Vmax)
+    Vmin = Vc(t0, R, Vmax)
 
     # Print dei risultati
     print("Resistenza: ", R)
     print("Tensione a fine scarica: ",  Vmin)
-    print("Ripple calcolato: ", Vc(np.pi/2/w + t0, tau_C) - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
+    print("Ripple calcolato: ", Vc(t0, R, Vmax) - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
 
-    graetz.ripple_teo = np.append(graetz.ripple_teo, Vc(np.pi/2/w + t0, tau_C) - Vmin)
+    graetz.ripple_teo = np.append(graetz.ripple_teo, Vc(t0, R, Vmax) - Vmin)
     
     # Vanno messe le barre d'errore
     if i in da_plottare:
