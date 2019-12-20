@@ -42,6 +42,15 @@ class Analisi:
                     self.ydata = np.append(self.ydata, row[1] * scale_y)
         else:
             print("Problema: non trovo il file " + file_lettura)
+
+    # Passare i dati sottoforma di colonna, cioè una matrice in cui 
+    # in ogni colonna ho una grandezza diversa
+    def scriviDati(self, file_scrittura, dati):
+        myfile = os.path.join(file_scrittura)
+        with open(file_scrittura, 'w', newline='\n') as csvfile:
+            mywriter = csv.writer(csvfile, delimiter = ',')
+            mywriter.writerows(np.transpose(dati))
+            
     
     # Legge una particolare colonna di dati dal file specificato
     def leggi_colonna(self, file_lettura, colonna, scale=1):
@@ -120,14 +129,14 @@ class Analisi:
     # Tenta di risolvere numericamente un'equazione del tipo f(x)=0. Il parametro func è la funzione che va passato come una funzione o lambda-function.
     # I parametri a e b sono gli estremi del dominio di ricerca, mentre nsteps è il numero di intervalli in cui viene suddiviso il dominio di ricerca.
     # Resituisce una variabile (un array) contenente la soluzione (le soluzioni).
-    def risolvi_numericamente(self, func, a, b, nsteps=10000, params=None):
+    def risolvi_numericamente(self, func, a, b, nsteps=10000, param1=None, param2=None):
         x = np.linspace(a, b, num=nsteps)
-        if params is None:
+        if param1 is None:
             f = np.abs(func(x))
+        elif param2 is None:
+            f = np.abs(func(x, param1))
         else:
-            f = func(x, params)
-            print("OK")
-            f = np.abs(func(x, params))
+            f = np.abs(func(x, param1, param2))
         print("Soluzione equazione: ", f)
         index = np.where(f == min(f))
         return x[index]

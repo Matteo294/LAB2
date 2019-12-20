@@ -28,6 +28,7 @@ plt.rc('font', size=22)
 file_soloC = 'Misure/soloC.csv'
 file_dmm = 'Misure/dmm.csv'
 file_zener = 'Misure/zener.csv'
+file_Vmax_no_zener = 'Vmax_teorica_no_zener.csv'
 
 # Costanti
 Vrms = 7.5 # V efficace all'uscita dal trasformatore
@@ -57,8 +58,7 @@ def Vdiodo(i):
 def func(t, param1, param2): 
     R = param1
     Vmax = param2
-    print(Vmax)
-    return Vin_vettorizzata(t) - 2*Vdiodo_vettorizzata(Vc_vettorizzata(t, R)/R) - Vc_vettorizzata(t, R, Vmax)/R
+    return Vin_vettorizzata(t) - 2*Vdiodo_vettorizzata(Vc_vettorizzata(t, R, Vmax)/R) - Vc_vettorizzata(t, R, Vmax)/R
 
 # Vettorizzazione le funzioni delle tensioni: utile quando si devono applicare ad un array di valori
 Vc_vettorizzata = np.vectorize(Vc, [float])
@@ -72,30 +72,31 @@ graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
 print("Resistenze: ", graetz.resistenze, '\n\n')
 graetz.ripple = graetz.leggi_colonna(file_soloC, 3)
 graetz.ripple_teo = np.array([])
-graetz.Vmax = graetz.leggi_colonna(file_soloC, 1)
+graetz.Vmax = graetz.leggi_colonna(file_Vmax_no_zener, 1)
 
 for R, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vmax):
 
     tau_C = R*C
     # Risoluzione numerica dell'equazione
-    t0 = graetz.risolvi_numericamente(func_vettorizzata, 3/2*np.pi/w, 2*np.pi/w, nsteps=10000, param1=R, param2=Vmax)
+    t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w, np.pi/w, nsteps=10000, param1=R, param2=Vmax)
     Vmin = Vc(t0, R, Vmax)
 
     # Print dei risultati
     print("Resistenza: ", R)
+    print("tempo di scarica: ", t0)
     print("Tensione a fine scarica: ",  Vmin)
-    print("Ripple calcolato: ", Vc(t0, R, Vmax) - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
+    print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
 
-    graetz.ripple_teo = np.append(graetz.ripple_teo, Vc(t0, R, Vmax) - Vmin)
+    graetz.ripple_teo = np.append(graetz.ripple_teo, Vmax - Vmin)
     
     # Vanno messe le barre d'errore
     if i in da_plottare:
         # Grafico cos'è successo
-        t = np.linspace(np.pi/2/w + t0, 2*np.pi/w, 1000)
-        #plt.plot(t, Vponte_vettorizzata(t), label="$V_{ponte}$", linewidth=2, color=[0, 0, 0.9], alpha=0.7)
-        plt.plot(t, Vc_vettorizzata(t, tau_C), label="$V_c$", linewidth=2, color=[1, 0.5, 0], alpha=0.7)
+        t = np.linspace(0, np.pi/w, 1000)
+        plt.plot(t, Vc_vettorizzata(t, R, Vmax), label="$V_c$", linewidth=2, color=[1, 0.5, 0], alpha=0.7)
         plt.plot(t, Vin_vettorizzata(t), label="$V_{in}$", linewidth=2, alpha=0.7, color="gray")
-        plt.plot([t, t], [-V0, Vmin], '--', linewidth=2, color="gray")
+        plt.plot(t, np.abs(Vin_vettorizzata(t)), label="$|V_{in}|$", linewidth=2, alpha=0.7, color=[0.8, 0, 0.1])
+        plt.plot([t0, t0], [-V0, Vmin], '--', linewidth=2, color="gray")
         plt.title("Grafico tensioni")
         plt.xlabel("Tempo [s]")
         plt.ylabel("Tensione [V]")

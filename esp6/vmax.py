@@ -56,9 +56,11 @@ func_vettorizzata = np.vectorize(func, [float])
 
 graetz.Vmax = np.array([])
 for R in graetz.resistenze:
-    graetz.Vmax = np.append(graetz.Vmax, graetz.risolvi_numericamente(func, 5, 12, nsteps=10000, params=R))
+    graetz.Vmax = np.append(graetz.Vmax, graetz.risolvi_numericamente(func, 5, 12, nsteps=10000, param1=R))
 for R, Vout, Vmax in zip(graetz.resistenze, graetz.Vout, graetz.Vmax):
     print("R: {0:.1f}   \t Vmax: {1:.4f} \t Vout: {2:.4f}".format(R, Vmax, Vout)) 
+print(np.array([graetz.resistenze, graetz.Vmax]))
+graetz.scriviDati(file_scrittura='Vmax_teorica_no_zener.csv', dati=np.array([graetz.resistenze, graetz.Vmax]))
 
 # Vanno messe le barre d'errore
 if enable_plots:
