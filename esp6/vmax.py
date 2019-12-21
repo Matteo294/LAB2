@@ -14,7 +14,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 # Da terminale si può selezionare se plottare i grafici: 0 -> non plottare, 1 -> plotta
-enable_plots = 0
+enable_plots = 1
 if len(sys.argv) > 1:
     enable_plots = int(sys.argv[1])
 
@@ -22,7 +22,7 @@ if len(sys.argv) > 1:
 plt.rc('text', usetex=True) 
 plt.rc('font', family='serif')
 plt.rc('text', usetex=True)
-plt.rc('font', size=22)
+plt.rc('font', size=18)
 
 # File delle misure
 file_soloC = 'Misure/soloC.csv'
@@ -64,12 +64,12 @@ graetz.scriviDati(file_scrittura='Vmax_teorica_no_zener.csv', dati=np.array([gra
 
 # Vanno messe le barre d'errore
 if enable_plots:
-    plt.plot(graetz.resistenze, graetz.Vout, '.', label="Vout misurata", linewidth=2.0)
-    plt.plot(graetz.resistenze, graetz.Vmax, '.', label="Vmax calcolata", linewidth=2.0)
-    plt.xlabel(r"Resistenza [$\Omega$]")
-    plt.ylabel("Vmax [V]")
-    plt.title("Tensione massima in uscita dal ponte di Graetz")
-    plt.legend()
+    plt.plot(graetz.Vout/graetz.resistenze, graetz.Vout, '.', label=r"$V^{max}$ misurata", linewidth=2.0)
+    plt.plot(graetz.Vout/graetz.resistenze, graetz.Vmax, '.', label=r"$V^{max}$ calcolata", linewidth=2.0)
+    plt.xlabel(r"$i_L$ [$A$]")
+    plt.ylabel(r"$V^{max}$ [V]")
+    plt.title("Tensione massima in uscita dal circuito")
+    plt.legend(loc='upper right')
     plt.grid()
     plt.show()
 

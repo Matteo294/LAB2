@@ -14,15 +14,16 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 # Da terminale si possono selezionare i grafici da plottare, con numeri da 0 a 9
-da_plottare = []
+da_plottare = [0]
 for nplot in sys.argv[1:]:
     da_plottare.append(int(nplot))
-
+print_risultati = 0
+plot_finale_ripple = 0
 # Impostazioni per i grafici
 plt.rc('text', usetex=True) 
 plt.rc('font', family='serif')
 plt.rc('text', usetex=True)
-plt.rc('font', size=22)
+plt.rc('font', size=18)
 
 # File delle misure
 file_soloC = 'Misure/soloC.csv'
@@ -58,7 +59,7 @@ def Vdiodo(i):
 def func(t, param1, param2): 
     R = param1
     Vmax = param2
-    return Vin_vettorizzata(t) - 2*Vdiodo_vettorizzata(Vc_vettorizzata(t, R, Vmax)/R) - Vc_vettorizzata(t, R, Vmax)/R
+    return np.abs(Vin_vettorizzata(t)) - 2*Vdiodo_vettorizzata(Vc_vettorizzata(t, R, Vmax)/R) - Vc_vettorizzata(t, R, Vmax)
 
 # Vettorizzazione le funzioni delle tensioni: utile quando si devono applicare ad un array di valori
 Vc_vettorizzata = np.vectorize(Vc, [float])
@@ -82,10 +83,11 @@ for R, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.V
     Vmin = Vc(t0, R, Vmax)
 
     # Print dei risultati
-    print("Resistenza: ", R)
-    print("tempo di scarica: ", t0)
-    print("Tensione a fine scarica: ",  Vmin)
-    print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
+    if print_risultati:
+        print("Resistenza: ", R)
+        print("tempo di scarica: ", t0)
+        print("Tensione a fine scarica: ",  Vmin)
+        print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
 
     graetz.ripple_teo = np.append(graetz.ripple_teo, Vmax - Vmin)
     
@@ -94,23 +96,23 @@ for R, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.V
         # Grafico cos'è successo
         t = np.linspace(0, np.pi/w, 1000)
         plt.plot(t, Vc_vettorizzata(t, R, Vmax), label="$V_c$", linewidth=2, color=[1, 0.5, 0], alpha=0.7)
-        plt.plot(t, Vin_vettorizzata(t), label="$V_{in}$", linewidth=2, alpha=0.7, color="gray")
-        plt.plot(t, np.abs(Vin_vettorizzata(t)), label="$|V_{in}|$", linewidth=2, alpha=0.7, color=[0.8, 0, 0.1])
-        plt.plot([t0, t0], [-V0, Vmin], '--', linewidth=2, color="gray")
+        plt.plot(t, np.abs(Vin_vettorizzata(t)) - 2*Vdiodo_vettorizzata(Vc_vettorizzata(t, R, Vmax)/R), label=r"$\left| V_{in}\right| - 2V_D(i(t))$", linewidth=2, alpha=0.7, color="firebrick")
+        plt.plot(t0, Vmin, 'o', fillstyle='full', markersize = 8, color="gray", label=r'$V^{min}$')
         plt.title("Grafico tensioni")
         plt.xlabel("Tempo [s]")
         plt.ylabel("Tensione [V]")
-        plt.legend()
+        plt.legend(loc = 'lower left')
         plt.grid()
         plt.show()
     
     print("\n")
 
-plt.semilogx(graetz.resistenze, graetz.ripple, '.',  markersize=16, label="Ripple misurato")
-plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=16, label="Ripple calcolato")
-plt.xlabel(r"Resistenza [$\Omega$]")
-plt.ylabel("Ripple [V]")
-plt.title("Tensioni di ripple")
-plt.legend()
-plt.grid()
-plt.show()
+if plot_finale_ripple:
+    plt.semilogx(graetz.resistenze, graetz.ripple, '.',  markersize=16, label="Ripple misurato")
+    plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=16, label="Ripple calcolato")
+    plt.xlabel(r"Resistenza [$\Omega$]")
+    plt.ylabel("Ripple [V]")
+    plt.title("Tensioni di ripple")
+    plt.legend()
+    plt.grid()
+    plt.show()
