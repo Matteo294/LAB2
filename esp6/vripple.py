@@ -17,8 +17,8 @@ os.chdir(dname)
 da_plottare = [0]
 for nplot in sys.argv[1:]:
     da_plottare.append(int(nplot))
-print_risultati = 0
-plot_finale_ripple = 0
+print_risultati = True
+plot_finale_ripple = False
 # Impostazioni per i grafici
 plt.rc('text', usetex=True) 
 plt.rc('font', family='serif')
@@ -34,13 +34,10 @@ file_Vmax_no_zener = 'Vmax_teorica_no_zener.csv'
 # Costanti
 Vrms = 7.5 # V efficace all'uscita dal trasformatore
 V0 = Vrms * math.sqrt(2) # Valore di picco
-Vd = 0.65 # Tensione su ciascun diodo
-Vp = V0 - 2*Vd # Vmax in uscita
 f = 50 # Frequenza
 w = 2*math.pi*f # Pulsazione
 T = 1/f # Periodo
 C = 200e-6
-t0 = np.arcsin(2*Vd/V0) / w
 
 Vin = lambda t: V0*np.cos(w*t) # Tensione in ingresso al ponte
 
@@ -70,10 +67,14 @@ func_vettorizzata = np.vectorize(func, [float])
 #--------------------------- Inizio analisi -------------------------------------
 graetz = Analisi()
 graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
-print("Resistenze: ", graetz.resistenze, '\n\n')
 graetz.ripple = graetz.leggi_colonna(file_soloC, 3)
-graetz.ripple_teo = np.array([])
 graetz.Vmax = graetz.leggi_colonna(file_Vmax_no_zener, 1)
+graetz.Vmax_sperimentale = graetz.leggi_colonna(file_soloC, 1)
+
+# Inizializzo gli array di storage
+graetz.ripple_teo = np.array([])
+graetz.dV_teo = np.array([])
+graetz.dV_sperimentale = np.array([])
 
 for R, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vmax):
 
@@ -82,14 +83,21 @@ for R, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.V
     t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w, np.pi/w, nsteps=10000, param1=R, param2=Vmax)
     Vmin = Vc(t0, R, Vmax)
 
+    # Aggiungo i risultati agli array di storage
+    graetz.ripple_teo = np.append(graetz.ripple_teo, Vmax - Vmin)
+    graetz.dV_sperimentale = np.append(graetz.dV_sperimentale, graetz.ripple[i] / graetz.Vmax_sperimentale[i] * 100)
+    graetz.dV_teo = np.append(graetz.dV_teo,  (Vmax - Vmin) / Vmax * 100)
+
     # Print dei risultati
     if print_risultati:
+        print("-----------------------------------------------------------------------------------------------------------------------")
         print("Resistenza: ", R)
+        print("Vmax teorica: ", Vmax)
         print("tempo di scarica: ", t0)
-        print("Tensione a fine scarica: ",  Vmin)
+        print("Tensione teorica a fine scarica: ",  Vmin)
         print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
-
-    graetz.ripple_teo = np.append(graetz.ripple_teo, Vmax - Vmin)
+        print("Ripple percentuale calcolato: ", graetz.dV_teo[i], "%\tRipple percentuale sperimentale: ", graetz.dV_sperimentale[i], "%")
+        print("-----------------------------------------------------------------------------------------------------------------------")
     
     # Vanno messe le barre d'errore
     if i in da_plottare:

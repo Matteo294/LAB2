@@ -137,7 +137,6 @@ class Analisi:
             f = np.abs(func(x, param1))
         else:
             f = np.abs(func(x, param1, param2))
-        print("Soluzione equazione: ", f)
         index = np.where(f == min(f))
         return x[index]
 
