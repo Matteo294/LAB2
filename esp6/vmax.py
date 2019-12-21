@@ -40,6 +40,8 @@ C = 200e-6
 graetz = Analisi()
 graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
 graetz.Vout = graetz.leggi_colonna(file_soloC, 1)
+graetz.sigmaVout = graetz.leggi_colonna(file_soloC,2)
+graetz.sigmaVout = graetz.sigmaVout * 24 / 100
 graetz.I = graetz.Vout / graetz.resistenze
 
 # Caratteristica del diodo
@@ -64,8 +66,8 @@ graetz.scriviDati(file_scrittura='Vmax_teorica_no_zener.csv', dati=np.array([gra
 
 # Vanno messe le barre d'errore
 if enable_plots:
-    plt.plot(graetz.Vout/graetz.resistenze, graetz.Vout, '.', label=r"$V^{max}$ misurata", linewidth=2.0)
-    plt.plot(graetz.Vout/graetz.resistenze, graetz.Vmax, '.', label=r"$V^{max}$ calcolata", linewidth=2.0)
+    plt.errorbar(graetz.Vout/graetz.resistenze, graetz.Vout, yerr=graetz.sigmaVout, marker='.', color = 'royalblue', ecolor = 'lightgray', linestyle='', label=r"$V^{max}$ misurata",linewidth=2.0, markersize=8)
+    plt.plot(graetz.Vout/graetz.resistenze, graetz.Vmax, '.', color = 'orange', label=r"$V^{max}$ calcolata", markersize=8)
     plt.xlabel(r"$i_L$ [$A$]")
     plt.ylabel(r"$V^{max}$ [V]")
     plt.title("Tensione massima in uscita dal circuito")
