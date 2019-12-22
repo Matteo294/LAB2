@@ -17,7 +17,7 @@ os.chdir(dname)
 da_plottare = []
 for nplot in sys.argv[1:]:
     da_plottare.append(int(nplot))
-print_risultati = False
+print_risultati = True
 plot_finale_ripple = True
 
 
@@ -28,9 +28,9 @@ plt.rc('text', usetex=True)
 plt.rc('font', size=18)
 
 # File delle misure
-file_soloC = 'Misure/soloC.csv'
-file_dmm = 'Misure/dmm.csv'
-file_zener = 'Misure/zener.csv'
+file_soloC = '../Misure/soloC.csv'
+file_dmm = '../Misure/dmm.csv'
+file_zener = '../Misure/zener.csv'
 file_Vmax_no_zener = 'Vmax_teorica_no_zener.csv'
 
 # Costanti

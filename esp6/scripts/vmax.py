@@ -42,9 +42,7 @@ B = Misura(4596e-5, 6e-5)
 
 graetz = Analisi()
 graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
-print(graetz.resistenze)
 graetz.sigma_resistenze = graetz.resistenze/100
-print(graetz.sigma_resistenze)
 graetz.Vout = graetz.leggi_colonna(file_soloC, 1)
 graetz.sigmaVout = graetz.leggi_colonna(file_soloC,2)
 graetz.sigmaVout = graetz.sigmaVout * 24 / 100
