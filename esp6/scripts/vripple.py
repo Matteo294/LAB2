@@ -14,11 +14,13 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 # Da terminale si possono selezionare i grafici da plottare, con numeri da 0 a 9
-da_plottare = [0]
+da_plottare = []
 for nplot in sys.argv[1:]:
     da_plottare.append(int(nplot))
-print_risultati = True
-plot_finale_ripple = False
+print_risultati = False
+plot_finale_ripple = True
+
+
 # Impostazioni per i grafici
 plt.rc('text', usetex=True) 
 plt.rc('font', family='serif')
@@ -70,6 +72,8 @@ graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
 graetz.ripple = graetz.leggi_colonna(file_soloC, 3)
 graetz.Vmax = graetz.leggi_colonna(file_Vmax_no_zener, 1)
 graetz.Vmax_sperimentale = graetz.leggi_colonna(file_soloC, 1)
+graetz.sigmaVripple = graetz.leggi_colonna(file_soloC, 2)
+graetz.sigmaVripple = graetz.sigmaVripple * 24/100
 
 # Inizializzo gli array di storage
 graetz.ripple_teo = np.array([])
@@ -112,15 +116,16 @@ for R, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.V
         plt.legend(loc = 'lower left')
         plt.grid()
         plt.show()
-    
-    print("\n")
+        print("\n")
 
 if plot_finale_ripple:
-    plt.semilogx(graetz.resistenze, graetz.ripple, '.',  markersize=16, label="Ripple misurato")
-    plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=16, label="Ripple calcolato")
-    plt.xlabel(r"Resistenza [$\Omega$]")
+    print(graetz.sigmaVripple)
+    print(graetz.ripple)
+    plt.errorbar(graetz.ripple/graetz.resistenze, graetz.ripple, yerr=graetz.sigmaVripple, marker = '.',  markersize=8, ecolor ='lightgray', color='royalblue', linestyle = '', label="Ripple misurato")
+    plt.semilogx(graetz.ripple/graetz.resistenze, graetz.ripple_teo, '.', markersize=8, color = 'orange', label="Ripple calcolato")
+    plt.xlabel(r"$i_L$ [A]")
     plt.ylabel("Ripple [V]")
     plt.title("Tensioni di ripple")
-    plt.legend()
+    plt.legend(loc='upper left')
     plt.grid()
     plt.show()
