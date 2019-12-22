@@ -14,7 +14,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 # Da terminale si può selezionare se plottare i grafici: 0 -> non plottare, 1 -> plotta
-enable_plots = 1
+enable_plots = 0
 if len(sys.argv) > 1:
     enable_plots = int(sys.argv[1])
 
@@ -25,8 +25,8 @@ plt.rc('text', usetex=True)
 plt.rc('font', size=18)
 
 # File delle misure
-file_dmm = 'Misure/dmm.csv'
-file_zener = 'Misure/zener.csv'
+file_dmm = '../Misure/dmm.csv'
+file_zener = '../Misure/zener.csv'
 
 # Costanti
 Vrms = 7.5 # V efficace all'uscita dal trasformatore
@@ -35,6 +35,7 @@ f = 50 # Frequenza
 w = 2*math.pi*f # Pulsazione
 T = 1/f # Periodo
 C = 200e-6
+R_singola = 99.8
 
 graetz = Analisi()
 graetz.resistenze = graetz.leggi_colonna(file_zener, 0)
@@ -50,24 +51,22 @@ def Vdiodo(i):
         return 0
 Vdiodo_vettorizzata = np.vectorize(Vdiodo, [float])
 # caratteristica zener
-# i = (0.01109 +- 0.00214) V + (-1.81110 +- 0.35762)
+# i = (0.35762 +- 0.00214) V + (-1.81110 +- 0.01109)
 def iZener(V):
-    if V < 0:
-        print("C'è un problema, V nello zener deve sempre essere positiva nel ponte di graetz")
-    if V > 0:
-        return 0.01109*V - 1.81110
+    return 0.35762*V - 1.81110
+iZener_vettorizzata = np.vectorize(iZener, [float])
 
 # Funzione ausiliaria
-func = lambda V, R: V0 - 2*Vdiodo_vettorizzata(V/R) - V
+func = lambda V, R: V0 - 2*Vdiodo_vettorizzata(iZener(V) + V/R) - iZener(V)*R_singola - V*R_singola/R - V
 func_vettorizzata = np.vectorize(func, [float])
 
 graetz.Vmax = np.array([])
 for R in graetz.resistenze:
-    graetz.Vmax = np.append(graetz.Vmax, graetz.risolvi_numericamente(func, 5, 12, nsteps=10000, param1=R))
+    graetz.Vmax = np.append(graetz.Vmax, graetz.risolvi_numericamente(func, 5, 6, nsteps=10000, param1=R))
+    print(graetz.Vmax)
 for R, Vout, Vmax in zip(graetz.resistenze, graetz.Vout, graetz.Vmax):
     print("R: {0:.1f}   \t Vmax: {1:.4f} \t Vout: {2:.4f}".format(R, Vmax, Vout)) 
-#print(np.array([graetz.resistenze, graetz.Vmax]))
-graetz.scriviDati(file_scrittura='Vmax_teorica_no_zener.csv', dati=np.array([graetz.resistenze, graetz.Vmax]))
+#graetz.scriviDati(file_scrittura='Vmax_teorica_zener.csv', dati=np.array([graetz.resistenze, graetz.Vmax]))
 
 # Vanno messe le barre d'errore
 if enable_plots:
