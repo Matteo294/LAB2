@@ -49,6 +49,13 @@ def Vdiodo(i):
     elif i == 0:
         return 0
 Vdiodo_vettorizzata = np.vectorize(Vdiodo, [float])
+# caratteristica zener
+# i = (0.01109 +- 0.00214) V + (-1.81110 +- 0.35762)
+def iZener(V):
+    if V < 0:
+        print("C'è un problema, V nello zener deve sempre essere positiva nel ponte di graetz")
+    if V > 0:
+        return 0.01109*V - 1.81110
 
 # Funzione ausiliaria
 func = lambda V, R: V0 - 2*Vdiodo_vettorizzata(V/R) - V
