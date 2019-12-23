@@ -1,5 +1,6 @@
 ''' Questo script serve per calcolare le tensioni di ripple e produrre un grafico per spiegare come si sono calcolate '''
 
+''' >>>>>>>>>>>>>>>> ATTENTION PLEASE: ho sostituito in zener.csv la resistenza +inf con una di valore molto grande per far girare lo script '''
 #from sympy import Eq, plot, symbols, solveset, sin, init_printing, Interval
 import math
 import numpy as np
@@ -54,13 +55,13 @@ R0 = lambda RL: Bz*Rz*RL + Rz + RL
 # Tau scarica condensatore
 tau = lambda RL: C*R0(RL)/(1+Bz*RL)
 
-def Vc(t, RL, Vmax):
-    V = Vmax*np.exp(-t/tau(RL)) - Az*RL/(1 + Bz*RL)*(1 - np.exp(-t/tau(RL)))
+def Vc(t, RL, Vc0):
+    V = Vc0*np.exp(-t/tau(RL)) - Az*RL/(1 + Bz*RL)*(1 - np.exp(-t/tau(RL)))
     return V
 Vc_vettorizzata = np.vectorize(Vc, [float])
 
 def Vout(t, RL):
-    return RL/R0(RL) * Vc(t, RL, Vmax) - Rz*RL/R0(RL)*Az
+    return RL/R0(RL) * Vc(t, RL, Vc0) - Rz*RL/R0(RL)*Az
 Vout_vettorizzata = np.vectorize(Vout, [float])
 
 # Caratteristica del diodo
@@ -80,14 +81,15 @@ iZener_vettorizzata = np.vectorize(iZener, [float])
 # Parametro 1: R, parametro 2: Vmax
 def func(t, param1, param2): 
     RL = param1
-    Vmax = param2
-    return np.abs(Vin_vettorizzata(t)) - 2*Vdiodo_vettorizzata(Vout_vettorizzata(t, RL)/RL + iZener(Vout_vettorizzata(t, RL))) - Vc_vettorizzata(t, RL, Vmax)
+    Vc0 = param2
+    return np.abs(Vin_vettorizzata(t)) - 2*Vdiodo_vettorizzata(Vout_vettorizzata(t, RL)/RL + iZener(Vout_vettorizzata(t, RL))) - Vc_vettorizzata(t, RL, Vc0)
 func_vettorizzata = np.vectorize(func, [float])
 
 #--------------------------- Inizio analisi -------------------------------------
 graetz = Analisi()
 graetz.resistenze = graetz.leggi_colonna(file_zener, 0)
 graetz.ripple = graetz.leggi_colonna(file_zener, 5)
+graetz.Vc0 = graetz.leggi_colonna(file_zener, 3)
 graetz.Vmax = graetz.leggi_colonna(file_Vmax_zener, 1)
 graetz.sigmaVripple = graetz.leggi_colonna(file_zener, 7)
 graetz.sigmaVripple = graetz.sigmaVripple * 24/100
@@ -97,10 +99,10 @@ graetz.ripple_teo = np.array([])
 graetz.dV_teo = np.array([])
 graetz.dV_sperimentale = np.array([])
 
-for RL, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vmax):
+for RL, i, Vc0, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vc0, graetz.Vmax):
 
     # Risoluzione numerica dell'equazione
-    t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w + 0.0005, np.pi/w, nsteps=10000, param1=RL, param2=Vmax)
+    t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w + 0.0005, np.pi/w, nsteps=10000, param1=RL, param2=Vc0)
     Vmin = Vout(t0, RL)
 
     # Aggiungo i risultati agli array di storage
@@ -121,7 +123,7 @@ for RL, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.
     if i in da_plottare:
         # Grafico cos'è successo
         t = np.linspace(0, np.pi/w, 1000)
-        plt.plot(t, Vc_vettorizzata(t, RL, Vmax), label="$V_c$", linewidth=2, color=[1, 0.5, 0], alpha=0.7)
+        plt.plot(t, Vc_vettorizzata(t, RL, Vc0), label="$V_c$", linewidth=2, color=[1, 0.5, 0], alpha=0.7)
         plt.plot(t, np.abs(Vin_vettorizzata(t)) - 2*Vdiodo_vettorizzata(Vout_vettorizzata(t, RL)/RL + iZener(Vout_vettorizzata(t, RL))), label=r"$\left| V_{in}\right| - 2V_D(i(t))$", linewidth=2, alpha=0.7, color="firebrick")
         plt.plot(t0, Vmin, 'o', fillstyle='full', markersize = 8, color="gray", label=r'$V^{min}$')
         plt.title("Grafico tensioni")
