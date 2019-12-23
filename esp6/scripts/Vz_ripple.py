@@ -20,7 +20,6 @@ for nplot in sys.argv[1:]:
 print_risultati = True
 plot_finale_ripple = True
 
-
 # Impostazioni per i grafici
 plt.rc('text', usetex=True) 
 plt.rc('font', family='serif')
@@ -51,14 +50,18 @@ Vin_vettorizzata = np.vectorize(Vin, [float])
 
 # Coefficiente comodo
 R0 = lambda RL: Bz*Rz*RL + Rz + RL
-R0_vettorizzata = np.vectorize(R0)
+
+# Tau scarica condensatore
+tau = lambda RL: C*R0(RL)/(1+Bz*RL)
 
 def Vc(t, RL, Vmax):
-    V = Vmax*np.exp(-t/(RL*C)) - Az*RL/(1 + Bz*RL)*(1 - np.exp(-t/(RL*C)))
+    V = Vmax*np.exp(-t/tau(RL)) - Az*RL/(1 + Bz*RL)*(1 - np.exp(-t/tau(RL)))
     return V
 Vc_vettorizzata = np.vectorize(Vc, [float])
 
-Vout = lambda t, RL: RL/R0(RL) * Vc(t, RL, Vmax) - Rz*RL/R0(RL)*Az
+def Vout(t, RL):
+    print(RL/R0(RL) * Vc(t, RL, Vmax) - Rz*RL/R0(RL)*Az) 
+    return RL/R0(RL) * Vc(t, RL, Vmax) - Rz*RL/R0(RL)*Az
 Vout_vettorizzata = np.vectorize(Vout, [float])
 
 # Caratteristica del diodo
@@ -79,7 +82,7 @@ iZener_vettorizzata = np.vectorize(iZener, [float])
 def func(t, param1, param2): 
     RL = param1
     Vmax = param2
-    return np.abs(Vin_vettorizzata(t)) - 2*Vdiodo_vettorizzata(Vout_vettorizzata(t, RL)/RL) - Vc_vettorizzata(t, RL, Vmax)
+    return np.abs(Vin_vettorizzata(t)) - 2*Vdiodo_vettorizzata(Vout_vettorizzata(t, RL)/RL + iZener(Vout_vettorizzata(t, RL))) - Vc_vettorizzata(t, RL, Vmax)
 func_vettorizzata = np.vectorize(func, [float])
 
 #--------------------------- Inizio analisi -------------------------------------
@@ -97,7 +100,6 @@ graetz.dV_sperimentale = np.array([])
 
 for RL, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vmax):
 
-    tau_C = RL*C
     # Risoluzione numerica dell'equazione
     t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w, np.pi/w, nsteps=10000, param1=RL, param2=Vmax)
     Vmin = Vout(t0, RL)
