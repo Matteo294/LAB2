@@ -66,7 +66,7 @@ for R in graetz.resistenze:
     print(graetz.Vmax)
 for R, Vout, Vmax in zip(graetz.resistenze, graetz.Vout, graetz.Vmax):
     print("R: {0:.1f}   \t Vmax: {1:.4f} \t Vout: {2:.4f}".format(R, Vmax, Vout)) 
-#graetz.scriviDati(file_scrittura='Vmax_teorica_zener.csv', dati=np.array([graetz.resistenze, graetz.Vmax]))
+graetz.scriviDati(file_scrittura='Vmax_teorica_zener.csv', dati=np.array([graetz.resistenze, graetz.Vmax]))
 
 # Vanno messe le barre d'errore
 if enable_plots:
