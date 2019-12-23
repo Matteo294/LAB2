@@ -45,7 +45,7 @@ graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
 graetz.sigma_resistenze = graetz.resistenze/100
 graetz.Vout = graetz.leggi_colonna(file_soloC, 1)
 graetz.sigmaVout = graetz.leggi_colonna(file_soloC,2)
-graetz.sigmaVout = graetz.sigmaVout * 24 / 100
+graetz.sigmaVout = graetz.sigmaVout * 24 / 1600
 
 # Caratteristica del diodo
 def Vdiodo(i):
@@ -67,10 +67,8 @@ for R, dR in zip(graetz.resistenze, graetz.sigma_resistenze):
     graetz.sigma_Vmax = np.append(graetz.sigma_Vmax, 2 * np.sqrt( (A.sigma)**2 + (np.log(VM/R)*B.sigma)**2 + (B.valore/R*dR)**2))
 for R, dR, Vout, dVout, Vmax, dVmax in zip(graetz.resistenze, graetz.sigma_resistenze, graetz.Vout, graetz.sigmaVout, graetz.Vmax, graetz.sigma_Vmax):
     print("R: {0:.1f} \u00B1 {1:.1f}  \t Vmax: {2:.4f} \u00B1 {3:.4f} \t Vout: {4:.4f} \u00B1 {5:.4f}".format(R, dR, Vmax, dVmax, Vout, dVout)) 
-#print(np.array([graetz.resistenze, graetz.Vmax]))
 
 
-# Vanno messe le barre d'errore
 if enable_plots:
     plt.errorbar(graetz.Vout/graetz.resistenze, graetz.Vout, yerr=graetz.sigmaVout, marker='.', color = 'royalblue', ecolor = 'lightgray', linestyle='', label=r"$V^{max}$ misurata",linewidth=2.0, markersize=8)
     plt.errorbar(graetz.Vout/graetz.resistenze, graetz.Vmax, yerr=graetz.sigma_Vmax, marker='.', color = 'orange', linestyle='', label=r"$V^{max}$ calcolata", markersize=8)
@@ -80,4 +78,7 @@ if enable_plots:
     plt.legend(loc='upper right')
     plt.grid()
     plt.show()
+
+    # plt.plot(graetz.Vout/graetz.resistenze, graetz.Vmax - graetz.Vout, '.')
+    # plt.show()
 

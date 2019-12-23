@@ -15,7 +15,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 # Da terminale si possono selezionare i grafici da plottare, con numeri da 0 a 9
-da_plottare = []
+da_plottare = [0]
 for nplot in sys.argv[1:]:
     da_plottare.append(int(nplot))
 print_risultati = True
