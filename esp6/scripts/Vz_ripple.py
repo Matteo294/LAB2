@@ -42,7 +42,7 @@ Rz = 100
 Az = -1.81110
 Bz = 0.35762
 # Coefficienti diodo
-Ad = 9096
+Ad = 0.9096
 Bd = 0.04596
 
 Vin = lambda t: V0*np.cos(w*t) # Tensione in ingresso al ponte
@@ -122,7 +122,7 @@ for RL, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.
         # Grafico cos'è successo
         t = np.linspace(0, np.pi/w, 1000)
         plt.plot(t, Vc_vettorizzata(t, RL, Vmax), label="$V_c$", linewidth=2, color=[1, 0.5, 0], alpha=0.7)
-        plt.plot(t, np.abs(Vin_vettorizzata(t)) - 2*Vdiodo_vettorizzata(Vc_vettorizzata(t, RL, Vmax)/RL), label=r"$\left| V_{in}\right| - 2V_D(i(t))$", linewidth=2, alpha=0.7, color="firebrick")
+        plt.plot(t, np.abs(Vin_vettorizzata(t)) - 2*Vdiodo_vettorizzata(Vout_vettorizzata(t, RL)/RL + iZener(Vout_vettorizzata(t, RL))), label=r"$\left| V_{in}\right| - 2V_D(i(t))$", linewidth=2, alpha=0.7, color="firebrick")
         plt.plot(t0, Vmin, 'o', fillstyle='full', markersize = 8, color="gray", label=r'$V^{min}$')
         plt.title("Grafico tensioni")
         plt.xlabel("Tempo [s]")
