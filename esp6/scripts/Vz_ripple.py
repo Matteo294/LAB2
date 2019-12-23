@@ -39,7 +39,7 @@ T = 1/f # Periodo
 C = 200e-6
 Rz = 100
 # Coefficienti zener
-Az = 1.81110
+Az = -1.81110
 Bz = 0.35762
 # Coefficienti diodo
 Ad = 9096
@@ -60,7 +60,6 @@ def Vc(t, RL, Vmax):
 Vc_vettorizzata = np.vectorize(Vc, [float])
 
 def Vout(t, RL):
-    print(RL/R0(RL) * Vc(t, RL, Vmax) - Rz*RL/R0(RL)*Az) 
     return RL/R0(RL) * Vc(t, RL, Vmax) - Rz*RL/R0(RL)*Az
 Vout_vettorizzata = np.vectorize(Vout, [float])
 
@@ -88,7 +87,7 @@ func_vettorizzata = np.vectorize(func, [float])
 #--------------------------- Inizio analisi -------------------------------------
 graetz = Analisi()
 graetz.resistenze = graetz.leggi_colonna(file_zener, 0)
-graetz.ripple = graetz.leggi_colonna(file_zener, 6)
+graetz.ripple = graetz.leggi_colonna(file_zener, 5)
 graetz.Vmax = graetz.leggi_colonna(file_Vmax_zener, 1)
 graetz.sigmaVripple = graetz.leggi_colonna(file_zener, 7)
 graetz.sigmaVripple = graetz.sigmaVripple * 24/100
@@ -101,7 +100,7 @@ graetz.dV_sperimentale = np.array([])
 for RL, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vmax):
 
     # Risoluzione numerica dell'equazione
-    t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w, np.pi/w, nsteps=10000, param1=RL, param2=Vmax)
+    t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w + 0.0005, np.pi/w, nsteps=10000, param1=RL, param2=Vmax)
     Vmin = Vout(t0, RL)
 
     # Aggiungo i risultati agli array di storage
