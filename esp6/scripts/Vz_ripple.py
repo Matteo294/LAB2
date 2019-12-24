@@ -77,6 +77,9 @@ def iZener(V):
     return Bz*V - Az
 iZener_vettorizzata = np.vectorize(iZener, [float])
 
+def Vzener(iz):
+    return (iz + Az)/Bz
+
 # Funzione ausiliaria per la linea di carico
 # Parametro 1: R, parametro 2: Vmax
 def func(t, param1, param2): 
@@ -102,8 +105,11 @@ graetz.dV_sperimentale = np.array([])
 for RL, i, Vc0, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vc0, graetz.Vmax):
 
     # Risoluzione numerica dell'equazione
-    t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w + 0.0005, np.pi/w, nsteps=10000, param1=RL, param2=Vc0)
-    Vmin = Vout(t0, RL)
+    if math.isinf(RL):
+        Vmin = Vmax
+    else:
+        t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w + 0.0005, np.pi/w, nsteps=10000, param1=RL, param2=Vc0)
+        Vmin = Vout(t0, RL)
 
     # Aggiungo i risultati agli array di storage
     graetz.ripple_teo = np.append(graetz.ripple_teo, Vmax - Vmin)
@@ -135,10 +141,8 @@ for RL, i, Vc0, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), gr
         print("\n")
 
 if plot_finale_ripple:
-    print(graetz.sigmaVripple)
-    print(graetz.ripple)
-    plt.errorbar(graetz.ripple/graetz.resistenze, graetz.ripple, yerr=graetz.sigmaVripple, marker = '.',  markersize=8, ecolor ='lightgray', color='royalblue', linestyle = '', label="Ripple misurato")
-    plt.semilogx(graetz.ripple/graetz.resistenze, graetz.ripple_teo, '.', markersize=8, color = 'orange', label="Ripple calcolato")
+    plt.errorbar(graetz.resistenze, graetz.ripple, yerr=graetz.sigmaVripple, marker = '.',  markersize=8, ecolor ='lightgray', color='royalblue', linestyle = '', label="Ripple misurato")
+    plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=8, color = 'orange', label="Ripple calcolato")
     plt.xlabel(r"$i_L$ [A]")
     plt.ylabel("Ripple [V]")
     plt.title("Tensioni di ripple")
