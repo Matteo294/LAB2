@@ -130,3 +130,7 @@ if plot_finale_ripple:
     plt.grid()
     plt.show()
 
+
+dV_rel = graetz.sigmaVripple/graetz.ripple
+print(f"Incertezza relativa media: {np.mean(dV_rel)}")
+print(f"Incertezze relative: {dV_rel} ")

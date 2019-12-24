@@ -1,6 +1,5 @@
 ''' Questo script serve per calcolare le tensioni di ripple e produrre un grafico per spiegare come si sono calcolate '''
 
-''' >>>>>>>>>>>>>>>> ATTENTION PLEASE: ho sostituito in zener.csv la resistenza +inf con una di valore molto grande per far girare lo script '''
 #from sympy import Eq, plot, symbols, solveset, sin, init_printing, Interval
 import math
 import numpy as np
@@ -99,8 +98,6 @@ graetz.sigmaVripple = graetz.sigmaVripple * 24/100
 
 # Inizializzo gli array di storage
 graetz.ripple_teo = np.array([])
-graetz.dV_teo = np.array([])
-graetz.dV_sperimentale = np.array([])
 
 for RL, i, Vc0, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vc0, graetz.Vmax):
 
@@ -121,7 +118,7 @@ for RL, i, Vc0, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), gr
         print("Vmax teorica: ", Vmax)
         print("tempo di scarica: ", t0)
         print("Tensione teorica a fine scarica: ",  Vmin)
-        print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
+        print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i], "\u00B1", graetz.ripple[i]*0.3) # Aggiungere incertezze
         #print("Ripple percentuale calcolato: ", graetz.dV_teo[i], "%\tRipple percentuale sperimentale: ", graetz.dV_sperimentale[i], "%")
         print("-----------------------------------------------------------------------------------------------------------------------")
     
