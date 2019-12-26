@@ -5,6 +5,7 @@ import math
 import numpy as np
 from matplotlib import pyplot as plt
 from labbclass import Analisi
+from labbclass import LinearFit
 import sys 
 import os
 
@@ -94,10 +95,14 @@ graetz.ripple = graetz.leggi_colonna(file_zener, 5)
 graetz.Vc0 = graetz.leggi_colonna(file_zener, 3)
 graetz.Vmax = graetz.leggi_colonna(file_Vmax_zener, 1)
 graetz.sigmaVripple = graetz.leggi_colonna(file_zener, 6)
-graetz.sigmaVripple = graetz.sigmaVripple * 32/100 *math.sqrt(2)
+graetz.sigmaVripple = graetz.sigmaVripple * 32/100 * math.sqrt(2)
+graetz.rippleC = graetz.leggi_colonna(file_zener, 7)
+graetz.sigma_rippleC = graetz.leggi_colonna(file_zener, 8)
+graetz.sigma_rippleC = math.sqrt(2) * 24/100 * graetz.sigma_rippleC
 
 # Inizializzo gli array di storage
 graetz.ripple_teo = np.array([])
+graetz.rippleC_teo = np.array([])
 
 for RL, i, Vc0, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.Vc0, graetz.Vmax):
 
@@ -107,9 +112,12 @@ for RL, i, Vc0, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), gr
     else:
         t0 = graetz.risolvi_numericamente(func_vettorizzata, 1/2*np.pi/w + 0.0005, np.pi/w, nsteps=10000, param1=RL, param2=Vc0)
         Vmin = Vout(t0, RL)
+        Vcmin = Vc(t0, RL, Vc0)
+        Vcripple = Vc0 - Vcmin
 
     # Aggiungo i risultati agli array di storage
     graetz.ripple_teo = np.append(graetz.ripple_teo, Vmax - Vmin)
+    graetz.rippleC_teo = np.append(graetz.rippleC_teo, Vcripple)
 
     # Print dei risultati
     if print_risultati:
@@ -137,12 +145,31 @@ for RL, i, Vc0, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), gr
         plt.show()
         print("\n")
 
+ripple = LinearFit()
+print(graetz.ripple, graetz.rippleC)
+ripple.ydata = np.delete(graetz.ripple, [4,6])
+ripple.xdata = np.delete(graetz.rippleC, [4, 6])
+ripple.add_sigmas(sigmay=np.delete(graetz.sigmaVripple, [4, 6]), sigmax=np.delete(graetz.sigma_rippleC, [4, 6]))
+ripple.reg_lin()
+ripple.chi_quadro()
+print(f"A: {ripple.A} \u00B1 {ripple.sigmaA}, \t B: {ripple.B} \u00B1 {ripple.sigmaB}")
+
 if plot_finale_ripple:
     plt.errorbar(graetz.resistenze, graetz.ripple, yerr=graetz.sigmaVripple, marker = '.',  markersize=8, ecolor ='gray', color='royalblue', linestyle = '', label="Ripple misurato")
     plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=8, color = 'orange', label="Ripple calcolato")
     plt.xlabel(r"$R_L~[\Omega]$")
     plt.ylabel("Ripple [V]")
     plt.title("Tensioni di ripple")
+    plt.legend(loc='upper right')
+    plt.grid()
+    plt.show()
+
+if plot_finale_ripple:
+    plt.errorbar(graetz.resistenze, graetz.ripple/graetz.rippleC, yerr=graetz.sigma_rippleC, marker = '.',  markersize=16, ecolor ='gray', color=[1, 0.2, 0.2], linestyle = '', label="Rapporto misurato", alpha=0.7, markeredgecolor='gray')
+    plt.semilogx(graetz.resistenze, graetz.ripple_teo/graetz.rippleC_teo, '.', markersize=16, color=[0, 1, 0.4], label="Rapporto calcolato", alpha=0.7, markeredgecolor='gray')
+    plt.xlabel(r"$R_L~[\Omega]$")
+    plt.ylabel(r"$\delta V_{out} / \delta V_C$")
+    plt.title("Rapporto ripple in uscita / ripple sul condensatore")
     plt.legend(loc='upper right')
     plt.grid()
     plt.show()
