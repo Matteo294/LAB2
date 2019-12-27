@@ -107,8 +107,8 @@ graetz.scriviDati(file_scrittura='Vmax_teorica_zener.csv', dati=np.array([graetz
 
 # Vanno messe le barre d'errore
 if enable_plots:
-    plt.errorbar(graetz.Vout/graetz.resistenze, graetz.Vout, yerr = graetz.sigmaVout, marker='.', color = 'royalblue', ecolor = 'lightgray', linestyle='', label=r"$V^{max}$ misurata",linewidth=2.0, markersize=8)
-    plt.semilogx(graetz.Vout/graetz.resistenze, graetz.Vmax, '.',  color='orange', label=r"$V^{max}$ calcolata", markersize=8)
+    plt.errorbar(graetz.Vout/graetz.resistenze, graetz.Vout, yerr = graetz.sigmaVout, marker='.', color = 'royalblue', ecolor = 'gray', linestyle='', label=r"$V^{max}$ misurata",linewidth=2.0, markersize=16, alpha=0.8, markeredgecolor='gray')
+    plt.semilogx(graetz.Vout/graetz.resistenze, graetz.Vmax, '.',  color='orange', label=r"$V^{max}$ calcolata", markersize=16, alpha=0.8, markeredgecolor='gray')
     plt.xlabel(r"$i_L$ [$A$]")
     plt.ylabel(r"$V^{max}$ [V]")
     plt.ylim(4.75,5.6)

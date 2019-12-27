@@ -19,7 +19,8 @@ da_plottare = []
 for nplot in sys.argv[1:]:
     da_plottare.append(int(nplot))
 print_risultati = 0
-plot_finale_ripple = True
+plot_finale_ripple = 1
+plot_finale_rippleC = 0
 
 # Impostazioni per i grafici
 plt.rc('text', usetex=True) 
@@ -155,8 +156,8 @@ ripple.chi_quadro()
 print(f"A: {ripple.A} \u00B1 {ripple.sigmaA}, \t B: {ripple.B} \u00B1 {ripple.sigmaB}")
 
 if plot_finale_ripple:
-    plt.errorbar(graetz.resistenze, graetz.ripple, yerr=graetz.sigmaVripple, marker = '.',  markersize=8, ecolor ='gray', color='royalblue', linestyle = '', label="Ripple misurato")
-    plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=8, color = 'orange', label="Ripple calcolato")
+    plt.errorbar(graetz.resistenze, graetz.ripple, yerr=graetz.sigmaVripple, marker = '.',  markersize=16, ecolor ='gray', color='royalblue', linestyle = '', label="Ripple misurato", alpha=0.7, markeredgecolor='gray')
+    plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=16, color = 'orange', label="Ripple calcolato", alpha=0.8, markeredgecolor='gray')
     plt.xlabel(r"$R_L~[\Omega]$")
     plt.ylabel("Ripple [V]")
     plt.title("Tensioni di ripple")
@@ -164,12 +165,12 @@ if plot_finale_ripple:
     plt.grid()
     plt.show()
 
-if plot_finale_ripple:
-    plt.errorbar(graetz.resistenze, graetz.ripple/graetz.rippleC, yerr=graetz.sigma_rippleC, marker = '.',  markersize=16, ecolor ='gray', color=[1, 0.2, 0.2], linestyle = '', label="Rapporto misurato", alpha=0.7, markeredgecolor='gray')
-    plt.semilogx(graetz.resistenze, graetz.ripple_teo/graetz.rippleC_teo, '.', markersize=16, color=[0, 1, 0.4], label="Rapporto calcolato", alpha=0.7, markeredgecolor='gray')
+if plot_finale_rippleC:
+    plt.errorbar(graetz.resistenze, graetz.ripple/graetz.rippleC, yerr=graetz.sigma_rippleC, marker = '.',  markersize=16, ecolor ='gray', color='royalblue', linestyle = '', label="Rapporto misurato", alpha=0.7, markeredgecolor='gray')
+    plt.semilogx(graetz.resistenze, graetz.ripple_teo/graetz.rippleC_teo, '.', markersize=16, color='orange', label="Rapporto calcolato", alpha=0.8, markeredgecolor='gray')
     plt.xlabel(r"$R_L~[\Omega]$")
-    plt.ylabel(r"$\delta V_{out} / \delta V_C$")
-    plt.title("Rapporto ripple in uscita / ripple sul condensatore")
+    plt.ylabel(r"$V_{rip,out} / V_{rip,C}$")
+    plt.title("Rapporti ripple in uscita e sul condensatore")
     plt.legend(loc='upper right')
     plt.grid()
     plt.show()

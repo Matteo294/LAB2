@@ -45,7 +45,7 @@ graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
 graetz.sigma_resistenze = graetz.resistenze/100
 graetz.Vout = graetz.leggi_colonna(file_soloC, 1)
 graetz.sigmaVout = graetz.leggi_colonna(file_soloC,2)
-graetz.sigmaVout = graetz.sigmaVout * 24 / 1600
+graetz.sigmaVout = graetz.sigmaVout * 24 / 100
 
 # Caratteristica del diodo
 def Vdiodo(i):
@@ -70,8 +70,8 @@ for R, dR, Vout, dVout, Vmax, dVmax in zip(graetz.resistenze, graetz.sigma_resis
 
 
 if enable_plots:
-    plt.errorbar(graetz.Vout/graetz.resistenze, graetz.Vout, yerr=graetz.sigmaVout, marker='.', color = 'royalblue', ecolor = 'lightgray', linestyle='', label=r"$V^{max}$ misurata",linewidth=2.0, markersize=8)
-    plt.errorbar(graetz.Vout/graetz.resistenze, graetz.Vmax, yerr=graetz.sigma_Vmax, marker='.', color = 'orange', linestyle='', label=r"$V^{max}$ calcolata", markersize=8)
+    plt.errorbar(graetz.Vout/graetz.resistenze, graetz.Vout, yerr=graetz.sigmaVout, marker='.', color = 'royalblue', ecolor = 'gray', linestyle='', label=r"$V^{max}$ misurata",linewidth=2.0, markersize=16, alpha=0.8, markeredgecolor='gray')
+    plt.errorbar(graetz.Vout/graetz.resistenze, graetz.Vmax, yerr=graetz.sigma_Vmax, marker='.', color = 'orange', linestyle='', label=r"$V^{max}$ calcolata", markersize=16, alpha=0.8, markeredgecolor='gray')
     plt.xlabel(r"$i_L$ [$A$]")
     plt.ylabel(r"$V^{max}$ [V]")
     plt.title("Tensione massima in uscita dal circuito")

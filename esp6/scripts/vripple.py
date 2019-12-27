@@ -121,8 +121,8 @@ for R, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.V
 if plot_finale_ripple:
     print(graetz.sigmaVripple)
     print(graetz.ripple)
-    plt.errorbar(graetz.resistenze, graetz.ripple, yerr=graetz.sigmaVripple, marker = '.',  markersize=8, ecolor ='gray', color='royalblue', linestyle = '', label="Ripple misurato")
-    plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=8, color = 'orange', label="Ripple calcolato")
+    plt.errorbar(graetz.resistenze, graetz.ripple, yerr=graetz.sigmaVripple, marker = '.',  markersize=16, ecolor ='gray', color='royalblue', linestyle = '', label="Ripple misurato", alpha=0.8, markeredgecolor='gray')
+    plt.semilogx(graetz.resistenze, graetz.ripple_teo, '.', markersize=16, color = 'orange', label="Ripple calcolato", alpha=0.8, markeredgecolor='gray')
     plt.xlabel(r"$R_L~[\Omega]$")
     plt.ylabel("Ripple [V]")
     plt.title("Tensioni di ripple")
