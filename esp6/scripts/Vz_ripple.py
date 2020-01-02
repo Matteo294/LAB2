@@ -18,8 +18,8 @@ os.chdir(dname)
 da_plottare = []
 for nplot in sys.argv[1:]:
     da_plottare.append(int(nplot))
-print_risultati = 0
-plot_finale_ripple = 1
+print_risultati = True
+plot_finale_ripple = False
 plot_finale_rippleC = 0
 
 # Impostazioni per i grafici
@@ -127,7 +127,7 @@ for RL, i, Vc0, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), gr
         print("Vmax teorica: ", Vmax)
         print("tempo di scarica: ", t0)
         print("Tensione teorica a fine scarica: ",  Vmin)
-        print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i], "\u00B1", graetz.ripple[i]*0.3) # Aggiungere incertezze
+        print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i], "\u00B1", graetz.sigmaVripple[i]) # Aggiungere incertezze
         #print("Ripple percentuale calcolato: ", graetz.dV_teo[i], "%\tRipple percentuale sperimentale: ", graetz.dV_sperimentale[i], "%")
         print("-----------------------------------------------------------------------------------------------------------------------")
     
