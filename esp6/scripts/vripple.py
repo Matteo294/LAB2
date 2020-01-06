@@ -72,8 +72,10 @@ graetz.resistenze = graetz.leggi_colonna(file_soloC, 0)
 graetz.ripple = graetz.leggi_colonna(file_soloC, 3)
 graetz.Vmax = graetz.leggi_colonna(file_Vmax_no_zener, 1)
 graetz.Vmax_sperimentale = graetz.leggi_colonna(file_soloC, 1)
-graetz.sigmaVripple = graetz.leggi_colonna(file_soloC, 2)
+graetz.sigmaVripple = graetz.leggi_colonna(file_soloC, 4)
 graetz.sigmaVripple = graetz.sigmaVripple * 24/100
+
+graetz.resistenze[6] = 100000000
 
 # Inizializzo gli array di storage
 graetz.ripple_teo = np.array([])
@@ -99,7 +101,7 @@ for R, i, Vmax in zip(graetz.resistenze, range(len(graetz.resistenze)), graetz.V
         print("Vmax teorica: ", Vmax)
         print("tempo di scarica: ", t0)
         print("Tensione teorica a fine scarica: ",  Vmin)
-        print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i]) # Aggiungere incertezze
+        print("Ripple calcolato: ", Vmax - Vmin,  "\t Ripple misurato: ", graetz.ripple[i], "\u00B1", graetz.sigmaVripple[i]) # Aggiungere incertezze
         print("Ripple percentuale calcolato: ", graetz.dV_teo[i], "%\tRipple percentuale sperimentale: ", graetz.dV_sperimentale[i], "%")
         print("-----------------------------------------------------------------------------------------------------------------------")
     

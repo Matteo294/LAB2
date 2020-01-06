@@ -67,6 +67,10 @@ for R, dR in zip(graetz.resistenze, graetz.sigma_resistenze):
     graetz.sigma_Vmax = np.append(graetz.sigma_Vmax, 2 * np.sqrt( (A.sigma)**2 + (np.log(VM/R)*B.sigma)**2 + (B.valore/R*dR)**2))
 for R, dR, Vout, dVout, Vmax, dVmax in zip(graetz.resistenze, graetz.sigma_resistenze, graetz.Vout, graetz.sigmaVout, graetz.Vmax, graetz.sigma_Vmax):
     print("R: {0:.1f} \u00B1 {1:.1f}  \t Vmax: {2:.4f} \u00B1 {3:.4f} \t Vout: {4:.4f} \u00B1 {5:.4f}".format(R, dR, Vmax, dVmax, Vout, dVout)) 
+try:
+    graetz.scriviDati('Vmax_teorica_no_zener', [graetz.resistenze, graetz.Vmax])
+except:
+    print("Scrittura dati non risucita")
 
 
 if enable_plots:
