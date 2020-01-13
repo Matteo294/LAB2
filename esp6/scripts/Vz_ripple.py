@@ -18,9 +18,9 @@ os.chdir(dname)
 da_plottare = []
 for nplot in sys.argv[1:]:
     da_plottare.append(int(nplot))
-print_risultati = True
+print_risultati = False
 plot_finale_ripple = False
-plot_finale_rippleC = 0
+plot_finale_rippleC = True
 
 # Impostazioni per i grafici
 plt.rc('text', usetex=True) 
@@ -166,7 +166,8 @@ if plot_finale_ripple:
     plt.show()
 
 if plot_finale_rippleC:
-    plt.errorbar(graetz.resistenze, graetz.ripple/graetz.rippleC, yerr=graetz.sigma_rippleC, marker = '.',  markersize=16, ecolor ='gray', color='royalblue', linestyle = '', label="Rapporto misurato", alpha=0.7, markeredgecolor='gray')
+    errori = np.sqrt((graetz.sigma_rippleC/graetz.rippleC**2*graetz.ripple)**2 + (graetz.sigmaVripple/graetz.rippleC)**2)
+    plt.errorbar(graetz.resistenze, graetz.ripple/graetz.rippleC, yerr=errori, marker = '.',  markersize=16, ecolor ='gray', color='royalblue', linestyle = '', label="Rapporto misurato", alpha=0.7, markeredgecolor='gray')
     plt.semilogx(graetz.resistenze, graetz.ripple_teo/graetz.rippleC_teo, '.', markersize=16, color='orange', label="Rapporto calcolato", alpha=0.8, markeredgecolor='gray')
     plt.xlabel(r"$R_L~[\Omega]$")
     plt.ylabel(r"$V_{rip,out} / V_{rip,C}$")
