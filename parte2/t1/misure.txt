@@ -1,1 +1,4 @@
 rc 0.1169kOhm
+
+t on = 1.1us
+t off = 1us
