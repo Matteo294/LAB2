@@ -40,19 +40,7 @@ class Analisi:
         else:
             print("Problema: non trovo il file " + file_lettura)'''
     
-    def leggiCSV(self, file_lettura, colonne):
-        myfile = os.path.join(file_lettura)
-        if os.path.isfile(myfile):
-            with open(file_lettura, 'r') as csvFile:
-                reader = csv.reader(csvFile)
-                # Scorro le righe del file
-                for riga in reader:
-                    # Copio solo le colonne richieste
-                    row = [float(riga[col]) for col in colonne]
-
-
-        else:
-            print("Problema: non trovo il file" + myfile)
+    
 
     def add_sigmas(self, sigmax=0, sigmay=0):
         # Se il parametro passato è una costante, creo un array di costanti. Altrimenti copio l'array.
@@ -122,7 +110,20 @@ class Analisi:
     def plotData(self):
         raise NotImplementedError
 
-
+def leggiCSV(file_lettura, colonna):
+        myfile = os.path.join(file_lettura)
+        data = np.array([])
+        if os.path.isfile(myfile):
+            with open(file_lettura, 'r') as csvFile:
+                reader = csv.reader(csvFile)
+                # Scorro le righe del file
+                for riga in reader:
+                    # Copio solo le colonne richieste
+                    element = float(riga[colonna])
+                    data = np.append(data,element)
+            return data
+        else:
+            print("Problema: non trovo il file" + myfile)
 
 
     
