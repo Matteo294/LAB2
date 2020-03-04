@@ -8,7 +8,6 @@ I parametri xscale e yscale che si trovano qua e la nelle funzioni servono per c
 (i due parametri servono per memorizzare i dati negli array con un multiplo di udm) e di nuovo nelle funzioni di plot (per facilitare la visualizzazione
 dei dati potrebbe essere comodo ri-cambiare udm)
 ''' 
-
 import numpy as np
 from scipy import stats
 from scipy import signal
@@ -16,8 +15,6 @@ import math
 from numpy.linalg import inv
 from numpy import transpose as T
 from matplotlib import pyplot as plt
-#from numpy.linalg import inv
-#from numpy import matrix as mat
 import os
 import csv
 
@@ -31,7 +28,7 @@ class Analisi:
 
     # Lo swap permette di invertre X e Y, mentre lo scale permette di cambiare multiplo di udm ai dati
     def leggiDati(self, file_lettura, swap_xy=0, scale_x=1, scale_y=1):
-        myfile = os.path.join(file_lettura)
+        '''myfile = os.path.join(file_lettura)
         if os.path.isfile(myfile):
             with open(file_lettura, 'r') as csvFile:
                 reader = csv.reader(csvFile)
@@ -41,7 +38,21 @@ class Analisi:
                     self.xdata = np.append(self.xdata, row[0] * scale_x)
                     self.ydata = np.append(self.ydata, row[1] * scale_y)
         else:
-            print("Problema: non trovo il file " + file_lettura)
+            print("Problema: non trovo il file " + file_lettura)'''
+    
+    def leggiCSV(self, file_lettura, colonne):
+        myfile = os.path.join(file_lettura)
+        if os.path.isfile(myfile):
+            with open(file_lettura, 'r') as csvFile:
+                reader = csv.reader(csvFile)
+                # Scorro le righe del file
+                for riga in reader:
+                    # Copio solo le colonne richieste
+                    row = [float(riga[col]) for col in colonne]
+
+
+        else:
+            print("Problema: non trovo il file" + myfile)
 
     def add_sigmas(self, sigmax=0, sigmay=0):
         # Se il parametro passato è una costante, creo un array di costanti. Altrimenti copio l'array.

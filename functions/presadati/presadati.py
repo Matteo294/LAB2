@@ -17,7 +17,7 @@ file_scrittura = "misure2.csv" # Nome del file dove salvare tutti i dati
 
 # Array di storage dove tenere tutti i dati (che poi andranno anche salvati su un csv)
 xdata = []
-ydata = []
+ydata = [] 
 sigmadata = []
 
 # cd nella directory di questo file (non sempre ci troviamo qui in automatico)
