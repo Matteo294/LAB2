@@ -1,0 +1,22 @@
+Amplificatore differenziale con resistenza in basso:
+    - Vcc = Vce = 15 V
+    - Rc = 10kW
+    - Re = 120W
+    - R1 = 10 kW
+Variazione con sorgente di corrente, togli R1 e metti BJT con trimmer
+    - trimmer 10 kW
+    - R3 = 1kW o 4.7 kW
+    - imposta i0 = 1.5 mA, ricorda i0 = Ve/R3 quindi capisci come trimmerare per fissare Vb e Ve al punto giusto
+    - Rs = Va/Vt * R3 circa alcun MW
+
+Misura Gcm 
+    - attacca Vin uguale a entrambi i BJT
+    - Vdiff = 0; Vcm = Vin
+    - Vout = Gcm Vin
+    - atteso Gcm = -Rc/(2R1) oppure Gcm = -Rc/(2Rs)
+
+Misura Gdiff 
+    - attacca il + di Vin al BJT1, la terra a BJT2 
+    - Vdiff = Vin; Vcm = Vdiff/2
+    - dVout = Gdiff Vin + Gcm/2 Vin ovvero Gdiff = dVout/dVin - Gcm/2
+    - atteso Gcm = R1/(2(re+Re))
