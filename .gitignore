@@ -415,6 +415,9 @@ dmypy.json
 #*.vscode/launch.json
 #*.vscode/extensions.json
 
+### src directory ###
+**/src/**
+
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
