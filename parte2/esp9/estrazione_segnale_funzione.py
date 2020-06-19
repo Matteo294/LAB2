@@ -36,12 +36,8 @@ def estrazione_segnale(data_file, freq, showplots=False):
     if(showplots):
         plt.show()
 
-
-    # calcolo ampiezze complesse per funzione di trasferimento e Gcm
-    # chiamo K la ampiezza complessa del segnale (vedi slides)
-    K_in = A_in + 1j*B_in
-    K_out = A_out + 1j*B_out
-    H = K_out/K_in
+    return {"A_in":A_in, "B_in":B_in, "C_in":C_in, "A_out":A_out, "B_out":B_out, "C_out":C_out}
+    
 
 
     return H

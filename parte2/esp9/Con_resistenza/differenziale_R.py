@@ -10,7 +10,7 @@ R1 = 10e3
 
 Vdiff = Vin
 Vmedia = Vdiff/2
-[Gcm, Gcm_fase] = readCSV(file_gcm)
+[Gcm, Gcm_fase, dGcm, dGcm_fase] = readCSV(file_gcm)
 
 Gdiff = Vout/Vdiff - Gcm/2
 #Cmrr = abs(Gdiff/Gcm)
