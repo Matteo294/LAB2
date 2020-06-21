@@ -17,7 +17,7 @@ def estrazione_segnale(data_file, freq, showplots=False):
     func_sin = numpify(np.sin(w*t))        # seno
     func_cos = numpify(np.cos(w*t))        # coseno
     # le combino nella matrice da dare alla funzione
-    matrix = np.hstack([func_const, func_sin, func_cos])
+    matrix = np.hstack([func_const, func_cos, func_sin])
 
     # chiamo la funzione di fit
     fit_Vin = lsq_fit(Vin, matrix, dVin)        # Vin = C + A*sin(wt) + B*cos(wt)

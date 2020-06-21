@@ -43,10 +43,10 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
 
     # calcolo ampiezze complesse per funzione di trasferimento e Gcm
     # chiamo C la ampiezza complessa del segnale (vedi slides)
-    C_in = A_in_media + 1j*B_in_media
+    C_in = A_in_media - 1j*B_in_media
     dC_in = sqrt(A_in_std**2 + B_in_std**2)
 
-    C_out = A_out_media + 1j*B_out_media
+    C_out = A_out_media - 1j*B_out_media
     dC_out = sqrt(A_out_std**2 + B_out_std**2)
 
     H = C_out/C_in
