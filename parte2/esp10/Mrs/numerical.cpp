@@ -1,9 +1,13 @@
 #include <iostream>
 #include <cmath>
+#include <fstream>
 
 using namespace std;
 
 #define R 17.5e-3 / 2 
+#define DMIN 0.010 // distanza minima 10mm
+#define DMAX 0.050 // distanza massima 50mm
+#define NPUNTI 500 // Distanze in cui calcolare l'integrale
 
 double f(double x, double d);
 
@@ -11,24 +15,40 @@ int main(){
 
     srand(time(NULL));
 
-    const int npoints = 1e6;
-    const float d = 0.100; // 10 mm
+    double dstep = (DMAX - DMIN) / NPUNTI;
+    double d = DMIN;
+    const int npoints = 1e5; // Punti per l'integrale
     const double mu0 = 4 * M_PI * 1e-7;
     const int N1 = 28;
     const int N2 = 28;
     const double sigma1 = M_PI * pow(R, 2);
     const double sigma2 = sigma1;
-    
-    double I = 0;
-    double h = (double) 2*M_PI / npoints;
-    double x = 0;
-    for (int i = 0; i < npoints; i++){
-        I += h * f(x, d);
-        x += h;
-    }
-    cout << "Value: " << I * mu0 * N1 * N2 * pow(R, 2) / 2 << endl;
-    cout << "Valore in approssimazione a dipolo: " << mu0/(4*M_PI) * 2 * N1 * N2 * sigma1 * sigma2 / pow(d, 3) << endl;
 
+    fstream myfile;
+    myfile.open("induzione.csv");
+
+    for (int j = 0; j < NPUNTI; j++){
+        
+        d += dstep;
+        
+        double I = 0;
+        double h = (double) 2*M_PI / npoints;
+        double x = 0;
+        for (int i = 0; i < npoints; i++){
+            I += h * f(x, d);
+            x += h;
+        }
+
+        double val = I * mu0 * N1 * N2 * pow(R, 2) / 2;
+        double approx = mu0/(4*M_PI) * 2 * N1 * N2 * sigma1 * sigma2 / pow(d, 3);
+        /*cout << "Valore integrale doppio: " << val << endl;
+        cout << "Valore in approssimazione a dipolo: " << approx << endl;
+        cout << "\n" << endl;*/
+
+        myfile << d << "," << val/1e6 << "," << approx/1e6 << endl;
+    }
+
+    myfile.close();
     return 0;
 }
 
