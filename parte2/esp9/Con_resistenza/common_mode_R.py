@@ -31,16 +31,16 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
         B_out.append(segnale["B_out"])
 
     A_in_media = np.average(A_in)
-    A_in_std = np.std(A_in)
+    A_in_std = np.std(A_in, ddof=1)
 
     B_in_media = np.average(B_in)
-    B_in_std = np.std(B_in)
+    B_in_std = np.std(B_in, ddof=1)
 
     A_out_media = np.average(A_out)
-    A_out_std = np.std(A_out)
+    A_out_std = np.std(A_out, ddof=1)
 
     B_out_media = np.average(B_out)
-    B_out_std = np.std(B_out)
+    B_out_std = np.std(B_out, ddof=1)
 
     # calcolo ampiezze complesse per funzione di trasferimento e Gcm
     # chiamo C la ampiezza complessa del segnale (vedi slides)
