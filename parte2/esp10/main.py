@@ -18,6 +18,13 @@ R_lim = 0
 dR_lim = 0
 n_samples = 0
 Mrs = 0
+# Parametri bobine
+mu0 = 4*pi*1e-7
+sigma1 = np.pi * (17.5e-3/2)**2
+sigma 2 = sigma1
+NS = 0
+NR = 0
+M_dipolo = lambda d: mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
 distanze = []
 frequenze = [10e3, 200e3] # fmax e fmin
@@ -80,8 +87,8 @@ for d in distanze:
         fig = bodeplot(frequenze, H=C_out)
         fig.show()
 
-    Mrs.append(Ze)
-    dMrs.append(dZe)
+    Mrs.append(Ze['m'])
+    dMrs.append(Ze['dm'])
 
-plt.errorbar(distanze, Mrs, yerr=dMrs, '.')
+plt.errorbar(distanze, Mrs, dMrs, '.')
 plt.show()
