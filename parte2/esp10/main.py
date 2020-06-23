@@ -21,7 +21,7 @@ Mrs = 0
 # Parametri bobine
 mu0 = 4*pi*1e-7
 sigma1 = np.pi * (17.5e-3/2)**2
-sigma 2 = sigma1
+sigma2 = sigma1
 NS = 0
 NR = 0
 M_dipolo = lambda d: mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
