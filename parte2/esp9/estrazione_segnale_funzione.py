@@ -26,14 +26,15 @@ def estrazione_segnale(data_file, freq, showplots=False):
     [C_out, A_out, B_out] = fit_Vout["fit_out"]
 
     # plots
-    plt.plot(t, Vin)
-    plt.plot(t, C_in + A_in*func_sin + B_in*func_cos)
-    plt.title("Vin")
+    
     if(showplots):
-        plt.show()
-    plt.plot(t, Vout)
-    plt.plot(t, C_out + A_out*func_sin + B_out*func_cos)
-    if(showplots):
+        plt.plot(t, Vin, label="Vin")
+        plt.plot(t, C_in + A_in*func_cos + B_in*func_sin, label="Vin fit")
+    
+        plt.plot(t, Vout, label="Vout")
+        plt.plot(t, C_out + A_out*func_cos + B_out*func_sin, label="Vout fit")
+
+        plt.legend()
         plt.show()
 
     return {"A_in":A_in, "B_in":B_in, "C_in":C_in, "A_out":A_out, "B_out":B_out, "C_out":C_out}

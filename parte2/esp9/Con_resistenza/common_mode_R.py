@@ -22,7 +22,7 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     A_out = []
     B_out = []
     for j in range(n_samples):      # ciclo sulle misure ripetute
-        input_file = "Serie_temporali/" + str(i+1) + "_" + str(j+1) + ".csv"
+        input_file = "Data_common_mode/" + str(i+1) + "_" + str(j+1) + ".csv"
         # estraggo dal fit le ampiezze di un misura
         segnale = estrazione_segnale(input_file, freq)
         A_in.append(segnale["A_in"])
@@ -51,7 +51,7 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     dC_out = sqrt(A_out_std**2 + B_out_std**2)
 
     H = C_out/C_in
-    dH = H * sqrt((dC_out/C_out)**2 + (dC_in/C_in)**2)
+    # provvisorio dH = H * sqrt((dC_out/C_out)**2 + (dC_in/C_in)**2)
     Gcm.append(abs(H))
     dGcm.append(abs(dH))
     Gcm_fase.append(np.angle(H))
