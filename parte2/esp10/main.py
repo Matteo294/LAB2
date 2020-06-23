@@ -24,10 +24,12 @@ sigma1 = np.pi * (17.5e-3/2)**2
 sigma2 = sigma1
 NS = 0
 NR = 0
-M_dipolo = lambda d: mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
+M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
 distanze = []
 frequenze = [10e3, 200e3] # fmax e fmin
+G_diff = [0, 0] # Guadagno differenziale per frequenze scelte
+dG_diff = [0, 0] # Incertezza per i guadagni sopra
 
 # Array induttanza mutua a diverse distanze
 Mrs = [] 
@@ -76,8 +78,8 @@ for d in distanze:
         # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
         i_s = C_in / R_lim
         di_s = i_s * np.sqrt((dC_in/C_in)**2 + (dR_lim/R_lim)**2) 
-        Z_eff.append(np.imag(C_out / i_s)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
-        _dZ_eff = Z_eff * np.sqrt((dC_out/C_out)**2 + (di_s/i_s)**2)
+        Z_eff.append(np.imag(C_out / G_diff[i] / i_s)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
+        _dZ_eff = Z_eff * np.sqrt((dC_out/C_out)**2 + (dG_diff[i]/G_diff[i])**2 + (di_s/i_s)**2)
         dZ_eff.append(_dZ_eff * np.imag(Z_eff)/np.absolute(Z_eff))
 
     Ze = linreg(2*pi*frequenze, Z_eff, dZ_eff)
