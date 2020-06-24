@@ -6,11 +6,27 @@ def estrazione_segnale(data_file, freq, showplots=False):
     showplots e' False di default
     """
     w = 2*pi*freq
-
+	
     # presa dati
-    [t, Vin, Vout] = readCSV(data_file, skiprows=10, untilrow=1900)
-    dVin = numpify(1e-3, dim=len(Vin))    # da cambiare in lab!!
-    dVout = numpify(1e-3, dim=len(Vout))
+    # offset e dt dalla prima riga
+    filetoread = os.path.join(data_file)
+    with open(filetoread, 'r') as f:
+        lines = f.readlines()
+        line = lines[1]
+        row = line.split(",")
+        t_offset = float(row[3])
+        dt = float(row[4])
+    # dati veri e propri
+    [t, Vin, Vout] = readCSV(data_file, skiprows=2, cols=[0,1,2])
+    Vin = numpify(Vin)
+    Vout = numpify(Vout)
+    t = numpify(t)
+    t = t_offset + t*dt
+    dVin = float(max(Vin))/100
+    dVout = float(max(Vout))/100
+    dVin = numpify(dVin, dim=len(Vin))    
+    dVout = numpify(dVout, dim=len(Vout))
+    
 
     # funzioni per il fit
     func_const= numpify(np.ones(len(t)))   # costante
@@ -21,7 +37,7 @@ def estrazione_segnale(data_file, freq, showplots=False):
 
     # chiamo la funzione di fit
     fit_Vin = lsq_fit(Vin, matrix, dVin)        # Vin = C + A*sin(wt) + B*cos(wt)
-    fit_Vout = lsq_fit(Vin, matrix, dVout)      # Vout = C + A*sin(wt) + B*cos(wt)
+    fit_Vout = lsq_fit(Vout, matrix, dVout)      # Vout = C + A*sin(wt) + B*cos(wt)
     [C_in, A_in, B_in] = fit_Vin["fit_out"]
     [C_out, A_out, B_out] = fit_Vout["fit_out"]
 

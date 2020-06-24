@@ -1,7 +1,7 @@
 from libphysics import *
 from estrazione_segnale_funzione import *
 
-freqs = [1e3, 2e3]
+freqs = [100, 250, 520, 980, 3.6e3, 11.4e3, 38.1e3, 63.3e3, 88.6e3, ]
 n_samples = 3 # cambiare in lab in base a quante misure ripetute si fanno!
 output_file = "output_common_mode_sorgente.csv"
 Rc = 10e3
