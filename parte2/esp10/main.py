@@ -26,10 +26,10 @@ NS = 0
 NR = 0
 M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
-distanze = []
-frequenze = [10e3, 200e3] # fmax e fmin
-G_diff = [0, 0] # Guadagno differenziale per frequenze scelte
-dG_diff = [0, 0] # Incertezza per i guadagni sopra
+distanze = [0, 2.3, 4.6, 10.5, 4.4, 1.8] * 1e-2 # m
+frequenze = [1, 50, 150] * 1e3
+G_diff = [0, 0, 0] # Guadagno differenziale per frequenze scelte
+dG_diff = [0, 0, 0] # Incertezza per i guadagni sopra
 
 # Array induttanza mutua a diverse distanze
 Mrs = [] 
