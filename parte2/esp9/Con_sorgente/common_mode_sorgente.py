@@ -1,11 +1,10 @@
 from libphysics import *
 from estrazione_segnale_funzione import *
 
-freqs = [100, 250, 520, 980, 3.6e3, 11.4e3, 38.1e3, 63.3e3, 88.6e3, ]
-n_samples = 3 # cambiare in lab in base a quante misure ripetute si fanno!
+freqs = [100, 250, 520, 980, 3.6e3, 11.4e3, 38.1e3, 63.3e3, 88.6e3, 141.3e3, 200e3, 159e3]
+n_samples = 5 # cambiare in lab in base a quante misure ripetute si fanno!
 output_file = "output_common_mode_sorgente.csv"
-Rc = 10e3
-Re = 120
+
 
 # preparo gli array per il guadagno (complesso, contiene dentro fase e ampiezza non separate)
 Gcm = []
@@ -21,9 +20,12 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     A_out = []
     B_out = []
     for j in range(n_samples):      # ciclo sulle misure ripetute
-        input_file = "Serie_temporali/" + str(i+1) + "_" + str(j+1) + ".csv"
+        input_file = "Data_common_mode/" + str(i+1) + "/" + str(j+1) + ".csv"
         # estraggo dal fit le ampiezze di un misura
-        segnale = estrazione_segnale(input_file, freq)
+        plots=False
+        if(j==0):
+            plots = True
+        segnale = estrazione_segnale(input_file, freq, showplots=plots)
         A_in.append(segnale["A_in"])
         B_in.append(segnale["B_in"])
         A_out.append(segnale["A_out"])

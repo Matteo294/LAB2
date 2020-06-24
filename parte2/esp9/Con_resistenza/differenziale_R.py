@@ -15,7 +15,6 @@ Re = 120
 Gdiff = []
 Gdiff_fase = []
 
-
 for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     input_file = "Data_diff/" + str(i+1) + ".csv"
     segnale = estrazione_segnale(input_file, freq)
@@ -37,8 +36,7 @@ Gdiff_fase = numpify(Gdiff_fase)
 Gcm = numpify(Gcm)
 Gcm_fase = numpify(Gcm_fase)
 freqs = numpify(freqs)
-    
-print
+
 
 #Cmrr = abs(Gdiff/Gcm)
 #re_stima = Rc/(2*Gdiff) - Re

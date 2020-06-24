@@ -56,6 +56,3 @@ def estrazione_segnale(data_file, freq, showplots=False):
     return {"A_in":A_in, "B_in":B_in, "C_in":C_in, "A_out":A_out, "B_out":B_out, "C_out":C_out}
     
 
-
-    return H
-
