@@ -9,15 +9,16 @@ plot_flag = 0
 if len(sys.argv) > 1:
     plot_flag = int(sys.argv[1])
 
+def Gdiff(f):
+    ReG = -3.0955117 + 5.03032336*f + 1.1460822e-9*f**2 - 4.1463407e-15*f**3
+    ImG = -3.14127842 + 3.16888061*f -2.01140302e-9*f**2 - 3.83960293e-15*f**3
+    return ReG + 1j*ImG
+
 # Misure e costanti
-Gdiff = 0 # da calcolare
-Rc = 0
-R1 = 0
-R2 = 0
-R_lim = 0
-dR_lim = 0
-n_samples = 0
-Mrs = 0
+R_lim = 4.634
+dR_lim = 0.001
+n_samples = 5 # numero misure ripetute
+
 # Parametri bobine
 mu0 = 4*pi*1e-7
 sigma1 = np.pi * (17.5e-3/2)**2
@@ -28,7 +29,6 @@ M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
 distanze = [0, 2.3, 4.6, 10.5, 4.4, 1.8] * 1e-2 # m
 frequenze = [1, 50, 150] * 1e3
-G_diff = [0, 0, 0] # Guadagno differenziale per frequenze scelte
 dG_diff = [0, 0, 0] # Incertezza per i guadagni sopra
 
 # Array induttanza mutua a diverse distanze
@@ -78,8 +78,8 @@ for d in distanze:
         # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
         i_s = C_in / R_lim
         di_s = i_s * np.sqrt((dC_in/C_in)**2 + (dR_lim/R_lim)**2) 
-        Z_eff.append(np.imag(C_out / G_diff[i] / i_s)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
-        _dZ_eff = Z_eff * np.sqrt((dC_out/C_out)**2 + (dG_diff[i]/G_diff[i])**2 + (di_s/i_s)**2)
+        Z_eff.append(np.imag(C_out / Gdiff(f[i]) / i_s)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
+        _dZ_eff = Z_eff * np.sqrt((dC_out/C_out)**2 + (dG_diff[i]/Gdiff(f[i]))**2 + (di_s/i_s)**2)
         dZ_eff.append(_dZ_eff * np.imag(Z_eff)/np.absolute(Z_eff))
 
     Ze = linreg(2*pi*frequenze, Z_eff, dZ_eff)
