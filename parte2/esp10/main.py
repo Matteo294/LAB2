@@ -27,8 +27,8 @@ NS = 0
 NR = 0
 M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
-distanze = [0, 2.3, 4.6, 10.5, 4.4, 1.8] * 1e-2 # m
-frequenze = [1, 50, 150] * 1e3
+distanze = [0, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2]
+frequenze = [1e3, 50e3, 150e3]
 dG_diff = [0, 0, 0] # Incertezza per i guadagni sopra
 
 # Array induttanza mutua a diverse distanze
@@ -37,8 +37,7 @@ dMrs = []
 
 for d in distanze:
 
-    base_input_file = "Faraday" + int(d)
-
+    base_input_file = "Data/d" + str(d+1)
     Z_eff = []
     dZ_eff = []
 
@@ -47,7 +46,7 @@ for d in distanze:
         A_in, B_in, A_out, B_out = [[] for n in range(4)]
 
         for j in range(n_samples):
-            filename = base_input_file + str(i+1) + '.csv'
+            filename = base_input_file + "/f" + str(i+1) + "/" + str(j+1) + '.csv'
             segnale = estrazione_segnale(filename, f, showplots=False)
             A_in.append(segnale["A_in"])
             B_in.append(segnale["B_in"])
