@@ -19,7 +19,7 @@ int main(){
     double d = DMIN;
     const int npoints = 1e5; // Punti per l'integrale
     const double mu0 = 4 * M_PI * 1e-7;
-    const int N1 = 28;
+    const int N1 = 30;
     const int N2 = 28;
     const double sigma1 = M_PI * pow(R, 2);
     const double sigma2 = sigma1;

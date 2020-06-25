@@ -18,7 +18,7 @@ def dGdiff(f):
     return Gdiff(f) / 100
 
 # Misure e costanti
-R_lim = 4.634
+R_lim = 10
 dR_lim = 0.001
 n_samples = 5 # numero misure ripetute
 
@@ -26,11 +26,11 @@ n_samples = 5 # numero misure ripetute
 mu0 = 4*pi*1e-7
 sigma1 = np.pi * (17.5e-3/2)**2
 sigma2 = sigma1
-NS = 28
+NS = 30
 NR = 28
 M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
-distanze = [2.0e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2]
+distanze = [2.0e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2] # Sistemare prima distanza
 frequenze = [1e3, 50e3, 150e3]
 
 # Array induttanza mutua a diverse distanze
@@ -78,7 +78,7 @@ for d in range(len(distanze)):
 
         # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
         Z_eff.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
-        dZ_eff.append(Z_eff[i]/100)
+        dZ_eff.append(Z_eff[i]/100) # Incertezza totalmente a caso
 
     omegas = [2*np.pi*f for f in frequenze]
     Ze = linreg(omegas, Z_eff, dZ_eff)
@@ -92,9 +92,10 @@ for d in range(len(distanze)):
     dMrs.append(Ze['dm'])
 
 d, val, approx = readCSV('Mrs/induzione.csv')
-plt.plot(d, approx)
-plt.plot(d, val)
-#d = np.linspace(0.02, 0.2, 1000)
-plt.plot(d, M_dipolo(d))
-plt.plot(distanze, Mrs, '.')
+plt.loglog(d, approx, label="Dipolo1")
+plt.loglog(d, val, label="Doppio integrale")
+d = np.linspace(0.02, 0.2, 1000)
+plt.loglog(d, M_dipolo(d), label="Dipolo2")
+plt.loglog(distanze, Mrs, '.')
+plt.legend()
 plt.show()
