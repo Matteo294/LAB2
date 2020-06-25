@@ -10,8 +10,8 @@ if len(sys.argv) > 1:
     plot_flag = int(sys.argv[1])
 
 def Gdiff(f):
-    ReG = -3.0955117 + 5.03032336*f + 1.1460822e-9*f**2 - 4.1463407e-15*f**3
-    ImG = -3.14127842 + 3.16888061*f -2.01140302e-9*f**2 - 3.83960293e-15*f**3
+    ReG = -3.0955117e1 + 5.03032336e-5*f + 1.14608228e-9*f**2 - 4.1463407e-15*f**3
+    ImG = -3.14127842e-1 + 3.16888061e-4*f -2.01140302e-9*f**2 - 3.83960293e-15*f**3
     return ReG + 1j*ImG
 
 def dGdiff(f):
@@ -26,11 +26,11 @@ n_samples = 5 # numero misure ripetute
 mu0 = 4*pi*1e-7
 sigma1 = np.pi * (17.5e-3/2)**2
 sigma2 = sigma1
-NS = 0
-NR = 0
+NS = 28
+NR = 28
 M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
-distanze = [0, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2]
+distanze = [2.0e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2]
 frequenze = [1e3, 50e3, 150e3]
 
 # Array induttanza mutua a diverse distanze
@@ -77,9 +77,7 @@ for d in range(len(distanze)):
         dC_out = np.sqrt(A_out_std**2 + B_out_std**2)
 
         # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
-        i_s = C_in / R_lim
-        di_s = i_s * np.sqrt((dC_in/C_in)**2 + (dR_lim/R_lim)**2) 
-        Z_eff.append(np.imag(C_out / Gdiff(f) / i_s)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
+        Z_eff.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
         dZ_eff.append(Z_eff[i]/100)
 
     omegas = [2*np.pi*f for f in frequenze]
@@ -93,7 +91,10 @@ for d in range(len(distanze)):
     Mrs.append(Ze['m'])
     dMrs.append(Ze['dm'])
 
-d = np.linspace(0, 0.30, 1000)
+d, val, approx = readCSV('Mrs/induzione.csv')
+plt.plot(d, approx)
+plt.plot(d, val)
+#d = np.linspace(0.02, 0.2, 1000)
 plt.plot(d, M_dipolo(d))
 plt.plot(distanze, Mrs, '.')
 plt.show()

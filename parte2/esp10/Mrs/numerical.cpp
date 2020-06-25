@@ -5,8 +5,8 @@
 using namespace std;
 
 #define R 17.5e-3 / 2 
-#define DMIN 0.010 // distanza minima 10mm
-#define DMAX 0.050 // distanza massima 50mm
+#define DMIN 0.020 // distanza minima 10mm
+#define DMAX 0.200 // distanza massima 200mm
 #define NPUNTI 500 // Distanze in cui calcolare l'integrale
 
 double f(double x, double d);
@@ -45,7 +45,7 @@ int main(){
         cout << "Valore in approssimazione a dipolo: " << approx << endl;
         cout << "\n" << endl;*/
 
-        myfile << d << "," << val/1e6 << "," << approx/1e6 << endl;
+        myfile << d << "," << val << "," << approx << endl;
     }
 
     myfile.close();
