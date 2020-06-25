@@ -23,6 +23,8 @@ def fitfunc(f, a, b, c, d):
 
 params_real = curve_fit(fitfunc, freqs, np.real(H))
 params_imag = curve_fit(fitfunc, freqs, np.imag(H))
+print("Parametri Re(H):", params_real[0])
+print("Parametri Im(H):", params_imag[0])
 Ar, Br, Cr, Dr = params_real[0]
 Ai, Bi, Ci, Di = params_imag[0]
 
