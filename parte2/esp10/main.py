@@ -14,6 +14,9 @@ def Gdiff(f):
     ImG = -3.14127842 + 3.16888061*f -2.01140302e-9*f**2 - 3.83960293e-15*f**3
     return ReG + 1j*ImG
 
+def dGdiff(f):
+    return Gdiff(f) / 100
+
 # Misure e costanti
 R_lim = 4.634
 dR_lim = 0.001
@@ -29,13 +32,12 @@ M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
 distanze = [0, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2]
 frequenze = [1e3, 50e3, 150e3]
-dG_diff = [0, 0, 0] # Incertezza per i guadagni sopra
 
 # Array induttanza mutua a diverse distanze
 Mrs = [] 
 dMrs = []
 
-for d in distanze:
+for d in range(len(distanze)):
 
     base_input_file = "Data/d" + str(d+1)
     Z_eff = []
@@ -78,18 +80,20 @@ for d in distanze:
         i_s = C_in / R_lim
         di_s = i_s * np.sqrt((dC_in/C_in)**2 + (dR_lim/R_lim)**2) 
         Z_eff.append(np.imag(C_out / Gdiff(f) / i_s)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
-        _dZ_eff = Z_eff[i] * np.sqrt((dC_out/C_out)**2 + (dG_diff[i]/Gdiff(f))**2 + (di_s/i_s)**2)
-        dZ_eff.append(_dZ_eff * np.imag(Z_eff[i])/np.absolute(Z_eff[i]))
+        dZ_eff.append(Z_eff[i]/100)
 
-    Ze = linreg(2*pi*frequenze, Z_eff, dZ_eff)
-    print("Risultati d =", d, ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'])
-
+    omegas = [2*np.pi*f for f in frequenze]
+    Ze = linreg(omegas, Z_eff, dZ_eff)
+    print("Risultati d =", distanze[d], ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'])
+    print("\n")
     if plot_flag == 1:
-        fig = bodeplot(frequenze, H=C_out)
-        fig.show()
+        fig = bodeplot(frequenze, Amp=np.abs(Z_eff), Phase=np.angle(Z_eff))
+        plt.show()
 
     Mrs.append(Ze['m'])
     dMrs.append(Ze['dm'])
 
-plt.errorbar(distanze, Mrs, dMrs, '.')
+d = np.linspace(0, 0.30, 1000)
+plt.plot(d, M_dipolo(d))
+plt.plot(distanze, Mrs, '.')
 plt.show()
