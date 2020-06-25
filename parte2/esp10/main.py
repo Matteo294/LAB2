@@ -32,6 +32,51 @@ M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
 distanze = [2.0e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2] # Sistemare prima distanza
 frequenze = [1e3, 50e3, 150e3]
+omegas = [2*np.pi*f for f in frequenze]
+
+''' Analisi accoppiamento '''
+Z_ctrl = []
+dZ_ctrl = []
+for i in range(3):
+
+    A_in, B_in, A_out, B_out = [[] for n in range(4)]
+    
+    for j in range(n_samples):
+            filename = "Data/h/f" + str(i+1) + "/" + str(j+1) + ".csv"
+            segnale = estrazione_segnale(filename, frequenze[i])
+            A_in.append(segnale["A_in"])
+            B_in.append(segnale["B_in"])
+            A_out.append(segnale["A_out"])
+            B_out.append(segnale["B_out"])
+        
+    # Valori medi delle misure ripetute
+    A_in_media = np.average(A_in)
+    A_in_std = np.std(A_in, ddof=1)
+
+    B_in_media = np.average(B_in)
+    B_in_std = np.std(B_in, ddof=1)
+
+    A_out_media = np.average(A_out)
+    A_out_std = np.std(A_out, ddof=1)
+
+    B_out_media = np.average(B_out)
+    B_out_std = np.std(B_out, ddof=1)
+
+    # Calcolo ampiezza complessa del segnale in ingresso
+    C_in = A_in_media - 1j*B_in_media
+    dC_in = np.sqrt(A_in_std**2 + B_in_std**2)
+
+    # Calcolo ampiezza complessa segnale in uscita
+    C_out = A_out_media - 1j*B_out_media
+    dC_out = np.sqrt(A_out_std**2 + B_out_std**2)
+
+    Z_ctrl.append(np.imag(C_out / C_in / Gdiff(frequenze[i]) * R_lim))
+    dZ_ctrl.append(Z_ctrl[i] / 100) # Messo accazzo
+
+params = linreg(omegas, Z_ctrl, dZ_ctrl)
+M_ctrl = params['m']
+print(M_ctrl)
+'''-----------------------------------'''
 
 # Array induttanza mutua a diverse distanze
 Mrs = [] 
@@ -80,7 +125,6 @@ for d in range(len(distanze)):
         Z_eff.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
         dZ_eff.append(Z_eff[i]/100) # Incertezza totalmente a caso
 
-    omegas = [2*np.pi*f for f in frequenze]
     Ze = linreg(omegas, Z_eff, dZ_eff)
     print("Risultati d =", distanze[d], ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'])
     print("\n")
@@ -88,7 +132,7 @@ for d in range(len(distanze)):
         fig = bodeplot(frequenze, Amp=np.abs(Z_eff), Phase=np.angle(Z_eff))
         plt.show()
 
-    Mrs.append(Ze['m'])
+    Mrs.append(Ze['m'] - M_ctrl)
     dMrs.append(Ze['dm'])
 
 d, val, approx = readCSV('Mrs/induzione.csv')
