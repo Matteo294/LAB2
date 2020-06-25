@@ -77,9 +77,9 @@ for d in distanze:
         # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
         i_s = C_in / R_lim
         di_s = i_s * np.sqrt((dC_in/C_in)**2 + (dR_lim/R_lim)**2) 
-        Z_eff.append(np.imag(C_out / Gdiff(f[i]) / i_s)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
-        _dZ_eff = Z_eff * np.sqrt((dC_out/C_out)**2 + (dG_diff[i]/Gdiff(f[i]))**2 + (di_s/i_s)**2)
-        dZ_eff.append(_dZ_eff * np.imag(Z_eff)/np.absolute(Z_eff))
+        Z_eff.append(np.imag(C_out / Gdiff(f) / i_s)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
+        _dZ_eff = Z_eff[i] * np.sqrt((dC_out/C_out)**2 + (dG_diff[i]/Gdiff(f))**2 + (di_s/i_s)**2)
+        dZ_eff.append(_dZ_eff * np.imag(Z_eff[i])/np.absolute(Z_eff[i]))
 
     Ze = linreg(2*pi*frequenze, Z_eff, dZ_eff)
     print("Risultati d =", d, ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'])
