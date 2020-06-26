@@ -39,7 +39,9 @@ def estrazione_segnale(data_file, freq, showplots=False):
     fit_Vin = lsq_fit(Vin, matrix, dVin)        # Vin = C + A*sin(wt) + B*cos(wt)
     fit_Vout = lsq_fit(Vout, matrix, dVout)      # Vout = C + A*sin(wt) + B*cos(wt)
     [C_in, A_in, B_in] = fit_Vin["fit_out"]
+    [dC_in, dA_in, dB_in] = fit_Vin["dfit_out"]
     [C_out, A_out, B_out] = fit_Vout["fit_out"]
+    [dC_out, dA_out, dB_out] = fit_Vout["dfit_out"]
 
     # plots
     
@@ -53,6 +55,7 @@ def estrazione_segnale(data_file, freq, showplots=False):
         plt.legend()
         plt.show()
 
-    return {"A_in":A_in, "B_in":B_in, "C_in":C_in, "A_out":A_out, "B_out":B_out, "C_out":C_out}
+    return [fit_Vin["fit_out"], fit_Vout["fit_out"], fit_Vin["dfit_out"], fit_Vout["dfit_out"]]
+    #return {"A_in":A_in, "B_in":B_in, "C_in":C_in, "A_out":A_out, "B_out":B_out, "C_out":C_out}
     
 
