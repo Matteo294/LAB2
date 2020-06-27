@@ -10,8 +10,8 @@ if len(sys.argv) > 1:
     plot_flag = int(sys.argv[1])
 
 def Gdiff(f):
-    ReG = -3.0955117e1 + 5.03032336e-5*f + 1.14608228e-9*f**2 - 4.1463407e-15*f**3
-    ImG = -3.14127842e-1 + 3.16888061e-4*f -2.01140302e-9*f**2 - 3.83960293e-15*f**3
+    ReG = -3.0955119e1 + 5.03032168e-5*f + 1.14608253e-9*f**2 - 4.14634118e-15*f**3
+    ImG = -3.14127842e-1 + 3.16888061e-4*f -2.01140302e-9*f**2 + 3.83960293e-15*f**3
     return ReG + 1j*ImG
 
 def dGdiff(f):
@@ -135,11 +135,13 @@ for d in range(len(distanze)):
     Mrs.append(Ze['m'] - M_ctrl)
     dMrs.append(Ze['dm'])
 
+fr = np.power(np.full(100, 10), np.linspace(3, 6, 100))
+plt.plot(fr, np.abs(Gdiff(fr)))
+plt.show()
+
 d, val, approx = readCSV('Mrs/induzione.csv')
 plt.loglog(d, approx, label="Dipolo1")
 plt.loglog(d, val, label="Doppio integrale")
-d = np.linspace(0.02, 0.2, 1000)
-plt.loglog(d, M_dipolo(d), label="Dipolo2")
 plt.loglog(distanze, Mrs, '.')
 plt.legend()
 plt.show()
