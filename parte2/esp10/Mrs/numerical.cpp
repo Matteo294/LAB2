@@ -5,9 +5,9 @@
 using namespace std;
 
 #define R 17.5e-3 / 2 
-#define DMIN 0.020 // distanza minima 10mm
+#define DMIN 0.010 // distanza minima 10mm
 #define DMAX 0.200 // distanza massima 200mm
-#define NPUNTI 500 // Distanze in cui calcolare l'integrale
+#define NPUNTI 10000 // Numero punti in cui calcolare l'integrale
 
 double f(double x, double d);
 

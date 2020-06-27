@@ -4,10 +4,15 @@ from libphysics import *
 from estrazione_segnale_funzione import *
 import numpy as np
 import sys
+from uncertainties import ufloat
+from uncertainties import unumpy
+from uncertainties.umath import *
 
 plot_flag = 0
 if len(sys.argv) > 1:
     plot_flag = int(sys.argv[1])
+
+fileimmagine = '../esp9/Immagini/Faraday.png'
 
 def Gdiff(f):
     ReG = -3.0955119e1 + 5.03032168e-5*f + 1.14608253e-9*f**2 - 4.14634118e-15*f**3
@@ -18,7 +23,7 @@ def dGdiff(f):
     return Gdiff(f) / 100
 
 # Misure e costanti
-R_lim = 10
+R_lim = 11
 dR_lim = 0.001
 n_samples = 5 # numero misure ripetute
 
@@ -37,41 +42,30 @@ omegas = [2*np.pi*f for f in frequenze]
 ''' Analisi accoppiamento '''
 Z_ctrl = []
 dZ_ctrl = []
-for i in range(3):
+for i, f in enumerate(frequenze):
 
-    A_in, B_in, A_out, B_out = [[] for n in range(4)]
+    Z = []
     
     for j in range(n_samples):
-            filename = "Data/h/f" + str(i+1) + "/" + str(j+1) + ".csv"
-            segnale = estrazione_segnale(filename, frequenze[i])
-            A_in.append(segnale["A_in"])
-            B_in.append(segnale["B_in"])
-            A_out.append(segnale["A_out"])
-            B_out.append(segnale["B_out"])
-        
-    # Valori medi delle misure ripetute
-    A_in_media = np.average(A_in)
-    A_in_std = np.std(A_in, ddof=1)
 
-    B_in_media = np.average(B_in)
-    B_in_std = np.std(B_in, ddof=1)
+        filename = "Data/h/f" + str(i+1) + "/" + str(j+1) + ".csv"
+        s_in, s_out, ds_in, ds_out = estrazione_segnale(filename, f, showplots=False)
+        [_, A_in, B_in] = s_in 
+        [_, A_out, B_out] = s_out 
+        [_, dA_in, dB_int] = ds_in
+        [_, dA_out, dB_out] = ds_out
 
-    A_out_media = np.average(A_out)
-    A_out_std = np.std(A_out, ddof=1)
+        # Calcolo ampiezza complessa del segnale in ingresso
+        C_in = A_in - 1j*B_in
 
-    B_out_media = np.average(B_out)
-    B_out_std = np.std(B_out, ddof=1)
+        # Calcolo ampiezza complessa segnale in uscita
+        C_out = A_out - 1j*B_out
 
-    # Calcolo ampiezza complessa del segnale in ingresso
-    C_in = A_in_media - 1j*B_in_media
-    dC_in = np.sqrt(A_in_std**2 + B_in_std**2)
-
-    # Calcolo ampiezza complessa segnale in uscita
-    C_out = A_out_media - 1j*B_out_media
-    dC_out = np.sqrt(A_out_std**2 + B_out_std**2)
-
-    Z_ctrl.append(np.imag(C_out / C_in / Gdiff(frequenze[i]) * R_lim))
-    dZ_ctrl.append(Z_ctrl[i] / 100) # Messo accazzo
+        # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
+        Z.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
+    
+    Z_ctrl.append(np.mean(Z))
+    dZ_ctrl.append(np.std(Z, ddof=1)) # Non solo questa, anche 1% fondoscala
 
 params = linreg(omegas, Z_ctrl, dZ_ctrl)
 M_ctrl = params['m']
@@ -89,40 +83,27 @@ for d in range(len(distanze)):
 
     for i, f in enumerate(frequenze):
 
-        A_in, B_in, A_out, B_out = [[] for n in range(4)]
-
+        Z = []
         for j in range(n_samples):
+
             filename = base_input_file + "/f" + str(i+1) + "/" + str(j+1) + '.csv'
-            segnale = estrazione_segnale(filename, f, showplots=False)
-            A_in.append(segnale["A_in"])
-            B_in.append(segnale["B_in"])
-            A_out.append(segnale["A_out"])
-            B_out.append(segnale["B_out"])
-        
-        # Valori medi delle misure ripetute
-        A_in_media = np.average(A_in)
-        A_in_std = np.std(A_in, ddof=1)
+            s_in, s_out, ds_in, ds_out = estrazione_segnale(filename, f, showplots=False)
+            [_, A_in, B_in] = s_in 
+            [_, A_out, B_out] = s_out 
+            [_, dA_in, dB_int] = ds_in
+            [_, dA_out, dB_out] = ds_out
 
-        B_in_media = np.average(B_in)
-        B_in_std = np.std(B_in, ddof=1)
+            # Calcolo ampiezza complessa del segnale in ingresso
+            C_in = A_in - 1j*B_in
 
-        A_out_media = np.average(A_out)
-        A_out_std = np.std(A_out, ddof=1)
+            # Calcolo ampiezza complessa segnale in uscita
+            C_out = A_out - 1j*B_out
 
-        B_out_media = np.average(B_out)
-        B_out_std = np.std(B_out, ddof=1)
-
-        # Calcolo ampiezza complessa del segnale in ingresso
-        C_in = A_in_media - 1j*B_in_media
-        dC_in = np.sqrt(A_in_std**2 + B_in_std**2)
-
-        # Calcolo ampiezza complessa segnale in uscita
-        C_out = A_out_media - 1j*B_out_media
-        dC_out = np.sqrt(A_out_std**2 + B_out_std**2)
-
-        # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
-        Z_eff.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
-        dZ_eff.append(Z_eff[i]/100) # Incertezza totalmente a caso
+            # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
+            Z.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
+    
+        Z_eff.append(np.mean(Z))
+        dZ_eff.append(np.std(Z, ddof=1)) # Non solo questa, anche 1% fondoscala
 
     Ze = linreg(omegas, Z_eff, dZ_eff)
     print("d =", distanze[d], ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'], '\n')
@@ -133,14 +114,25 @@ for d in range(len(distanze)):
     Mrs.append(Ze['m'] - M_ctrl)
     dMrs.append(Ze['dm'])
 
+# Leggo i valori dei modelli teorici
 d, val, approx = readCSV('Mrs/induzione.csv')
+
+# Cambio udm ai dati
 d = [dist/1e-3 for dist in d]
 distanze = [dist/1e-3 for dist in distanze]
+approx = [a/1e-6 for a in approx]
+val = [v/1e-6 for v in val]
+Mrs = [m/1e-6 for m in Mrs]
+dMrs = [d/1e-6 for d in dMrs]
 
-plt.loglog(d, approx, label="Dipolo1")
-plt.loglog(d, val, label="Doppio integrale")
-plt.loglog(distanze, Mrs, '.')
-plt.xlabel('Distanza \, [mm]')
-plt.ylabel(r'$M_{RS} \, [\mu H]$')
+# Plot dati, salvo nella cartella immagini
+plt.semilogy(d, approx, label="Approssimazione dipolo", linewidth=1.8, color='green')
+plt.semilogy(d, val, label="Formula Neumann", linewidth=1.8, color='blue')
+plt.errorbar(distanze, Mrs, yerr=np.real(dMrs), fmt='.', markersize=12, markerfacecolor='red', color='black', label="Dati sperimentali")
+plt.xlabel(r'Distanza   [mm]')
+plt.ylabel(r'$M_{RS}   [\mu H]$')
+plt.ylim((5e-4, 1e1))
+plt.title("Mutua induzione tra bobine", fontsize=20)
 plt.legend()
+plt.savefig(fileimmagine, bbox_inches='tight', dpi=1000)
 plt.show()
