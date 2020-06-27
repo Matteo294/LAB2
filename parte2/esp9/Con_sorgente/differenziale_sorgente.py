@@ -37,9 +37,9 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     [dH_amp, dH_fase] = [dH["abs"], dH["arg"]]
 
     # Gdiff = Vout/Vin - Gcm/2, ma sono numeri complessi
-    Gdiff_complesso = H - Gcm[i]*np.exp(1j*Gcm_fase[i])
-    Gdiff.append(float(abs(Gdiff_complesso)))
-    Gdiff_fase.append(float(np.angle(Gdiff_complesso)))
+    Gdiff_complesso.append(H - Gcm[i]*np.exp(1j*Gcm_fase[i]))
+    Gdiff.append(float(abs(Gdiff_complesso[i])))
+    Gdiff_fase.append(float(np.angle(Gdiff_complesso[i])))
     dGdiff.append(sqrt(dH_amp**2 + dGcm[i]**2))
 
 Gdiff = numpify(Gdiff, column = False)
@@ -56,10 +56,10 @@ re = Rc/(2*Gdiff_u) - Re
 re_stima = np.mean(unumpy.nominal_values(re)[:6])
 dre_stima = np.std(unumpy.nominal_values(re)[:6])
 
-# # output
-# outfile = open(file_gdelta, 'w+')
-# for f, G in zip(freqs, Gdiff_complesso):
-#     outfile.write(str(f) + "," + str(G[0]) + '\n')
+# output
+outfile = open(file_gdelta, 'w+')
+for f, G in zip(freqs, Gdiff_complesso):
+    outfile.write(str(f) + "," + str(G[0]) + '\n')
 
 b1 = bodeplot(freqs, Amp=Gcm, Phase=Gcm_fase)
 b2 = bodeplot(freqs, Amp=Gdiff, Phase=Gdiff_fase, figure=b1, color="blue")

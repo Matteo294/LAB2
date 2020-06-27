@@ -11,8 +11,8 @@ if len(sys.argv) > 1:
 
 def Gdiff(f):
     ReG = -3.0955119e1 + 5.03032168e-5*f + 1.14608253e-9*f**2 - 4.14634118e-15*f**3
-    ImG = -3.14127842e-1 + 3.16888061e-4*f -2.01140302e-9*f**2 + 3.83960293e-15*f**3
-    return ReG + 1j*ImG
+    ImG = -3.14127842e-1 + 3.16888061e-4*f - 2.01140302e-9*f**2 + 3.83960293e-15*f**3
+    return abs(ReG + 1j*ImG)
 
 def dGdiff(f):
     return Gdiff(f) / 100
@@ -30,7 +30,7 @@ NS = 30
 NR = 28
 M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
 
-distanze = [2.0e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2] # Sistemare prima distanza
+distanze = [1.35e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2] # Sistemare prima distanza
 frequenze = [1e3, 50e3, 150e3]
 omegas = [2*np.pi*f for f in frequenze]
 
@@ -75,7 +75,6 @@ for i in range(3):
 
 params = linreg(omegas, Z_ctrl, dZ_ctrl)
 M_ctrl = params['m']
-print(M_ctrl)
 '''-----------------------------------'''
 
 # Array induttanza mutua a diverse distanze
@@ -126,8 +125,7 @@ for d in range(len(distanze)):
         dZ_eff.append(Z_eff[i]/100) # Incertezza totalmente a caso
 
     Ze = linreg(omegas, Z_eff, dZ_eff)
-    print("Risultati d =", distanze[d], ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'])
-    print("\n")
+    print("d =", distanze[d], ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'], '\n')
     if plot_flag == 1:
         fig = bodeplot(frequenze, Amp=np.abs(Z_eff), Phase=np.angle(Z_eff))
         plt.show()
@@ -135,13 +133,14 @@ for d in range(len(distanze)):
     Mrs.append(Ze['m'] - M_ctrl)
     dMrs.append(Ze['dm'])
 
-fr = np.power(np.full(100, 10), np.linspace(3, 6, 100))
-plt.plot(fr, np.abs(Gdiff(fr)))
-plt.show()
-
 d, val, approx = readCSV('Mrs/induzione.csv')
+d = [dist/1e-3 for dist in d]
+distanze = [dist/1e-3 for dist in distanze]
+
 plt.loglog(d, approx, label="Dipolo1")
 plt.loglog(d, val, label="Doppio integrale")
 plt.loglog(distanze, Mrs, '.')
+plt.xlabel('Distanza \, [mm]')
+plt.ylabel(r'$M_{RS} \, [\mu H]$')
 plt.legend()
 plt.show()
