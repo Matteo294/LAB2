@@ -126,9 +126,9 @@ Mrs = [m/1e-6 for m in Mrs]
 dMrs = [d/1e-6 for d in dMrs]
 
 # Plot dati, salvo nella cartella immagini
-plt.semilogy(d, approx, label="Approssimazione dipolo", linewidth=1.8, color='green')
+plt.semilogy(d, approx, label="Approssimazione dipolo", linewidth=1.8, color=[0, 1, 0])
 plt.semilogy(d, val, label="Formula Neumann", linewidth=1.8, color='blue')
-plt.errorbar(distanze, Mrs, yerr=np.real(dMrs), fmt='.', markersize=12, markerfacecolor='red', color='black', label="Dati sperimentali")
+plt.errorbar(distanze, Mrs, yerr=np.real(dMrs), fmt='.', markersize=8, markerfacecolor='red', color='black', label="Dati sperimentali")
 plt.xlabel(r'Distanza   [mm]')
 plt.ylabel(r'$M_{RS}   [\mu H]$')
 plt.ylim((5e-4, 1e1))
