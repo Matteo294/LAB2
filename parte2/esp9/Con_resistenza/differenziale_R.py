@@ -49,6 +49,7 @@ Gcm = numpify(Gcm, column = False)
 Gcm_fase = numpify(Gcm_fase, column = False)
 freqs = numpify(freqs, column = False)
 
+
 #stima Cmrr e re
 Gdiff_u = unumpy.uarray(Gdiff, dGdiff)
 Gcm_u = unumpy.uarray(Gcm, dGcm)

@@ -26,7 +26,6 @@ def estrazione_segnale(data_file, freq, showplots=False):
     dVout = float(max(Vout))/100
     dVin = numpify(dVin, dim=len(Vin))    
     dVout = numpify(dVout, dim=len(Vout))
-    
 
     # funzioni per il fit
     func_const= numpify(np.ones(len(t)))   # costante
@@ -56,6 +55,5 @@ def estrazione_segnale(data_file, freq, showplots=False):
         plt.show()
 
     return [fit_Vin["fit_out"], fit_Vout["fit_out"], fit_Vin["dfit_out"], fit_Vout["dfit_out"]]
-    #return {"A_in":A_in, "B_in":B_in, "C_in":C_in, "A_out":A_out, "B_out":B_out, "C_out":C_out}
     
 

@@ -8,7 +8,7 @@ output_file = "output_common_mode_R.csv"
 Rc = 10e3
 Re = 120
 
-# preparo gli array per il guadagno (complesso, contiene dentro fase e ampiezza non separate)
+# preparo gli array per il guadagno
 Gcm = []
 dGcm = []
 Gcm_fase = []
@@ -21,7 +21,7 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     [_, A_out, B_out] = segnale_out
     [_, dA_in, dB_in] = dsegnale_in
     [_, dA_out, dB_out] = dsegnale_out
-
+    
     C_in = A_in - 1j*B_in
     C_out = A_out - 1j*B_out
     H = C_out/C_in
