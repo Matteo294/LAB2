@@ -1,1 +1,1 @@
-../estrazione_segnale_funzione.py
+../../estrazione_segnale_funzione.py
