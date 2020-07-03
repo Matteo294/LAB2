@@ -28,15 +28,15 @@ def estrazione_segnale(data_file, freq, showplots=False):
     dVout = numpify(dVout, dim=len(Vout))
 
     # funzioni per il fit
-    func_const= numpify(np.ones(len(t)))   # costante
-    func_sin = numpify(np.sin(w*t))        # seno
-    func_cos = numpify(np.cos(w*t))        # coseno
+    func_const= numpify(np.ones(len(t)), column=True)   # costante
+    func_sin = numpify(np.sin(w*t), column=True)        # seno
+    func_cos = numpify(np.cos(w*t), column=True)        # coseno
     # le combino nella matrice da dare alla funzione
     matrix = np.hstack([func_const, func_cos, func_sin])
 
     # chiamo la funzione di fit
-    fit_Vin = lsq_fit(Vin, matrix, dVin)        # Vin = C + A*sin(wt) + B*cos(wt)
-    fit_Vout = lsq_fit(Vout, matrix, dVout)      # Vout = C + A*sin(wt) + B*cos(wt)
+    fit_Vin = lsq_fit(Vin, matrix, dVin)        # Vin = C + B*sin(wt) + A*cos(wt)
+    fit_Vout = lsq_fit(Vout, matrix, dVout)      # Vout = C + B*sin(wt) + A*cos(wt)
     [C_in, A_in, B_in] = fit_Vin["fit_out"]
     [dC_in, dA_in, dB_in] = fit_Vin["dfit_out"]
     [C_out, A_out, B_out] = fit_Vout["fit_out"]

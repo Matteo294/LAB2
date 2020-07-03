@@ -40,9 +40,17 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     Gcm_fase.append(np.average(Gcm_fase_temp))
     dGcm.append(np.std(Gcm_temp, ddof=1))
     dGcm_fase.append(np.std(Gcm_fase_temp, ddof=1))
+
+Gcm = numpify(Gcm)
+freqs = numpify(freqs)
+Gcm_fase = numpify(Gcm_fase)
     
+bodeplot
+b1 = bodeplot(freqs, Amp = Gcm, Phase=Gcm_fase, deg=False, err=True, Amperr = dGcm, Phaseerr = dGcm_fase)
+plt.show()
+
 # write Gcm in file
 with open(output_file, 'w') as f:
     writer = csv.writer(f)
     for i in range(len(Gcm)):
-        writer.writerow([Gcm[i], Gcm_fase[i], dGcm[i], dGcm_fase[i]])
+        writer.writerow([float(Gcm[i]), float(Gcm_fase[i]), dGcm[i], dGcm_fase[i]])

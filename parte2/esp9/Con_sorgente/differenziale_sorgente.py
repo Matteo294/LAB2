@@ -7,8 +7,8 @@ from uncertainties import unumpy
 from uncertainties.umath import *
 
 freqs = [980, 3.6e3, 11.4e3, 38.1e3, 88.6e3, 141.3e3, 200e3, 159e3, 100, 250, 520]
-Rc = 10e3
-Re = 120
+Rc = 9.830e3
+Re = 119.25
 
 # prendo Gcm dall'output dell'altro script
 file_gcm = "output_common_mode_sorgente.csv"
@@ -21,6 +21,7 @@ dGdiff = []
 Gdiff_fase = []
 dGdiff_fase = []
 Gdiff_complesso = []
+trans = []
 
 for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     input_file = "Data_diff/" + str(i+1) + ".csv"
@@ -37,16 +38,19 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     [dH_amp, dH_fase] = [dH["abs"], dH["arg"]]
 
     # Gdiff = Vout/Vin - Gcm/2, ma sono numeri complessi
-    Gdiff_complesso.append(H - Gcm[i]*np.exp(1j*Gcm_fase[i]))
+    trans.append(np.complex(H))
+    Gdiff_complesso.append(H - Gcm[i]/2*np.exp(1j*Gcm_fase[i]/2))
     Gdiff.append(float(abs(Gdiff_complesso[i])))
     Gdiff_fase.append(float(np.angle(Gdiff_complesso[i])))
     dGdiff.append(sqrt(dH_amp**2 + dGcm[i]**2))
 
 Gdiff = numpify(Gdiff, column = False)
+Gdiff_complesso = numpify(Gdiff_complesso, column=False)
 Gdiff_fase = numpify(Gdiff_fase, column = False)
 Gcm = numpify(Gcm[:-1], column = False)
 Gcm_fase = numpify(Gcm_fase[:-1], column = False)
 freqs = numpify(freqs, column = False)
+trans = numpify(trans)
 
 #stima Cmrr e re
 Gdiff_u = unumpy.uarray(Gdiff, dGdiff)
@@ -55,16 +59,28 @@ Cmrr = abs(Gdiff_u/Gcm_u)
 re = Rc/(2*Gdiff_u) - Re
 re_stima = np.mean(unumpy.nominal_values(re)[:6])
 dre_stima = np.std(unumpy.nominal_values(re)[:6])
+print(re_stima)
 
-# output
-outfile = open(file_gdelta, 'w+')
-for f, G in zip(freqs, Gdiff_complesso):
-    outfile.write(str(f) + "," + str(G[0]) + '\n')
+# modello teorico
+Cosc = 110e-12
+Rosc = 1e6
+G_0 = Rc / (2*(45 + Re))
+f = np.logspace(2, 6)
+w = 2*pi*f
+Zosc = Rosc/(1 + 1j*w*Rosc*Cosc)
+G = (G_0*Zosc)/(Rc + Zosc)
+
+
 
 b1 = bodeplot(freqs, Amp=Gcm, Phase=Gcm_fase)
-b2 = bodeplot(freqs, Amp=Gdiff, Phase=Gdiff_fase, figure=b1, color="blue")
+b2 = bodeplot(freqs, H=-trans, figure=b1, color="blue")
+b3 = bodeplot(f, H=G, figure = b2, asline=True)
 [ax1, ax2] = b1.axes
 ax1.legend(["Gcm", "Gdiff"])
 ax2.legend(["Gcm", "Gdiff"])
 plt.show()
 
+# output
+outfile = open(file_gdelta, 'w+')
+for f, G in zip(freqs, Gdiff_complesso):
+    outfile.write(str(f) + "," + str(G[0]) + '\n')

@@ -21,6 +21,7 @@ Gdiff = []
 dGdiff = []
 Gdiff_fase = []
 dGdiff_fase = []
+H = []
 
 for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     input_file = "Data_diff/" + str(i+1) + ".csv"
@@ -32,22 +33,24 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
 
     C_in = A_in - 1j*B_in
     C_out = A_out - 1j*B_out
-    H = C_out/C_in
+    H.append(np.complex(-C_out/C_in))
     dH = incertezza_H(A_in, B_in, A_out, B_out, dA_in, dB_in, dA_out, dB_out)
     [dH_amp, dH_fase] = [dH["abs"], dH["arg"]]
 
     # Gdiff = Vout/Vin - Gcm/2, ma sono numeri complessi
-    Gdiff_complesso = H - Gcm[i]*np.exp(1j*Gcm_fase[i])
+    Gdiff_complesso = -H[i] + 1/2*Gcm[i]*np.exp(1j*Gcm_fase[i]/2)
     Gdiff.append(float(abs(Gdiff_complesso)))
-    Gdiff_fase.append(float(np.angle(Gdiff_complesso)))
+    Gdiff_fase.append(normalize_angle(np.angle(Gdiff_complesso)))
     dGdiff.append(sqrt(dH_amp**2 + dGcm[i]**2))
 
 
-Gdiff = numpify(Gdiff, column = False)
-Gdiff_fase = numpify(Gdiff_fase, column = False)
-Gcm = numpify(Gcm, column = False)
-Gcm_fase = numpify(Gcm_fase, column = False)
-freqs = numpify(freqs, column = False)
+Gdiff = numpify(Gdiff)
+Gdiff_fase = numpify(Gdiff_fase)
+Gcm = numpify(Gcm)
+Gcm_fase = numpify(Gcm_fase)
+freqs = numpify(freqs)
+H = numpify(H)
+
 
 
 #stima Cmrr e re
@@ -58,8 +61,20 @@ re = Rc/(2*Gdiff_u) - Re
 re_stima = np.mean(unumpy.nominal_values(re)[:6])
 dre_stima = np.std(unumpy.nominal_values(re)[:6])
 
-b1 = bodeplot(freqs, Amp=Gcm, Phase=Gcm_fase)
-b2 = bodeplot(freqs, Amp=Gdiff, Phase=Gdiff_fase, color="blue", figure=b1)
+# modello teorico
+Cosc = 110e-12
+Rosc = 1e6
+G_0 = Rc.n / (2*(re_stima + Re.n))
+f = np.logspace(2, 6)
+w = 2*pi*f
+Zosc = Rosc/(1 + 1j*w*Rosc*Cosc)
+G = (G_0*Zosc)/(Rc.n + Zosc)
+
+
+#b1 = bodeplot(freqs, Amp=Gcm, Phase=Gcm_fase)
+b1 = bodeplot(freqs, Amp = Gcm, Phase = Gcm_fase, deg=False)
+b2 = bodeplot(freqs, H=H, color="blue", figure=b1)
+b3 = bodeplot(f, H=G, figure = b2, asline=True)
 [ax1, ax2] = b1.axes
 ax1.legend(["Gcm", "Gdiff"])
 ax2.legend(["Gcm", "Gdiff"])
