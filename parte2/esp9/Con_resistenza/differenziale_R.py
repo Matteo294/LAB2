@@ -6,6 +6,8 @@ from uncertainties import ufloat
 from uncertainties import unumpy
 from uncertainties.umath import *
 
+plt.rc('font', family='serif', size=18)
+
 
 # prendo Gcm dall'output dell'altro script
 file_gcm = "output_common_mode_R.csv"
@@ -15,6 +17,7 @@ freqs = [100, 250, 520, 980, 3.6e3, 11.4e3, 38.1e3, 88.6e3, 141.3e3, 200e3]
 output_file = "output_common_mode_R.csv"
 Rc = ufloat(9.830, 0.001)*1e3
 Re = ufloat(119.25, 0.03)
+R1 = 9.924e3
 
 # preparo gli array per il guadagno (complesso, contiene dentro fase e ampiezza non separate)
 Gdiff = []
@@ -61,23 +64,29 @@ re = Rc/(2*Gdiff_u) - Re
 re_stima = np.mean(unumpy.nominal_values(re)[:6])
 dre_stima = np.std(unumpy.nominal_values(re)[:6])
 
-# modello teorico
+# modelli teorici
 Cosc = 110e-12
 Rosc = 1e6
-G_0 = Rc.n / (2*(re_stima + Re.n))
+G_0_diff = Rc.n / (2*(re_stima + Re.n))
+G_0_cm = -Rc.n/(2*R1)
 f = np.logspace(2, 6)
 w = 2*pi*f
 Zosc = Rosc/(1 + 1j*w*Rosc*Cosc)
-G = (G_0*Zosc)/(Rc.n + Zosc)
+Gdiff_teo = (G_0_diff*Zosc)/(Rc.n + Zosc)
+Gcm_teo = (G_0_cm*Zosc)/(Rc.n + Zosc)
 
-
-#b1 = bodeplot(freqs, Amp=Gcm, Phase=Gcm_fase)
-b1 = bodeplot(freqs, Amp = Gcm, Phase = Gcm_fase, deg=False)
+# plots
+b1 = bodeplot(freqs, Amp = Gcm, Phase = Gcm_fase, deg=False, logyscale=True)
 b2 = bodeplot(freqs, H=H, color="blue", figure=b1)
-b3 = bodeplot(f, H=G, figure = b2, asline=True)
-[ax1, ax2] = b1.axes
-ax1.legend(["Gcm", "Gdiff"])
-ax2.legend(["Gcm", "Gdiff"])
+b3 = bodeplot(f, H=Gcm_teo, figure = b2, asline=True, linestyle='--', color="red")
+b4 = bodeplot(f, H=Gdiff_teo, figure = b3, asline=True, linestyle = '--', color = "blue")
+# set legend
+ax = b3.axes[0]
+handles,_ = ax.get_legend_handles_labels()
+b3.legend(handles, labels=[r"$G_{CM}$", r"$G_{DIFF}$", r"Modello $G_{CM}$", r"Modello $G_{DIFF}$"], loc='lower center', ncol=2)
+# adjust layout
+b3.tight_layout()
+b3.subplots_adjust(hspace=0.4, left=0.1)
 plt.show()
 
 print("Stima re: {} +- {}".format(re_stima, dre_stima))
