@@ -9,15 +9,25 @@ from uncertainties import unumpy
 from uncertainties.umath import *
 
 plot_flag = 0
+print_flag = 0
 if len(sys.argv) > 1:
     plot_flag = int(sys.argv[1])
 
 fileimmagine = '../esp9/Immagini/Faraday.png'
 
 def Gdiff(f):
-    ReG = -3.0955119e1 + 5.03032168e-5*f + 1.14608253e-9*f**2 - 4.14634118e-15*f**3
-    ImG = -3.14127842e-1 + 3.16888061e-4*f - 2.01140302e-9*f**2 + 3.83960293e-15*f**3
-    return abs(ReG + 1j*ImG)
+    w = 2*pi*f
+    # carico = oscilloscopio
+    Cosc = 110e-12
+    Rosc = 1e6
+    Zosc = Rosc/(1 + 1j*w*Rosc*Cosc)
+    # parametri che servono
+    Rc = 9.830e3
+    Re = 119.25
+    re = 45
+    # Gdiff
+    G0_diff = Rc / (2*(re + Re))
+    return abs((G0_diff*Zosc)/(Rc + Zosc))
 
 def dGdiff(f):
     return Gdiff(f) / 100
@@ -31,9 +41,9 @@ n_samples = 5 # numero misure ripetute
 mu0 = 4*pi*1e-7
 sigma1 = np.pi * (17.5e-3/2)**2
 sigma2 = sigma1
-NS = 30
-NR = 28
-M_dipolo = lambda d: 2 * mu0/(4*np.pi) * NS * NR * sigma1 * sigma2 / d**3
+n_S = 30
+n_R = 28
+M_dipolo = lambda d: 2 * mu0/(4*np.pi) * n_S * n_R * sigma1 * sigma2 / d**3
 
 distanze = [1.35e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2] # Sistemare prima distanza
 frequenze = [1e3, 50e3, 150e3]
@@ -106,7 +116,8 @@ for d in range(len(distanze)):
         dZ_eff.append(np.std(Z, ddof=1)) # Non solo questa, anche 1% fondoscala
 
     Ze = linreg(omegas, Z_eff, dZ_eff)
-    print("d =", distanze[d], ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'], '\n')
+    if print_flag:
+        print("d =", distanze[d], ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'], '\n')
     if plot_flag == 1:
         fig = bodeplot(frequenze, Amp=np.abs(Z_eff), Phase=np.angle(Z_eff))
         plt.show()
