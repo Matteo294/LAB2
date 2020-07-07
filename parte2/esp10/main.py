@@ -33,7 +33,7 @@ def dGdiff(f):
     return Gdiff(f) / 100
 
 # Misure e costanti
-R_lim = 11
+R_lim = 12
 dR_lim = 0.001
 n_samples = 5 # numero misure ripetute
 
@@ -45,7 +45,8 @@ n_S = 30
 n_R = 28
 M_dipolo = lambda d: 2 * mu0/(4*np.pi) * n_S * n_R * sigma1 * sigma2 / d**3
 
-distanze = [1.35e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2] # Sistemare prima distanza
+distanze = [1.35e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2] 
+d_distanze = [1 for _ in range(len(distanze))]
 frequenze = [1e3, 50e3, 150e3]
 omegas = [2*np.pi*f for f in frequenze]
 
@@ -70,7 +71,7 @@ for i, f in enumerate(frequenze):
 
         # Calcolo ampiezza complessa segnale in uscita
         C_out = A_out - 1j*B_out
-
+	
         # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
         Z.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
     
@@ -109,13 +110,15 @@ for d in range(len(distanze)):
             # Calcolo ampiezza complessa segnale in uscita
             C_out = A_out - 1j*B_out
 
+            print("d =", distanze[d], abs(C_in), abs(C_out))
+
             # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
             Z.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
     
         Z_eff.append(np.mean(Z))
         dZ_eff.append(np.std(Z, ddof=1)) # Non solo questa, anche 1% fondoscala
 
-    Ze = linreg(omegas, Z_eff, dZ_eff)
+    Ze = linreg(omegas, Z_eff, dZ_eff, np.full(len(Z_eff), d_distanze[d]/1e-3))
     if print_flag:
         print("d =", distanze[d], ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'], '\n')
     if plot_flag == 1:
@@ -139,9 +142,9 @@ dMrs = [d/1e-6 for d in dMrs]
 # Plot dati, salvo nella cartella immagini
 plt.semilogy(d, approx, label="Approssimazione dipolo", linewidth=1.8, color=[0, 1, 0])
 plt.semilogy(d, val, label="Formula Neumann", linewidth=1.8, color='blue')
-plt.errorbar(distanze, Mrs, yerr=np.real(dMrs), fmt='.', markersize=8, markerfacecolor='red', color='black', label="Dati sperimentali")
-plt.xlabel(r'Distanza   [mm]')
-plt.ylabel(r'$M_{RS}   [\mu H]$')
+plt.errorbar(distanze, Mrs, yerr=np.real(dMrs), xerr=d_distanze, fmt='.', markersize=8, markerfacecolor='red', color='black', label="Dati sperimentali")
+plt.xlabel(r'Distanza  [mm]')
+plt.ylabel(r'$M_{RS}$  $[\mu H]$')
 plt.ylim((5e-4, 1e1))
 plt.title("Mutua induzione tra bobine", fontsize=20)
 plt.legend()
