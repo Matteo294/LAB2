@@ -80,6 +80,8 @@ for i, f in enumerate(frequenze):
 
 params = linreg(omegas, Z_ctrl, dZ_ctrl)
 M_ctrl = params['m']
+dM_ctrl = params['dm']
+print(M_ctrl, dM_ctrl)
 '''-----------------------------------'''
 
 # Array induttanza mutua a diverse distanze
@@ -118,16 +120,17 @@ for d in range(len(distanze)):
         Z_eff.append(np.mean(Z))
         dZ_eff.append(np.std(Z, ddof=1)) # Non solo questa, anche 1% fondoscala
 
-    Ze = linreg(omegas, Z_eff, dZ_eff, np.full(len(Z_eff), d_distanze[d]/1e-3))
+    Ze = linreg(omegas, Z_eff, dZ_eff)
+
     if print_flag:
         print("d =", distanze[d], ": \t Z0 =", Ze['b'], "\u00B1", Ze['db'], " \t Zeff =", Ze['m'], "\u00B1", Ze['dm'], '\n')
     if plot_flag == 1:
         fig = bodeplot(frequenze, Amp=np.abs(Z_eff), Phase=np.angle(Z_eff))
         plt.show()
 
-    Mrs.append(Ze['m'] - M_ctrl)
-    dMrs.append(Ze['dm'])
-
+    Mrs.append(Ze['m'])
+    dMrs.append(np.sqrt(Ze['dm']**2 + dM_ctrl**2))
+    
 # Leggo i valori dei modelli teorici
 d, val, approx = readCSV('Mrs/induzione.csv')
 
@@ -137,12 +140,12 @@ distanze = [dist/1e-3 for dist in distanze]
 approx = [a/1e-6 for a in approx]
 val = [v/1e-6 for v in val]
 Mrs = [m/1e-6 for m in Mrs]
-dMrs = [d/1e-6 for d in dMrs]
+dMrs = [np.real(d)/1e-6 for d in dMrs]
 
 # Plot dati, salvo nella cartella immagini
 plt.semilogy(d, approx, label="Approssimazione dipolo", linewidth=1.8, color=[0, 1, 0])
 plt.semilogy(d, val, label="Formula Neumann", linewidth=1.8, color='blue')
-plt.errorbar(distanze, Mrs, yerr=np.real(dMrs), xerr=d_distanze, fmt='.', markersize=8, markerfacecolor='red', color='black', label="Dati sperimentali")
+plt.errorbar(distanze, Mrs, yerr=dMrs, xerr=d_distanze, fmt='.', markersize=8, markerfacecolor='red', color='black', label="Dati sperimentali")
 plt.xlabel(r'Distanza  [mm]')
 plt.ylabel(r'$M_{RS}$  $[\mu H]$')
 plt.ylim((5e-4, 1e1))
