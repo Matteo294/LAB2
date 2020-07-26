@@ -1,23 +1,33 @@
 import numpy as np
-import math
+from math import *
 import uncertainties
+from libphysics import numpify
 from uncertainties import ufloat
 from uncertainties.umath import *
 
-def incertezza_H(A_in, B_in, A_out, B_out, dA_in, dB_in, dA_out, dB_out):
-    A_in = ufloat(A_in, dA_in)
-    B_in = ufloat(B_in, dB_in)
-    A_out = ufloat(A_out, dA_out)
-    B_out = ufloat(B_out, dB_out)
+def incertezza_H(Cin, Cout, dVin_schermo, dVout_schermo, t_schermo, freqs):
+    Cin_abs = abs(Cin)
+    Cout_abs = abs(Cout)
+    Cin_fase = float(np.angle(Cin))
+    Cout_fase = float(np.angle(Cin))
+    
+    dVout = dVout_schermo*32/100
+    dVin = dVin_schermo*32/100
+    
+    dt = 8e-4*t_schermo
 
-    C_in_re = A_in
-    C_in_im = -B_in
-    C_out_re = A_out
-    C_out_im = -B_out
+    dCout_abs = dVout
+    dCout_fase = numpify(2*pi*freqs*dt)*180/pi
+    dCin_abs = dVin
+    dCin_fase = numpify(2*pi*freqs*dt)*180/pi
 
-    H_re = (C_out_re*C_in_re + C_in_im*C_out_im)/(C_in_re**2 + C_in_im**2)
-    H_im = (C_out_im*C_in_re - C_out_re*C_in_im)/(C_in_re**2 + C_in_im**2)
-    H_abs = H_re**2 + H_im **2
-    H_arg = atan(H_im/H_re)
+    Cin_abs = ufloat(Cin_abs, dCin_abs)
+    Cin_fase = ufloat(Cin_fase, dCin_fase)
+    Cout_abs = ufloat(Cout_abs, dCout_abs)
+    Cout_fase = ufloat(Cout_fase, dCout_fase)
+    
+    H_abs = Cout_abs/Cin_abs
+    H_fase = Cout_fase-Cin_fase
 
-    return {"abs":H_abs.s, "arg":H_arg.s}
+
+    return {"abs":H_abs.s, "arg":H_fase.s}

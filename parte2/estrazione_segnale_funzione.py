@@ -45,8 +45,8 @@ def estrazione_segnale(data_file, freq, showplots=False):
     # plots
     
     if(showplots):
-        plt.plot(t, Vin, label="Vin")
-        plt.plot(t, C_in + A_in*func_cos + B_in*func_sin, label="Vin fit")
+        # plt.plot(t, Vin, label="Vin")
+        # plt.plot(t, C_in + A_in*func_cos + B_in*func_sin, label="Vin fit")
     
         plt.plot(t, Vout, label="Vout")
         plt.plot(t, C_out + A_out*func_cos + B_out*func_sin, label="Vout fit")

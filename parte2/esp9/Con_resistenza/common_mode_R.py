@@ -5,6 +5,7 @@ from incertezza_H_funzione import *
 
 
 freqs = [100, 250, 520, 980, 3.6e3, 11.4e3, 38.1e3, 88.6e3, 141.3e3, 200e3]
+t_schermo=numpify([3e-3, 1e-3, 5e-4, 5e-4, 4e-4, 5e-5, 1e-5, 1e-6, 1e-6, 1e-6])
 output_file = "output_common_mode_R.csv"
 Rc = 9.73e3
 R1 = 9.924e3
@@ -15,6 +16,8 @@ Gcm = []
 dGcm = []
 Gcm_fase = []
 dGcm_fase = []
+dH_amp =[]
+dH_fase = []
 
 for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     input_file = "Data_common_mode/" + str(i+1) + ".csv"
@@ -27,7 +30,7 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     C_in = A_in - 1j*B_in
     C_out = A_out - 1j*B_out
     H = C_out/C_in
-    dH = incertezza_H(A_in, B_in, A_out, B_out, dA_in, dB_in, dA_out, dB_out)
+    dH = incertezza_H(C_in, C_out, dVin_schermo=134e-3, dVout_schermo=60e-3, t_schermo=t_schermo[i], freqs=freq)
 
     Gcm.append(float(abs(H)))
     dGcm.append(dH["abs"])
