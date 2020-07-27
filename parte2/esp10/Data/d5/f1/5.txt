@@ -6,12 +6,12 @@ Firmware:00.03.05.04.00
 Status:
 L:[HEX] 0000 0000	[BIN] 0000 0000 0000 0000 0000 0000 0000 0000
 H:[HEX] 0000 0000	[BIN] 0000 0000 0000 0000 0000 0000 0000 0000
-2020:6:24 17:32:36
+2020:6:24 16:54:2
 
 	DSO Vertical System 
 CH1:On
-Scale:2.300e+01mV/
-Position:5.400e-02mV
+Scale:2.350e+01mV/
+Position:4.600e-01mV
 Coupling:DC
 Invert:Off
 Bandwidth Limit:OFF
@@ -21,7 +21,7 @@ Unit:V
 User Cal:0ps
 
 CH2:On
-Scale:6.800e+00mV/
+Scale:7.900e+00mV/
 Position:0.000e+00mV
 Coupling:DC
 Invert:Off
@@ -61,16 +61,16 @@ D8-D15 Cal:0ps
 
 	DSO Horizontal System
 Delay:Off
-Time Vernier:On
+Time Vernier:Off
 Time Mode:YT
-Time Scale:4.060000e-06s
-Delay Time Scale:1.000000e-06s
+Time Scale:2.000000e-04s
+Delay Time Scale:1.000000e-04s
 Time Offset:2.360200e-04s
-Delay Time Offset:2.360200e-04s
+Delay Time Offset:0.000000e+00s
 
 	DSO Acquire System
 Acquire Mode:Average
-Memory Depth:56839
+Memory Depth:2800000
 Average Num:32
 Sampling Rate:1.000e+09
 LA Sampling Rate:5.000e+08
@@ -84,7 +84,7 @@ Trigger Noise Reject:Off
 Trigger HoldOff:1.000000e-07s
 CH1 Level:0.005440V
 CH2 Level:0.000000V
-Ext Level:-0.002000V
+Ext Level:0.000000V
 Trigger Edge Slope:Rising
 Pulse Condition:Positive More
 Pulse High:2.000000e-06s

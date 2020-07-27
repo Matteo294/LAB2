@@ -6,7 +6,7 @@ Firmware:00.03.05.04.00
 Status:
 L:[HEX] 0000 0000	[BIN] 0000 0000 0000 0000 0000 0000 0000 0000
 H:[HEX] 0000 0000	[BIN] 0000 0000 0000 0000 0000 0000 0000 0000
-2020:6:24 17:19:26
+2020:6:24 17:7:32
 
 	DSO Vertical System 
 CH1:On
@@ -21,7 +21,7 @@ Unit:V
 User Cal:0ps
 
 CH2:On
-Scale:5.400e+01mV/
+Scale:9.000e+01mV/
 Position:0.000e+00mV
 Coupling:DC
 Invert:Off
@@ -63,14 +63,14 @@ D8-D15 Cal:0ps
 Delay:Off
 Time Vernier:On
 Time Mode:YT
-Time Scale:3.780000e-06s
+Time Scale:1.570000e-06s
 Delay Time Scale:1.000000e-06s
 Time Offset:2.360200e-04s
 Delay Time Offset:2.360200e-04s
 
 	DSO Acquire System
 Acquire Mode:Average
-Memory Depth:52920
+Memory Depth:21980
 Average Num:32
 Sampling Rate:1.000e+09
 LA Sampling Rate:5.000e+08

@@ -55,12 +55,6 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     dH_amp.append(dH["abs"])
     dH_fase.append(dH["arg"])
 
-    # # Gdiff = Vout/Vin - Gcm/2, ma sono numeri complessi
-    # Gdiff_complesso.append(H[i] - Gcm[i]/2*np.exp(1j*Gcm_fase[i]/2))
-    # Gdiff.append(float(abs(Gdiff_complesso[i])))
-    # Gdiff_fase.append(float(np.angle(Gdiff_complesso[i])))
-    # dGdiff.append(sqrt(dH_amp[i]**2 + dGcm[i]**2))
-
 H = numpify(H)
 dH_amp = numpify(dH_amp)
 dH_fase = numpify(dH_fase)
@@ -100,9 +94,9 @@ Zs = -Rc / (2*H_cm)
 Rs = 1/((1/Zs).real)
 Cs = ((1/Zs).imag)/w
 Rs_stima = np.average(Rs[:6])
-Cs_stima = np.average(Cs[6:])
+Cs_stima = np.average(Cs[2:])
 dRs = np.std(Rs[:6], ddof=1)
-dCs = np.std(Cs[6:], ddof=1)
+dCs = np.std(Cs[2:], ddof=1)
 print("Rs = {}+-{} MOhm".format(Rs_stima/1e6, dRs/1e6))
 print("Stima di Cs: {}+-{} pF\n\n".format(Cs_stima*1e12, dCs*1e12))
 
