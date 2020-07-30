@@ -14,7 +14,7 @@ file_gcm = "output_common_mode_R.csv"
 [Gcm, Gcm_fase, dGcm, dGcm_fase] = readCSV(file_gcm)
 
 freqs = [100, 250, 520, 980, 3.6e3, 11.4e3, 38.1e3, 88.6e3, 141.3e3, 200e3]
-t_schermo=numpify([3e-3, 1e-3, 5e-4, 5e-4, 4e-4, 5e-5, 1e-5, 1e-6, 1e-6, 1e-6])
+t_schermo=numpify([2.6e-3, 1e-3, 4.5e-4, 2.5e-4, 6.1e-5, 1.9e-5, 5.7e-5, 1e-6, 1e-6, 1e-6, 1e-6])
 Rc = ufloat(9.830, 0.001)*1e3
 Re = ufloat(119.25, 0.03)
 R1 = 9.924e3
@@ -39,7 +39,7 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     C_in = A_in - 1j*B_in
     C_out = A_out - 1j*B_out
     H.append(np.complex(-C_out/C_in))
-    dH = incertezza_H(C_in, C_out, dVin_schermo=40e-3, dVout_schermo=405e-3, t_schermo=t_schermo[i], freqs=freq)
+    dH = incertezza_H(C_in, C_out, t_schermo=t_schermo[i], freqs=freq)
     dH_amp.append(dH["abs"]) 
     dH_fase.append(dH["arg"])
 
@@ -58,7 +58,6 @@ freqs = numpify(freqs)
 H = numpify(H)
 dH_amp=numpify(dH_amp)
 dH_fase = numpify(dH_fase)
-
 
 
 

@@ -5,16 +5,16 @@ from libphysics import numpify
 from uncertainties import ufloat
 from uncertainties.umath import *
 
-def incertezza_H(Cin, Cout, dVin_schermo, dVout_schermo, t_schermo, freqs):
+def incertezza_H(Cin, Cout, t_schermo, freqs):
     Cin_abs = abs(Cin)
     Cout_abs = abs(Cout)
     Cin_fase = float(np.angle(Cin))
     Cout_fase = float(np.angle(Cin))
     
-    dVout = dVout_schermo*32/100
-    dVin = dVin_schermo*32/100
+    dVout = 2*Cout_abs*1.5/100
+    dVin = 2*Cin_abs*1.5/100
     
-    dt = 8e-4*t_schermo
+    dt = 8e-3*t_schermo
 
     dCout_abs = dVout
     dCout_fase = numpify(2*pi*freqs*dt)*180/pi

@@ -56,7 +56,7 @@ H = Gcm*np.exp(1j*Gcm_fase)
 #incertezze fase
 t_schermo=numpify([3e-3, 1e-3, 5e-4, 5e-4, 4e-4, 5e-5, 1e-5, 1e-6, 1e-6, 1e-6, 1e-6])
 dt = 8e-4*t_schermo
-dGcm_fase = numpify(2*pi*freqs*dt)*180/pi
+dGcm_fase = np.sqrt(dGcm_fase**2 + (numpify(2*pi*freqs*dt)*180/pi)**2)
 
 
 # stima di Rs e Cs
@@ -89,7 +89,7 @@ Gcm_teo = (G0_cm*Zosc)/(Rc + Zosc)
 bodeplot
 b1 = bodeplot(freqs, H=H, err=True, Amperr=dGcm, Phaseerr=dGcm_fase, deg=False)
 b2 = bodeplot(f, H=Gcm_teo, asline=True, figure=b1)
-plt.show()
+#plt.show()
 
 # write Gcm in file
 with open(output_file, 'w') as f:

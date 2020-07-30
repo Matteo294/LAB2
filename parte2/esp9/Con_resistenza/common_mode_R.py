@@ -5,7 +5,7 @@ from incertezza_H_funzione import *
 
 
 freqs = [100, 250, 520, 980, 3.6e3, 11.4e3, 38.1e3, 88.6e3, 141.3e3, 200e3]
-t_schermo=numpify([3e-3, 1e-3, 5e-4, 5e-4, 4e-4, 5e-5, 1e-5, 1e-6, 1e-6, 1e-6])
+t_schermo=numpify([2e-3, 8.2e-4, 4.4e-4, 2e-4, 5e-5, 2e-5, 5e-6, 2.2e-6, 1.5e-5, 1.1e-6])
 output_file = "output_common_mode_R.csv"
 Rc = 9.73e3
 R1 = 9.924e3
@@ -30,7 +30,7 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     C_in = A_in - 1j*B_in
     C_out = A_out - 1j*B_out
     H = C_out/C_in
-    dH = incertezza_H(C_in, C_out, dVin_schermo=134e-3, dVout_schermo=60e-3, t_schermo=t_schermo[i], freqs=freq)
+    dH = incertezza_H(C_in, C_out, t_schermo=t_schermo[i], freqs=freq)
 
     Gcm.append(float(abs(H)))
     dGcm.append(dH["abs"])
@@ -57,7 +57,7 @@ G = (G_0*Zosc)/(Rc + Zosc)
 bodeplot
 b1 = bodeplot(freqs, Amp = Gcm, Phase=Gcm_fase, deg=False, err=True, Amperr = dGcm, Phaseerr = dGcm_fase)
 b2 = bodeplot(f, H=G, asline=True, figure=b1, deg=False)
-plt.show()
+#plt.show()
 
 # write Gcm in file
 with open(output_file, 'w') as f:

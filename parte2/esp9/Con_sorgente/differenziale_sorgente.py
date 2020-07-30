@@ -51,7 +51,7 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     C_in = A_in - 1j*B_in
     C_out = A_out - 1j*B_out
     H.append(C_out/C_in)
-    dH = incertezza_H(C_in, C_out, dVin_schermo=30e-3, dVout_schermo=400e-3, t_schermo=t_schermo[i], freqs=freqs[i])
+    dH = incertezza_H(C_in, C_out, t_schermo=t_schermo[i], freqs=freqs[i])
     dH_amp.append(dH["abs"])
     dH_fase.append(dH["arg"])
 

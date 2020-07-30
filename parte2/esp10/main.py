@@ -7,6 +7,7 @@ import sys
 from uncertainties import ufloat
 from uncertainties import unumpy
 from uncertainties.umath import *
+from incertezza_H_funzione import *
 
 plot_flag = 0
 print_flag = 1
@@ -27,13 +28,13 @@ def Gdiff(f):
     re = 45
     # Gdiff
     G0_diff = Rc / (2*(re + Re))
-    return abs((G0_diff*Zosc)/(Rc + Zosc))
+    return (G0_diff*Zosc)/(Rc + Zosc)
 
 def dGdiff(f):
     return Gdiff(f) / 100
 
 # Misure e costanti
-R_lim = 12
+R_lim = 10
 dR_lim = 0.001
 n_samples = 5 # numero misure ripetute
 
@@ -45,18 +46,21 @@ n_S = 30
 n_R = 28
 M_dipolo = lambda d: 2 * mu0/(4*np.pi) * n_S * n_R * sigma1 * sigma2 / d**3
 
-distanze = [1.35e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2] 
+distanze = numpify([1.35e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2])
 d_distanze = [1 for _ in range(len(distanze))]
 frequenze = [1e3, 50e3, 150e3]
 omegas = [2*np.pi*f for f in frequenze]
 
+t_schermo = numpify([2e-4, 3.7e-6, 1.5e-6])
 ''' Analisi accoppiamento '''
 Z_ctrl = []
-dZ_ctrl = []
+dZ_ctrl_fase = []
+dZ_ctrl_abs = []
 for i, f in enumerate(frequenze):
 
     Z = []
-    
+    dH_abs = []
+    dH_fase = []
     for j in range(n_samples):
 
         filename = "Data/h/f" + str(i+1) + "/" + str(j+1) + ".csv"
@@ -71,17 +75,26 @@ for i, f in enumerate(frequenze):
 
         # Calcolo ampiezza complessa segnale in uscita
         C_out = A_out - 1j*B_out
-	
+        
+        
         # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
-        Z.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
-    
-    Z_ctrl.append(np.mean(Z))
-    dZ_ctrl.append(np.std(Z, ddof=1)) # Non solo questa, anche 1% fondoscala
+        Z.append(C_out / C_in / Gdiff(f) * R_lim) 
+        dH = incertezza_H(C_in, C_out, t_schermo[i], freqs=frequenze[i])
+        dH_abs.append(dH["abs"])
+        dH_fase.append(dH["arg"])
 
-params = linreg(omegas, Z_ctrl, dZ_ctrl)
+    dH_abs = np.mean(numpify(dH_abs))
+    dH_fase = np.mean(numpify(dH_fase))
+    Z = numpify(Z)
+    Z_ctrl.append(np.mean(Z))
+    dZ_ctrl_abs.append(np.std(abs(Z), ddof=1) + dH_abs)
+    dZ_ctrl_fase.append(np.std(np.angle(Z), ddof=1) + dH_fase) 
+
+Z_ctrl = numpify(Z_ctrl)
+params = linreg(omegas, np.imag(Z_ctrl), dZ_ctrl_abs)
 M_ctrl = params['m']
 dM_ctrl = params['dm']
-print("Induttanza di controllo accoppiamento\n\tM_ctrl={}+-{}".format(M_ctrl, dM_ctrl))
+#print("Induttanza di controllo accoppiamento\n\tM_ctrl={}+-{}".format(M_ctrl, dM_ctrl))
 '''-----------------------------------'''
 
 # Array induttanza mutua a diverse distanze
@@ -104,6 +117,8 @@ for d in range(len(distanze)):
     for i, f in enumerate(frequenze):
         Z = []
         Z_complessa = []
+        dH_abs = []
+        dH_fase = []
         for j in range(n_samples):
 
             filename = base_input_file + "/f" + str(i+1) + "/" + str(j+1) + '.csv'
@@ -122,20 +137,24 @@ for d in range(len(distanze)):
             # Calcolo ampiezza complessa segnale in uscita
             C_out = A_out - 1j*B_out
 
-            #print("d =", distanze[d], abs(C_in), abs(C_out))
-
             # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
             Z_complessa.append(C_out / C_in / Gdiff(f) * R_lim)
             Z.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
+            dH = incertezza_H(C_in, C_out, t_schermo[i], freqs=frequenze[i])
+            dH_abs.append(dH["abs"])
+            dH_fase.append(dH["arg"])
         # complesse per il bodeplot
+        dH_abs = np.mean(numpify(dH_abs))
+        dH_fase = np.mean(numpify(dH_fase))
         Zeff_complessa.append(np.mean(numpify(Z_complessa)))
-        dZeff_abs.append(np.std(abs(numpify(Z_complessa))))
-        dZeff_fase.append(np.std(abs(numpify(Z_complessa))))
+        dZeff_abs.append(np.std(abs(numpify(Z_complessa))) + dH_abs)
+        dZeff_fase.append(np.std(abs(numpify(Z_complessa))) + dH_fase)
         # parte immaginaria per il fit
         Z_eff.append(np.mean(Z))
-        dZ_eff.append(np.std(Z, ddof=1)) # Non solo questa, anche 1% fondoscala
+        dZ_eff.append(np.std(Z, ddof=1) + dH_abs) # Non solo questa, anche 1% fondoscala
 
-    Zeff_complessa = numpify(Zeff_complessa)
+    
+    Zeff_complessa = numpify(Zeff_complessa) - Z_ctrl
     dZeff_abs = numpify(dZeff_abs)
     dZeff_fase = numpify(dZeff_fase)
     Zeff_d.append(Zeff_complessa)
@@ -148,21 +167,37 @@ for d in range(len(distanze)):
     Mrs.append(Ze['m'])
     dMrs.append(np.sqrt(Ze['dm']**2 + dM_ctrl**2))
     
+
+# modelli teorici Zeff = j*f/2pi*Mrs
+f = np.logspace(3, 6)
+Zeff_teo = [f*1j*2*pi *2 * mu0/(4*np.pi) * n_S * n_R * sigma1 * sigma2 / d**3 for d in distanze]
+
 # bodeplot Zeff in funzione della frequenza
-b0 = bodeplot(frequenze, H = Zeff_d[0], err=1, Amperr=dZeff_d_abs[0], Phaseerr=dZeff_d_fase[0], logyscale=1, color="firebrick")
+b00 = bodeplot(frequenze, H = Z_ctrl, err=1, Amperr=numpify(dZ_ctrl_abs), Phaseerr=numpify(dZ_ctrl_fase), logyscale=1, color="black")
+b0 = bodeplot(frequenze, H = Zeff_d[0], err=1, Amperr=dZeff_d_abs[0], Phaseerr=dZeff_d_fase[0], logyscale=1, color="firebrick", figure=b00)
 b1 = bodeplot(frequenze, H = Zeff_d[1], err=1, Amperr=dZeff_d_abs[1], Phaseerr=dZeff_d_fase[1], figure=b0, color="royalblue")
 b2 = bodeplot(frequenze, H = Zeff_d[2], err=1, Amperr=dZeff_d_abs[2], Phaseerr=dZeff_d_fase[2], figure=b1, color = "darkorange")
 b3 = bodeplot(frequenze, H = Zeff_d[3], err=1, Amperr=dZeff_d_abs[3], Phaseerr=dZeff_d_fase[3], figure=b2, color="mediumseagreen")
 b4 = bodeplot(frequenze, H = Zeff_d[4], err=1, Amperr=dZeff_d_abs[4], Phaseerr=dZeff_d_fase[4],figure=b3, color="yellowgreen")
-b5 = bodeplot(frequenze, H = Zeff_d[5], err=1, Amperr=dZeff_d_abs[5], Phaseerr=dZeff_d_fase[5],figure=b4, color="black")
+b5 = bodeplot(frequenze, H = Zeff_d[5], err=1, Amperr=dZeff_d_abs[5], Phaseerr=dZeff_d_fase[5],figure=b4, color="red")
+# modello teorico
+b6 = bodeplot(f, H=Zeff_teo[0], color = "firebrick", asline=1, figure=b5)
+b7 = bodeplot(f, H=Zeff_teo[1], color = "royalblue", asline=1, figure=b6)
+b8 =  bodeplot(f, H=Zeff_teo[2], color = "darkorange", asline=1, figure=b7)
+b9 = bodeplot(f, H=Zeff_teo[3], color = "mediumseagreen", asline=1, figure=b8)
+b10 = bodeplot(f, H=Zeff_teo[4], color = "yellowgreen", asline=1, figure=b9)
+b11 = bodeplot(f, H=Zeff_teo[5], color = "red", asline=1, figure=b10)
 ax = b5.axes[0]
 handles,_ = ax.get_legend_handles_labels()
 labels = [r"$d=${} mm".format(distanze[i]*1000) for i in range(len(distanze))]
-b3.legend(handles, labels=labels, loc='lower center', ncol=3)
-# plt.show()
+labels.append("Controllo")
+b3.legend(handles, labels=labels, loc='lower center', ncol=4)
+#plt.show()
+
 
 # Leggo i valori dei modelli teorici
 d, val, approx = readCSV('Mrs/induzione.csv')
+
 
 # Cambio udm ai dati
 d = [dist/1e-3 for dist in d]
@@ -185,6 +220,6 @@ plt.title("Mutua induzione tra bobine", fontsize=20)
 
 fig.legend(loc='lower center', ncol=3)
 # adjust layout
-fig.tight_layout()
+#fig.tight_layout()
 #plt.savefig(fileimmagine, bbox_inches='tight', dpi=1000)
-# plt.show()
+plt.show()

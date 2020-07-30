@@ -1,1 +1,1 @@
-../incertezza_H_funzione.py
+../../incertezza_H_funzione.py
