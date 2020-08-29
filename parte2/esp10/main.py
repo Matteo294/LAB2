@@ -5,9 +5,13 @@ from estrazione_segnale_funzione import *
 import numpy as np
 import sys
 from uncertainties import ufloat
-from uncertainties import unumpy
+from uncertainties import unumpy, wrap
 from uncertainties.umath import *
 from incertezza_H_funzione import *
+
+wangle = wrap(np.angle)
+wreal = wrap(np.real)
+wimag = wrap(np.imag)
 
 plot_flag = 0
 print_flag = 1
@@ -16,7 +20,26 @@ if len(sys.argv) > 1:
 
 fileimmagine = '../esp9/Immagini/Faraday.png'
 
-def Gdiff(f):
+def Gdiff(f, flag='val'):
+    w = 2*pi*f
+    # carico = oscilloscopio
+    Cosc = 110e-12
+    Rosc = 1e6
+    Zosc = Rosc/(1 + 1j*w*Rosc*Cosc)
+    # parametri che servono
+    Rc = ufloat(9.830e3, 0.002e3)
+    Re = ufloat(119.25, 0.002e3)
+    re = ufloat(45, 1)
+    # Gdiff
+    G0_diff = Rc / (2*(re + Re))
+    G_abs = (G0_diff*np.absolute(Zosc))/ufloat(np.absolute(Rc.n + Zosc), Rc.s)
+    G_fase = ufloat( np.angle((G0_diff.n*Zosc)/(Rc.n + Zosc)), 0)
+    if flag == 'df':
+        return G_abs.s
+    else:
+        return G_abs.n*np.exp(1j*G_fase.n) 
+
+def Gdiff1(f):
     w = 2*pi*f
     # carico = oscilloscopio
     Cosc = 110e-12
@@ -30,7 +53,7 @@ def Gdiff(f):
     G0_diff = Rc / (2*(re + Re))
     return (G0_diff*Zosc)/(Rc + Zosc)
 
-def dGdiff(f):
+def dGdifff(f):
     return Gdiff(f) / 100
 
 # Misure e costanti
@@ -46,8 +69,8 @@ n_S = 30
 n_R = 28
 M_dipolo = lambda d: 2 * mu0/(4*np.pi) * n_S * n_R * sigma1 * sigma2 / d**3
 
-distanze = numpify([1.35e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2])
-d_distanze = [1 for _ in range(len(distanze))]
+distanze = numpify([1.35e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2]) #m
+d_distanze = [0.4 for _ in range(len(distanze))] #mm
 frequenze = [1e3, 50e3, 150e3]
 omegas = [2*np.pi*f for f in frequenze]
 
@@ -75,7 +98,6 @@ for i, f in enumerate(frequenze):
 
         # Calcolo ampiezza complessa segnale in uscita
         C_out = A_out - 1j*B_out
-        
         
         # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
         Z.append(C_out / C_in / Gdiff(f) * R_lim) 
@@ -116,9 +138,11 @@ for d in range(len(distanze)):
 
     for i, f in enumerate(frequenze):
         Z = []
-        Z_complessa = []
+        Z_complessa_abs = []
+        Z_complessa_fase = []
         dH_abs = []
         dH_fase = []
+        dGdiff_abs = []
         for j in range(n_samples):
 
             filename = base_input_file + "/f" + str(i+1) + "/" + str(j+1) + '.csv'
@@ -138,21 +162,41 @@ for d in range(len(distanze)):
             C_out = A_out - 1j*B_out
 
             # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
-            Z_complessa.append(C_out / C_in / Gdiff(f) * R_lim)
-            Z.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
-            dH = incertezza_H(C_in, C_out, t_schermo[i], freqs=frequenze[i])
-            dH_abs.append(dH["abs"])
-            dH_fase.append(dH["arg"])
-        # complesse per il bodeplot
-        dH_abs = np.mean(numpify(dH_abs))
-        dH_fase = np.mean(numpify(dH_fase))
-        Zeff_complessa.append(np.mean(numpify(Z_complessa)))
-        dZeff_abs.append(np.std(abs(numpify(Z_complessa))) + dH_abs)
-        dZeff_fase.append(np.std(abs(numpify(Z_complessa))) + dH_fase)
-        # parte immaginaria per il fit
-        Z_eff.append(np.mean(Z))
-        dZ_eff.append(np.std(Z, ddof=1) + dH_abs) # Non solo questa, anche 1% fondoscala
+            #Z.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
 
+            # H e incertezze
+            dH = incertezza_H(C_in, C_out, t_schermo[i], freqs=frequenze[i])
+            dH_abs = dH["abs"]
+            dH_fase = dH["arg"]
+            H_abs = ufloat(np.absolute(C_out / C_in), dH_abs)
+            H_fase = ufloat(wangle(C_out/C_in), dH_fase)
+            # G e incertezze
+            dGdiff_abs = Gdiff(f, 'df')
+            dGdiff_fase = 0
+            Gdiff_abs = ufloat(np.abs(Gdiff(f)), dGdiff_abs)
+            Gdiff_fase = ufloat(np.angle(Gdiff(f)), dGdiff_fase)
+            # Z e incertezze
+            Z_complessa_abs.append(H_abs / Gdiff_abs * R_lim)
+            Z_complessa_fase.append(H_fase - Gdiff_fase)
+            
+        # complesse per il bodeplot
+        #dH_abs = np.mean(numpify(dH_abs))
+        #dH_fase = np.mean(numpify(dH_fase))
+        # Preparo pesi per medie pesate
+        w_abs = [1/v.s**2 for v in Z_complessa_abs]
+        w_fase = [1/v.s**2 for v in Z_complessa_fase]
+        # Medie pesate
+        Z_eff_abs = np.average([v.n for v in Z_complessa_abs], weights=w_abs)
+        d_abs = np.sqrt(1/np.sum(w_abs))
+        Z_eff_fase = np.average([v.n for v in Z_complessa_fase], weights=w_fase)
+        d_fase = np.sqrt(1/np.sum(w_fase))
+        # Carico negli array per il bodeplot
+        Zeff_complessa.append(Z_eff_abs*np.exp(1j*Z_eff_fase))
+        dZeff_abs.append(d_abs)
+        dZeff_fase.append(d_fase)
+        # parte immaginaria per il fit
+        Z_eff.append(wimag(Z_eff_abs*np.exp(1j*Z_eff_fase)))
+        dZ_eff.append(d_abs)
     
     Zeff_complessa = numpify(Zeff_complessa) - Z_ctrl
     dZeff_abs = numpify(dZeff_abs)
@@ -166,6 +210,10 @@ for d in range(len(distanze)):
 
     Mrs.append(Ze['m'])
     dMrs.append(np.sqrt(Ze['dm']**2 + dM_ctrl**2))
+
+    print('MRDSDDRMRS', [d/v*100 for d,v in zip(dMrs, Mrs)])
+
+#####################################################
     
 
 # modelli teorici Zeff = j*f/2pi*Mrs
@@ -210,13 +258,13 @@ dMrs = [np.real(d)/1e-6 for d in dMrs]
 # Plot dati, salvo nella cartella immagini
 fig = plt.figure()
 plt.semilogy(d, approx, label="Approssimazione dipolo", linewidth=1.8, color = 'red', ls='--') #color=[0, 1, 0])
-plt.semilogy(d, val, label="Formula di Neumann", linewidth=1.8, color = 'red')#color='blue')
+plt.semilogy(d, val, label="Formula di Neumann", linewidth=1.8, color = 'blue')#color='blue')
 plt.errorbar(distanze, Mrs, yerr=dMrs, xerr=d_distanze, fmt='.', markersize=8, color='black', label="Dati sperimentali")#markerfacecolor='red'
 plt.xlabel(r'Distanza  [mm]')
 plt.ylabel(r'$M_{RS}$  $[\mu H]$')
 plt.ylim((5e-4, 1e1))
 plt.title("Mutua induzione tra bobine", fontsize=20)
-#plt.legend()
+plt.grid()
 
 fig.legend(loc='lower center', ncol=3)
 # adjust layout
