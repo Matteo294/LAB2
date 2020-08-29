@@ -13,8 +13,17 @@ wangle = wrap(np.angle)
 wreal = wrap(np.real)
 wimag = wrap(np.imag)
 
+def mod(Re, Im):
+    return np.sqrt(Re**2 + Im**2)
+wabs = wrap(mod)
+
+def ang(Re, Im):
+    return np.angle(Re+1j*Im)
+wfase = wrap(ang)
+
 plot_flag = 0
 print_flag = 1
+
 if len(sys.argv) > 1:
     plot_flag = int(sys.argv[1])
 
@@ -39,23 +48,6 @@ def Gdiff(f, flag='val'):
     else:
         return G_abs.n*np.exp(1j*G_fase.n) 
 
-def Gdiff1(f):
-    w = 2*pi*f
-    # carico = oscilloscopio
-    Cosc = 110e-12
-    Rosc = 1e6
-    Zosc = Rosc/(1 + 1j*w*Rosc*Cosc)
-    # parametri che servono
-    Rc = 9.830e3
-    Re = 119.25
-    re = 45
-    # Gdiff
-    G0_diff = Rc / (2*(re + Re))
-    return (G0_diff*Zosc)/(Rc + Zosc)
-
-def dGdifff(f):
-    return Gdiff(f) / 100
-
 # Misure e costanti
 R_lim = 10
 dR_lim = 0.001
@@ -70,7 +62,7 @@ n_R = 28
 M_dipolo = lambda d: 2 * mu0/(4*np.pi) * n_S * n_R * sigma1 * sigma2 / d**3
 
 distanze = numpify([1.35e-2, 2.3e-2, 4.6e-2, 10.5e-2, 4.4e-2, 1.8e-2]) #m
-d_distanze = [0.4 for _ in range(len(distanze))] #mm
+d_distanze = [0.7 for _ in range(len(distanze))] #mm incertezza aggiunta dalla difficoltà di allineamento
 frequenze = [1e3, 50e3, 150e3]
 omegas = [2*np.pi*f for f in frequenze]
 
@@ -152,8 +144,13 @@ for d in range(len(distanze)):
             s_in, s_out, ds_in, ds_out = estrazione_segnale(filename, f, showplots=plots)
             [_, A_in, B_in] = s_in 
             [_, A_out, B_out] = s_out 
-            [_, dA_in, dB_int] = ds_in
+            [_, dA_in, dB_in] = ds_in
             [_, dA_out, dB_out] = ds_out
+
+            _A_in = ufloat(A_in, dA_in)
+            _A_out = ufloat(A_out, dA_out)
+            _B_in = ufloat(B_in, dB_in)
+            _B_out = ufloat(B_out, dB_out)
 
             # Calcolo ampiezza complessa del segnale in ingresso
             C_in = A_in - 1j*B_in
@@ -161,42 +158,46 @@ for d in range(len(distanze)):
             # Calcolo ampiezza complessa segnale in uscita
             C_out = A_out - 1j*B_out
 
-            # Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)
-            #Z.append(np.imag(C_out / C_in / Gdiff(f) * R_lim)) # (Z dovrebbe essere puramente immaginaria, c'è solo la mutua induzione)
+            C_in_abs = ufloat(np.absolute(C_in), 1/np.absolute(C_in) * np.sqrt( (A_in*dA_in)**2 + (B_in*dB_in)**2 ) )
+            C_out_abs = ufloat(np.absolute(C_out), 1/np.absolute(C_out) * np.sqrt( (A_out*dA_out)**2 + (B_out*dB_out)**2 ) )
+            C_in_fase = wfase(_A_in, -1*_B_in)
+            C_out_fase =  wfase(_A_out, -1*_B_out)
 
             # H e incertezze
-            dH = incertezza_H(C_in, C_out, t_schermo[i], freqs=frequenze[i])
-            dH_abs = dH["abs"]
-            dH_fase = dH["arg"]
-            H_abs = ufloat(np.absolute(C_out / C_in), dH_abs)
-            H_fase = ufloat(wangle(C_out/C_in), dH_fase)
+            H_abs = C_out_abs/C_in_abs
+            H_fase = C_out_fase - C_in_fase
             # G e incertezze
             dGdiff_abs = Gdiff(f, 'df')
             dGdiff_fase = 0
             Gdiff_abs = ufloat(np.abs(Gdiff(f)), dGdiff_abs)
             Gdiff_fase = ufloat(np.angle(Gdiff(f)), dGdiff_fase)
+
+            ''' Impedenza efficace (vediamo lo spazio tra le due bobine come un induttore di induttanza Mrs)'''
             # Z e incertezze
             Z_complessa_abs.append(H_abs / Gdiff_abs * R_lim)
             Z_complessa_fase.append(H_fase - Gdiff_fase)
-            
-        # complesse per il bodeplot
-        #dH_abs = np.mean(numpify(dH_abs))
-        #dH_fase = np.mean(numpify(dH_fase))
+
         # Preparo pesi per medie pesate
         w_abs = [1/v.s**2 for v in Z_complessa_abs]
         w_fase = [1/v.s**2 for v in Z_complessa_fase]
         # Medie pesate
         Z_eff_abs = np.average([v.n for v in Z_complessa_abs], weights=w_abs)
-        d_abs = np.sqrt(1/np.sum(w_abs))
+        d_abs1 = np.sqrt(1/np.sum(w_abs))
         Z_eff_fase = np.average([v.n for v in Z_complessa_fase], weights=w_fase)
-        d_fase = np.sqrt(1/np.sum(w_fase))
+        d_fase1 = np.sqrt(1/np.sum(w_fase))
+        # Deviazioni standard
+        d_abs2 = np.std([v.n for v in Z_complessa_abs], ddof=1)
+        d_fase2 = np.std([v.n for v in Z_complessa_fase], ddof=1)
+        # Combino gli errori
+        d_abs = np.sqrt(d_abs1**2 + d_abs2**2)
+        d_fase = np.sqrt(d_fase1**2 + d_fase2**2)
         # Carico negli array per il bodeplot
         Zeff_complessa.append(Z_eff_abs*np.exp(1j*Z_eff_fase))
         dZeff_abs.append(d_abs)
         dZeff_fase.append(d_fase)
         # parte immaginaria per il fit
         Z_eff.append(wimag(Z_eff_abs*np.exp(1j*Z_eff_fase)))
-        dZ_eff.append(d_abs)
+        dZ_eff.append(5*np.sqrt( (np.sin(Z_eff_fase)*d_abs)**2 + (Z_eff_abs*np.cos(Z_eff_fase)*d_fase)**2 ))
     
     Zeff_complessa = numpify(Zeff_complessa) - Z_ctrl
     dZeff_abs = numpify(dZeff_abs)
@@ -205,22 +206,18 @@ for d in range(len(distanze)):
     dZeff_d_abs.append(dZeff_abs)
     dZeff_d_fase.append(dZeff_fase)
 
+    print('distanza', distanze[d], 'frequenza', f,'fasi', np.angle(Zeff_complessa)*180/np.pi)
+
     Ze = linreg(omegas, Z_eff, dZ_eff)
 
-
     Mrs.append(Ze['m'])
-    dMrs.append(np.sqrt(Ze['dm']**2 + dM_ctrl**2))
-
-    print('MRDSDDRMRS', [d/v*100 for d,v in zip(dMrs, Mrs)])
-
-#####################################################
-    
+    dMrs.append(np.sqrt(Ze['dm']**2 + dM_ctrl**2))   
 
 # modelli teorici Zeff = j*f/2pi*Mrs
 f = np.logspace(3, 6)
 Zeff_teo = [f*1j*2*pi *2 * mu0/(4*np.pi) * n_S * n_R * sigma1 * sigma2 / d**3 for d in distanze]
 
-# bodeplot Zeff in funzione della frequenza
+# Bodeplot Zeff in funzione della frequenza
 b00 = bodeplot(frequenze, H = Z_ctrl, err=1, Amperr=numpify(dZ_ctrl_abs), Phaseerr=numpify(dZ_ctrl_fase), logyscale=1, color="black")
 b0 = bodeplot(frequenze, H = Zeff_d[0], err=1, Amperr=dZeff_d_abs[0], Phaseerr=dZeff_d_fase[0], logyscale=1, color="firebrick", figure=b00)
 b1 = bodeplot(frequenze, H = Zeff_d[1], err=1, Amperr=dZeff_d_abs[1], Phaseerr=dZeff_d_fase[1], figure=b0, color="royalblue")
@@ -228,7 +225,7 @@ b2 = bodeplot(frequenze, H = Zeff_d[2], err=1, Amperr=dZeff_d_abs[2], Phaseerr=d
 b3 = bodeplot(frequenze, H = Zeff_d[3], err=1, Amperr=dZeff_d_abs[3], Phaseerr=dZeff_d_fase[3], figure=b2, color="mediumseagreen")
 b4 = bodeplot(frequenze, H = Zeff_d[4], err=1, Amperr=dZeff_d_abs[4], Phaseerr=dZeff_d_fase[4],figure=b3, color="yellowgreen")
 b5 = bodeplot(frequenze, H = Zeff_d[5], err=1, Amperr=dZeff_d_abs[5], Phaseerr=dZeff_d_fase[5],figure=b4, color="red")
-# modello teorico
+# Modello teorico
 b6 = bodeplot(f, H=Zeff_teo[0], color = "firebrick", asline=1, figure=b5)
 b7 = bodeplot(f, H=Zeff_teo[1], color = "royalblue", asline=1, figure=b6)
 b8 =  bodeplot(f, H=Zeff_teo[2], color = "darkorange", asline=1, figure=b7)
@@ -240,7 +237,7 @@ handles,_ = ax.get_legend_handles_labels()
 labels = [r"$d=${} mm".format(distanze[i]*1000) for i in range(len(distanze))]
 labels.append("Controllo")
 b3.legend(handles, labels=labels, loc='lower center', ncol=4)
-#plt.show()
+plt.show()
 
 
 # Leggo i valori dei modelli teorici
@@ -253,13 +250,13 @@ distanze = [dist/1e-3 for dist in distanze]
 approx = [a/1e-6 for a in approx]
 val = [v/1e-6 for v in val]
 Mrs = [m/1e-6 for m in Mrs]
-dMrs = [np.real(d)/1e-6 for d in dMrs]
+dMrs = [np.real(dd)/1e-6 for dd in dMrs]
 
 # Plot dati, salvo nella cartella immagini
 fig = plt.figure()
-plt.semilogy(d, approx, label="Approssimazione dipolo", linewidth=1.8, color = 'red', ls='--') #color=[0, 1, 0])
-plt.semilogy(d, val, label="Formula di Neumann", linewidth=1.8, color = 'blue')#color='blue')
-plt.errorbar(distanze, Mrs, yerr=dMrs, xerr=d_distanze, fmt='.', markersize=8, color='black', label="Dati sperimentali")#markerfacecolor='red'
+plt.semilogy(d, approx, label="Approssimazione dipolo", linewidth=1.8, color = 'red', ls='--')
+plt.semilogy(d, val, label="Formula di Neumann", linewidth=1.8, color = 'red')
+plt.errorbar(distanze, Mrs, yerr=dMrs, xerr=d_distanze, fmt='.', markersize=8, color='black', label="Dati sperimentali")
 plt.xlabel(r'Distanza  [mm]')
 plt.ylabel(r'$M_{RS}$  $[\mu H]$')
 plt.ylim((5e-4, 1e1))
@@ -268,6 +265,6 @@ plt.grid()
 
 fig.legend(loc='lower center', ncol=3)
 # adjust layout
-#fig.tight_layout()
-#plt.savefig(fileimmagine, bbox_inches='tight', dpi=1000)
+fig.tight_layout()
+plt.savefig(fileimmagine, bbox_inches='tight', dpi=1000)
 plt.show()

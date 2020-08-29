@@ -1,10 +1,15 @@
 from libphysics import *
+from scipy.optimize import curve_fit as fit
+
+def fitfunc(t, C, A, B):
+    return C + A*np.cos(w*t) + B*np.sin(w*t)
 
 def estrazione_segnale(data_file, freq, showplots=False):
     """ 
     Prende la serie temporale di Vin e Vout, fa il fit a somma di seno e coseno, e ricava la funzione di trasferimento
     showplots e' False di default
     """
+    global w 
     w = 2*pi*freq
 	
     # presa dati
@@ -36,11 +41,15 @@ def estrazione_segnale(data_file, freq, showplots=False):
 
     # chiamo la funzione di fit
     fit_Vin = lsq_fit(Vin, matrix, dVin)        # Vin = C + B*sin(wt) + A*cos(wt)
-    fit_Vout = lsq_fit(Vout, matrix, dVout)      # Vout = C + B*sin(wt) + A*cos(wt)
-    [C_in, A_in, B_in] = fit_Vin["fit_out"]
-    [dC_in, dA_in, dB_in] = fit_Vin["dfit_out"]
-    [C_out, A_out, B_out] = fit_Vout["fit_out"]
-    [dC_out, dA_out, dB_out] = fit_Vout["dfit_out"]
+    #print(fit_Vin['dfit_out'])
+    #fit_Vout = lsq_fit(Vout, matrix, dVout)      # Vout = C + B*sin(wt) + A*cos(wt)
+    fit_in = fit(fitfunc, t, Vin, sigma=dVin, absolute_sigma=True)
+    #print(fit_in[1])
+    fit_out = fit(fitfunc, t, Vout, sigma=dVout, absolute_sigma=True)
+    [C_in, A_in, B_in] = fit_in[0]
+    [dC_in, dA_in, dB_in] = np.sqrt([fit_in[1][0][0], fit_in[1][1][1], fit_in[1][2][2]])
+    [C_out, A_out, B_out] = fit_out[0]
+    [dC_out, dA_out, dB_out] = np.sqrt([fit_out[1][0][0], fit_out[1][1][1], fit_out[1][2][2]])
 
     # plots
     
@@ -54,6 +63,4 @@ def estrazione_segnale(data_file, freq, showplots=False):
         plt.legend()
         plt.show()
 
-    return [fit_Vin["fit_out"], fit_Vout["fit_out"], fit_Vin["dfit_out"], fit_Vout["dfit_out"]]
-    
-
+    return [[C_in, A_in, B_in], [C_out, A_out, B_out], [dC_in, dA_in, dB_in], [dC_out, dA_out, dB_out]]
