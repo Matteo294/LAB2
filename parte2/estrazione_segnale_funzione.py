@@ -40,11 +40,7 @@ def estrazione_segnale(data_file, freq, showplots=False):
     matrix = np.hstack([func_const, func_cos, func_sin])
 
     # chiamo la funzione di fit
-    fit_Vin = lsq_fit(Vin, matrix, dVin)        # Vin = C + B*sin(wt) + A*cos(wt)
-    #print(fit_Vin['dfit_out'])
-    #fit_Vout = lsq_fit(Vout, matrix, dVout)      # Vout = C + B*sin(wt) + A*cos(wt)
     fit_in = fit(fitfunc, t, Vin, sigma=dVin, absolute_sigma=True)
-    #print(fit_in[1])
     fit_out = fit(fitfunc, t, Vout, sigma=dVout, absolute_sigma=True)
     [C_in, A_in, B_in] = fit_in[0]
     [dC_in, dA_in, dB_in] = np.sqrt([fit_in[1][0][0], fit_in[1][1][1], fit_in[1][2][2]])

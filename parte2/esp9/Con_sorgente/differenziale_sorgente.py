@@ -3,13 +3,26 @@ from estrazione_segnale_funzione import *
 from incertezza_H_funzione import *
 import uncertainties
 from uncertainties import ufloat
-from uncertainties import unumpy
+from uncertainties import unumpy, wrap
 from uncertainties.umath import *
 
 plt.rc('font', family='serif', size=18)
 freqs = numpify([980, 3.6e3, 11.4e3, 38.1e3, 88.6e3, 141.3e3, 200e3, 159e3, 100, 250, 520])
 Rc = 9.830e3
 Re = 119.25
+
+# Funzioni wrappate per uncertainties
+wangle = wrap(np.angle)
+wreal = wrap(np.real)
+wimag = wrap(np.imag)
+
+def mod(Re, Im):
+    return np.sqrt(Re**2 + Im**2)
+wabs = wrap(mod)
+
+def ang(Re, Im):
+    return np.angle(Re+1j*Im)
+wfase = wrap(ang)
 
 ###########################
 # PRESA DATI COMMON MODE E RIORDINAMENTO
@@ -46,14 +59,28 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     [_, A_in, B_in] = segnale_in
     [_, A_out, B_out] = segnale_out
     [_, dA_in, dB_in] = dsegnale_in
-    [_, dA_out, dB_out] = dsegnale_out    
+    [_, dA_out, dB_out] = dsegnale_out
+
+    _A_in = ufloat(A_in, dA_in)
+    _A_out = ufloat(A_out, dA_out)
+    _B_in = ufloat(B_in, dB_in)
+    _B_out = ufloat(B_out, dB_out)
 
     C_in = A_in - 1j*B_in
     C_out = A_out - 1j*B_out
+
+    C_in_abs = ufloat(np.absolute(C_in), 1/np.absolute(C_in) * np.sqrt( (A_in*dA_in)**2 + (B_in*dB_in)**2 ) )
+    C_out_abs = ufloat(np.absolute(C_out), 1/np.absolute(C_out) * np.sqrt( (A_out*dA_out)**2 + (B_out*dB_out)**2 ) )
+    C_in_fase = wfase(_A_in, -1*_B_in)
+    C_out_fase =  wfase(_A_out, -1*_B_out)   
+
+    H_abs = C_out_abs/C_in_abs 
+    H_fase = C_out_fase/C_in_fase
+
     H.append(C_out/C_in)
-    dH = incertezza_H(C_in, C_out, t_schermo=t_schermo[i], freqs=freqs[i])
-    dH_amp.append(dH["abs"])
-    dH_fase.append(dH["arg"])
+
+    dH_amp.append(H_abs.s)
+    dH_fase.append(H_fase.s)
 
 H = numpify(H)
 dH_amp = numpify(dH_amp)
@@ -69,7 +96,6 @@ Gdiff_complesso = H - Gcm/2*np.exp(1j*Gcm_fase/2)
 Gdiff = np.abs(Gdiff_complesso)
 Gdiff_fase = np.angle(Gdiff_complesso)
 dGdiff = np.sqrt(dH_amp**2 + dGcm**2)
-
 
 ###########################
 # STIME PARAMETRI E MODELLI TEORICI

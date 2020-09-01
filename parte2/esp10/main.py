@@ -108,7 +108,7 @@ Z_ctrl = numpify(Z_ctrl)
 params = linreg(omegas, np.imag(Z_ctrl), dZ_ctrl_abs)
 M_ctrl = params['m']
 dM_ctrl = params['dm']
-#print("Induttanza di controllo accoppiamento\n\tM_ctrl={}+-{}".format(M_ctrl, dM_ctrl))
+print("Induttanza di controllo accoppiamento\n\tM_ctrl={}+-{}".format(M_ctrl, dM_ctrl))
 '''-----------------------------------'''
 
 # Array induttanza mutua a diverse distanze
@@ -205,8 +205,6 @@ for d in range(len(distanze)):
     Zeff_d.append(Zeff_complessa)
     dZeff_d_abs.append(dZeff_abs)
     dZeff_d_fase.append(dZeff_fase)
-
-    print('distanza', distanze[d], 'frequenza', f,'fasi', np.angle(Zeff_complessa)*180/np.pi)
 
     Ze = linreg(omegas, Z_eff, dZ_eff)
 
