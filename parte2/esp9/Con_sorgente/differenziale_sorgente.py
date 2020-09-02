@@ -61,26 +61,15 @@ for i, freq in enumerate(freqs):    # ciclo sulle frequenze
     [_, dA_in, dB_in] = dsegnale_in
     [_, dA_out, dB_out] = dsegnale_out
 
-    _A_in = ufloat(A_in, dA_in)
-    _A_out = ufloat(A_out, dA_out)
-    _B_in = ufloat(B_in, dB_in)
-    _B_out = ufloat(B_out, dB_out)
-
     C_in = A_in - 1j*B_in
-    C_out = A_out - 1j*B_out
-
-    C_in_abs = ufloat(np.absolute(C_in), 1/np.absolute(C_in) * np.sqrt( (A_in*dA_in)**2 + (B_in*dB_in)**2 ) )
-    C_out_abs = ufloat(np.absolute(C_out), 1/np.absolute(C_out) * np.sqrt( (A_out*dA_out)**2 + (B_out*dB_out)**2 ) )
-    C_in_fase = wfase(_A_in, -1*_B_in)
-    C_out_fase =  wfase(_A_out, -1*_B_out)   
-
-    H_abs = C_out_abs/C_in_abs 
-    H_fase = C_out_fase/C_in_fase
+    C_out = A_out - 1j*B_out  
 
     H.append(C_out/C_in)
 
-    dH_amp.append(H_abs.s)
-    dH_fase.append(H_fase.s)
+    dH = incertezza_H(C_in, C_out, t_schermo=t_schermo[i], freqs=freqs[i])
+
+    dH_amp.append(dH["abs"])
+    dH_fase.append(dH["arg"])
 
 H = numpify(H)
 dH_amp = numpify(dH_amp)
@@ -119,6 +108,7 @@ Zs = -Rc / (2*H_cm)
 # 1/Zs = 1/Rs + jwCs
 Rs = 1/((1/Zs).real)
 Cs = ((1/Zs).imag)/w
+
 Rs_stima = np.average(Rs[:6])
 Cs_stima = np.average(Cs[2:])
 dRs = np.std(Rs[:6], ddof=1)
@@ -160,4 +150,4 @@ plt.show()
 # output
 outfile = open(file_gdelta, 'w+')
 for f, G in zip(freqs, Gdiff_complesso):
-    outfile.write(str(f) + "," + str(G[0]) + '\n')
+    outfile.write(str(f) + "," + str(G) + '\n')

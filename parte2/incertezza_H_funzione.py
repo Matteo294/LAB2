@@ -14,7 +14,7 @@ def incertezza_H(Cin, Cout, t_schermo, freqs):
     dVout = 2*Cout_abs*1.5/100
     dVin = 2*Cin_abs*1.5/100
     
-    dt = 8e-3*t_schermo
+    dt = 8e-4*t_schermo
 
     dCout_abs = dVout
     dCout_fase = numpify(2*pi*freqs*dt)*180/pi
@@ -28,6 +28,5 @@ def incertezza_H(Cin, Cout, t_schermo, freqs):
     
     H_abs = Cout_abs/Cin_abs
     H_fase = Cout_fase-Cin_fase
-
 
     return {"abs":H_abs.s, "arg":H_fase.s}

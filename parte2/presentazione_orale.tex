@@ -1,0 +1,23 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{packages}
+\usepackage{siunitx}
+\usepackage{subfiles}
+
+\newcommand{\onlyinsubfile}[1]{#1}
+\newcommand{\notinsubfile}[1]{}
+
+\author{Matteo Zortea, Elena Acinapura}
+\date{Settembre 2020}
+\title{Amplificatore ad emettitore comune e esperienza di Faraday}
+
+\begin{document}
+    \maketitle
+    \renewcommand{\onlyinsubfile}[1]{}
+    \renewcommand{\notinsubfile}[1]{#1}
+    \section*{Amplificatore differenziale}
+    \subfile{esp9/Latex/amplificatore.tex}
+    \newpage
+    \section*{Esperienza di Faraday}
+    \subfile{esp10/Latex/faraday.tex}
+\end{document}

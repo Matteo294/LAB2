@@ -147,9 +147,6 @@ for d in range(len(distanze)):
             [_, dA_in, dB_in] = ds_in
             [_, dA_out, dB_out] = ds_out
 
-            _A_in = ufloat(A_in, dA_in)
-            _A_out = ufloat(A_out, dA_out)
-            _B_in = ufloat(B_in, dB_in)
             _B_out = ufloat(B_out, dB_out)
 
             # Calcolo ampiezza complessa del segnale in ingresso
@@ -158,14 +155,11 @@ for d in range(len(distanze)):
             # Calcolo ampiezza complessa segnale in uscita
             C_out = A_out - 1j*B_out
 
-            C_in_abs = ufloat(np.absolute(C_in), 1/np.absolute(C_in) * np.sqrt( (A_in*dA_in)**2 + (B_in*dB_in)**2 ) )
-            C_out_abs = ufloat(np.absolute(C_out), 1/np.absolute(C_out) * np.sqrt( (A_out*dA_out)**2 + (B_out*dB_out)**2 ) )
-            C_in_fase = wfase(_A_in, -1*_B_in)
-            C_out_fase =  wfase(_A_out, -1*_B_out)
+            dH = incertezza_H(C_in, C_out, t_schermo[i], freqs=frequenze[i])
 
             # H e incertezze
-            H_abs = C_out_abs/C_in_abs
-            H_fase = C_out_fase - C_in_fase
+            H_abs = ufloat(np.absolute(C_out/C_in), dH['abs'])
+            H_fase = ufloat(np.angle(C_out/C_in), dH['arg'])
             # G e incertezze
             dGdiff_abs = Gdiff(f, 'df')
             dGdiff_fase = 0
